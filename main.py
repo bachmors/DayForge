@@ -106,10 +106,8 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
 
 @app.post("/api/auth/login")
 async def login(req: LoginRequest):
-    if req.username != ADMIN_USER or not pwd_context.verify(req.password, pwd_context.hash(ADMIN_PASS)):
-        # Simple check - in production use stored hash
-        if req.username != ADMIN_USER or req.password != ADMIN_PASS:
-            raise HTTPException(status_code=401, detail="Invalid credentials")
+    if req.username != ADMIN_USER or req.password != ADMIN_PASS:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
     token = create_token(req.username)
     return {"token": token, "username": req.username}
 
@@ -139,6 +137,7 @@ class ItemCreate(BaseModel):
     label: str = ""
     browser: str = "chrome"  # chrome, edge, default
     status: str = "pending"  # pending, done
+    permanent: bool = False  # permanent = pinned reference link
     order: int = 0
 
 class ItemUpdate(BaseModel):
@@ -147,6 +146,7 @@ class ItemUpdate(BaseModel):
     label: Optional[str] = None
     browser: Optional[str] = None
     status: Optional[str] = None
+    permanent: Optional[bool] = None
     order: Optional[int] = None
     workspace_id: Optional[str] = None
 
