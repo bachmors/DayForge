@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DayForge — Forja tu Día</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --purple: #6C5CE7;
+  --purple-light: #a855f7;
+  --purple-dark: #4a3aa0;
+  --orange: #FD7014;
+  --orange-glow: #ff8a3d;
+  --green: #00B894;
+  --red: #e74c3c;
+  --bg-dark: #0a0a1a;
+  --bg-card: #12122a;
+  --bg-card-hover: #1a1a3e;
+  --border: rgba(108, 92, 231, 0.2);
+  --border-hover: rgba(108, 92, 231, 0.5);
+  --text: #e8e8f0;
+  --text-dim: #8888aa;
+  --text-bright: #ffffff;
+  --hypatia-bg: rgba(168, 85, 247, 0.08);
+  --hypatia-border: rgba(168, 85, 247, 0.25);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'IBM Plex Sans', sans-serif;
+  background: var(--bg-dark);
+  color: var(--text);
+  min-height: 100vh;
+  font-weight: 400;
+}
+
+/* ─── Background atmosphere ─── */
+body::before {
+  content: '';
+  position: fixed;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(ellipse at 20% 20%, rgba(108,92,231,0.06) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 80%, rgba(253,112,20,0.04) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Login Screen ─── */
+#loginScreen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  position: relative;
+  z-index: 1;
+}
+
+.login-box {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 48px 40px;
+  width: 380px;
+  text-align: center;
+}
+
+.login-box h1 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 2.4rem;
+  background: linear-gradient(135deg, var(--purple-light), var(--orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+
+.login-box .subtitle {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  margin-bottom: 32px;
+  font-weight: 300;
+}
+
+.login-box input {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.95rem;
+  margin-bottom: 12px;
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+.login-box input:focus {
+  border-color: var(--purple);
+}
+
+.login-box button {
+  width: 100%;
+  padding: 12px;
+  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.login-box button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 24px rgba(108, 92, 231, 0.3);
+}
+
+.login-error {
+  color: var(--red);
+  font-size: 0.85rem;
+  margin-top: 12px;
+  min-height: 20px;
+}
+
+/* ─── Main App ─── */
+#appScreen { display: none; position: relative; z-index: 1; }
+
+/* ─── Header ─── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 28px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(10, 10, 26, 0.8);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-logo {
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, var(--purple-light), var(--orange));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.device-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  font-family: 'JetBrains Mono', monospace;
+}
+
+.device-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse-dot 2s infinite;
+}
+
+.device-dot.offline { background: var(--red); animation: none; }
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.header-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.header-btn:hover {
+  border-color: var(--purple);
+  color: var(--text);
+}
+
+/* ─── Main Content ─── */
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 28px;
+}
+
+/* ─── Hypatia Panel ─── */
+.hypatia-panel {
+  background: var(--hypatia-bg);
+  border: 1px solid var(--hypatia-border);
+  border-radius: 16px;
+  padding: 20px 24px;
+  margin-bottom: 28px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  animation: breathe 4s ease-in-out infinite;
+}
+
+@keyframes breathe {
+  0%, 100% { border-color: rgba(168, 85, 247, 0.25); }
+  50% { border-color: rgba(168, 85, 247, 0.45); }
+}
+
+.hypatia-avatar {
+  width: 40px; height: 40px;
+  background: linear-gradient(135deg, var(--purple), #ec4899);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.hypatia-content {
+  flex: 1;
+}
+
+.hypatia-label {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--purple-light);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+
+.hypatia-message {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--text);
+  font-weight: 300;
+}
+
+.hypatia-refresh {
+  background: none;
+  border: none;
+  color: var(--purple-light);
+  cursor: pointer;
+  font-size: 1.1rem;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+  margin-top: 4px;
+}
+
+.hypatia-refresh:hover { opacity: 1; }
+
+/* ─── Section Headers ─── */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  color: var(--text-bright);
+}
+
+.section-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  background: var(--bg-card);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+/* ─── Workspace Grid ─── */
+.workspace-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 32px;
+}
+
+.workspace-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  cursor: pointer;
+  transition: all 0.25s;
+  position: relative;
+  overflow: hidden;
+}
+
+.workspace-card:hover {
+  border-color: var(--border-hover);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+.workspace-card.selected {
+  border-color: var(--purple);
+  background: rgba(108, 92, 231, 0.1);
+}
+
+.workspace-card.forged {
+  border-color: var(--orange);
+  background: rgba(253, 112, 20, 0.08);
+}
+
+.workspace-card.forged::after {
+  content: '🔥';
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 1rem;
+}
+
+.ws-icon {
+  font-size: 1.8rem;
+  margin-bottom: 10px;
+}
+
+.ws-name {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+  color: var(--text-bright);
+}
+
+.ws-meta {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+}
+
+.ws-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+.ws-action-btn {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  font-family: 'IBM Plex Sans', sans-serif;
+  transition: all 0.2s;
+}
+
+.ws-action-btn:hover {
+  background: rgba(255,255,255,0.1);
+  color: var(--text);
+}
+
+.ws-action-btn.forge {
+  border-color: rgba(253, 112, 20, 0.4);
+  color: var(--orange);
+}
+
+.ws-action-btn.forge:hover {
+  background: rgba(253, 112, 20, 0.15);
+}
+
+/* ─── Add Workspace Button ─── */
+.add-workspace-card {
+  background: transparent;
+  border: 2px dashed var(--border);
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.25s;
+  min-height: 130px;
+  color: var(--text-dim);
+}
+
+.add-workspace-card:hover {
+  border-color: var(--purple);
+  color: var(--purple-light);
+}
+
+.add-workspace-card .plus {
+  font-size: 2rem;
+  margin-bottom: 6px;
+  font-weight: 300;
+}
+
+/* ─── Items Panel ─── */
+.items-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 32px;
+}
+
+.items-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.items-panel-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.items-panel-title .icon { font-size: 1.4rem; }
+
+.items-panel-title h3 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.items-panel-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ─── Item Row ─── */
+.item-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  transition: background 0.2s;
+  cursor: default;
+}
+
+.item-row:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.item-row.done {
+  opacity: 0.4;
+}
+
+.item-checkbox {
+  width: 20px; height: 20px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.2s;
+  color: transparent;
+  font-size: 0.8rem;
+}
+
+.item-checkbox:hover {
+  border-color: var(--green);
+}
+
+.item-checkbox.checked {
+  background: var(--green);
+  border-color: var(--green);
+  color: white;
+}
+
+.item-type-icon {
+  font-size: 1rem;
+  flex-shrink: 0;
+  width: 24px;
+  text-align: center;
+}
+
+.item-label {
+  flex: 1;
+  font-size: 0.9rem;
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-row.done .item-label {
+  text-decoration: line-through;
+}
+
+.item-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.7rem;
+  color: var(--text-dim);
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.item-delete {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.9rem;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  padding: 4px;
+}
+
+.item-row:hover .item-delete { opacity: 1; }
+.item-delete:hover { color: var(--red); }
+
+/* ─── Add Item Form ─── */
+.add-item-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.add-item-form select,
+.add-item-form input {
+  padding: 8px 12px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.add-item-form select { width: 100px; }
+.add-item-form input { flex: 1; }
+.add-item-form input:focus,
+.add-item-form select:focus { border-color: var(--purple); }
+
+.add-item-form button {
+  padding: 8px 16px;
+  background: var(--purple);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.add-item-form button:hover { background: var(--purple-dark); }
+
+/* ─── Forge Button ─── */
+.forge-section {
+  text-align: center;
+  margin: 32px 0;
+}
+
+.forge-btn {
+  padding: 16px 48px;
+  background: linear-gradient(135deg, var(--orange), #e85d04);
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-family: 'Playfair Display', serif;
+  font-weight: 800;
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 24px rgba(253, 112, 20, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.forge-btn:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 32px rgba(253, 112, 20, 0.5);
+}
+
+.forge-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.forge-count {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 10px;
+}
+
+/* ─── Empty States ─── */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-dim);
+}
+
+.empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
+.empty-state p { font-size: 0.9rem; font-weight: 300; }
+
+/* ─── Modal ─── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-overlay.active { display: flex; }
+
+.modal {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  width: 420px;
+  max-width: 90vw;
+}
+
+.modal h2 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  font-size: 1.3rem;
+  margin-bottom: 20px;
+}
+
+.modal label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin-bottom: 6px;
+  margin-top: 14px;
+}
+
+.modal input, .modal select {
+  width: 100%;
+  padding: 10px 14px;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  color: var(--text);
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-size: 0.9rem;
+  outline: none;
+}
+
+.modal input:focus { border-color: var(--purple); }
+
+.emoji-picker {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.emoji-pick {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg-dark);
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.emoji-pick:hover, .emoji-pick.selected {
+  border-color: var(--purple);
+  background: rgba(108, 92, 231, 0.15);
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 24px;
+  justify-content: flex-end;
+}
+
+.modal-actions button {
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-family: 'IBM Plex Sans', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-cancel {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text-dim);
+}
+
+.btn-cancel:hover { border-color: var(--text-dim); color: var(--text); }
+
+.btn-primary {
+  background: var(--purple);
+  border: none;
+  color: white;
+}
+
+.btn-primary:hover { background: var(--purple-dark); }
+
+.btn-danger {
+  background: var(--red);
+  border: none;
+  color: white;
+}
+
+.btn-danger:hover { background: #c0392b; }
+
+/* ─── Toast ─── */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--bg-card);
+  border: 1px solid var(--green);
+  color: var(--text);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 0.9rem;
+  z-index: 300;
+  transform: translateY(100px);
+  opacity: 0;
+  transition: all 0.3s;
+}
+
+.toast.show {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.toast.error { border-color: var(--red); }
+
+/* ─── Responsive ─── */
+@media (max-width: 700px) {
+  .main { padding: 16px; }
+  .workspace-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+  .workspace-card { padding: 14px; }
+  .header { padding: 12px 16px; }
+  .forge-btn { padding: 14px 32px; font-size: 1.1rem; }
+  .item-value { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN SCREEN ═══ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <h1>🔨 DayForge</h1>
+    <p class="subtitle">Forja tu día la noche anterior</p>
+    <input type="text" id="loginUser" placeholder="Usuario" autocomplete="username">
+    <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password">
+    <button onclick="doLogin()">Entrar</button>
+    <div class="login-error" id="loginError"></div>
+  </div>
+</div>
+
+<!-- ═══ APP SCREEN ═══ -->
+<div id="appScreen">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <span class="header-logo">🔨 DayForge</span>
+    </div>
+    <div class="header-right">
+      <div class="device-status">
+        <div class="device-dot" id="agentDot"></div>
+        <span id="agentLabel">Checking...</span>
+      </div>
+      <button class="header-btn" onclick="loadAll()">↻</button>
+      <button class="header-btn" onclick="doLogout()">Salir</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- Hypatia Panel -->
+    <div class="hypatia-panel">
+      <div class="hypatia-avatar">💜</div>
+      <div class="hypatia-content">
+        <div class="hypatia-label">Hypatia observa</div>
+        <div class="hypatia-message" id="hypatiaMessage">Cargando...</div>
+      </div>
+      <button class="hypatia-refresh" onclick="loadHypatia()" title="Pedir observación">↻</button>
+    </div>
+
+    <!-- Forge Button (top) -->
+    <div class="forge-section" id="forgeSection" style="display:none">
+      <button class="forge-btn" onclick="forgeDay()">🚀 FORJAR DÍA</button>
+      <div class="forge-count" id="forgeCount"></div>
+    </div>
+
+    <!-- Forged Workspaces (today) -->
+    <div id="forgedSection" style="display:none">
+      <div class="section-header">
+        <span class="section-title">🔥 Hoy</span>
+        <span class="section-count" id="forgedCount">0</span>
+      </div>
+      <div class="workspace-grid" id="forgedGrid"></div>
+    </div>
+
+    <!-- All Workspaces -->
+    <div>
+      <div class="section-header">
+        <span class="section-title">📋 Workspaces</span>
+        <span class="section-count" id="wsCount">0</span>
+      </div>
+      <div class="workspace-grid" id="workspaceGrid"></div>
+    </div>
+
+    <!-- Items Panel (shown when workspace selected) -->
+    <div class="items-panel" id="itemsPanel" style="display:none">
+      <div class="items-panel-header">
+        <div class="items-panel-title">
+          <span class="icon" id="panelIcon">📁</span>
+          <h3 id="panelName">Workspace</h3>
+        </div>
+        <div class="items-panel-actions">
+          <button class="ws-action-btn" onclick="clearDoneItems()">Limpiar ✓</button>
+          <button class="ws-action-btn" onclick="closePanel()">Cerrar</button>
+        </div>
+      </div>
+      <div id="itemsList"></div>
+      <div class="add-item-form">
+        <select id="newItemType">
+          <option value="url">🌐 URL</option>
+          <option value="app">📱 App</option>
+          <option value="file">📄 Archivo</option>
+          <option value="note">📝 Nota</option>
+        </select>
+        <input type="text" id="newItemValue" placeholder="URL, ruta de app, o nota..." 
+               onkeydown="if(event.key==='Enter')addItem()">
+        <input type="text" id="newItemLabel" placeholder="Etiqueta (opc.)" style="width:140px"
+               onkeydown="if(event.key==='Enter')addItem()">
+        <button onclick="addItem()">+ Añadir</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: New/Edit Workspace ═══ -->
+<div class="modal-overlay" id="wsModal">
+  <div class="modal">
+    <h2 id="wsModalTitle">Nuevo Workspace</h2>
+    <label>Nombre</label>
+    <input type="text" id="wsName" placeholder="Ej: Goitia, Research..." maxlength="40">
+    <label>Icono</label>
+    <div class="emoji-picker" id="emojiPicker"></div>
+    <input type="text" id="wsIconCustom" placeholder="O escribe un emoji" maxlength="2" style="margin-top:8px; width:80px">
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('wsModal')">Cancelar</button>
+      <button class="btn-danger" id="wsDeleteBtn" style="display:none" onclick="deleteWorkspace()">Eliminar</button>
+      <button class="btn-primary" onclick="saveWorkspace()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// DayForge Frontend — Built with ∞ love
+// ═══════════════════════════════════════════════════════════
+
+const API = '';  // Same origin
+let TOKEN = localStorage.getItem('dayforge_token') || '';
+let workspaces = [];
+let currentWorkspaceId = null;
+let editingWorkspaceId = null;
+let selectedEmoji = '📁';
+const AGENT_URL = 'http://localhost:5555';
+
+const EMOJIS = ['📁','🎨','🔬','📝','💼','🚀','🎯','📊','🎵','📚','🔧','💡','🌐','🎬','📱','🏠','✨','🧠'];
+const TYPE_ICONS = { url: '🌐', app: '📱', file: '📄', note: '📝' };
+
+// ─── Auth ─────────────────────────────────────────────
+async function doLogin() {
+  const user = document.getElementById('loginUser').value;
+  const pass = document.getElementById('loginPass').value;
+  const errEl = document.getElementById('loginError');
+  
+  try {
+    const res = await fetch(`${API}/api/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username: user, password: pass })
+    });
+    if (!res.ok) { errEl.textContent = 'Credenciales incorrectas'; return; }
+    const data = await res.json();
+    TOKEN = data.token;
+    localStorage.setItem('dayforge_token', TOKEN);
+    showApp();
+  } catch (e) {
+    errEl.textContent = 'Error de conexión';
+  }
+}
+
+function doLogout() {
+  TOKEN = '';
+  localStorage.removeItem('dayforge_token');
+  document.getElementById('appScreen').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+}
+
+async function checkAuth() {
+  if (!TOKEN) return false;
+  try {
+    const res = await apiFetch('/api/auth/verify');
+    return res.valid;
+  } catch { return false; }
+}
+
+// ─── API Helper ───────────────────────────────────────
+async function apiFetch(path, opts = {}) {
+  const res = await fetch(`${API}${path}`, {
+    ...opts,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${TOKEN}`,
+      ...(opts.headers || {})
+    }
+  });
+  if (res.status === 401) { doLogout(); throw new Error('Unauthorized'); }
+  if (!res.ok) throw new Error(`API error ${res.status}`);
+  return res.json();
+}
+
+// ─── App Init ─────────────────────────────────────────
+async function showApp() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('appScreen').style.display = 'block';
+  await loadAll();
+}
+
+async function loadAll() {
+  await loadWorkspaces();
+  checkAgent();
+  loadHypatia();
+}
+
+// ─── Agent Detection ──────────────────────────────────
+async function checkAgent() {
+  const dot = document.getElementById('agentDot');
+  const label = document.getElementById('agentLabel');
+  try {
+    const res = await fetch(`${AGENT_URL}/health`, { signal: AbortSignal.timeout(2000) });
+    if (res.ok) {
+      const data = await res.json();
+      dot.className = 'device-dot';
+      label.textContent = data.name || 'Agente conectado';
+    } else throw 0;
+  } catch {
+    dot.className = 'device-dot offline';
+    label.textContent = 'Sin agente local';
+  }
+}
+
+// ─── Workspaces ───────────────────────────────────────
+async function loadWorkspaces() {
+  try {
+    const data = await apiFetch('/api/workspaces');
+    workspaces = data.workspaces || [];
+    renderWorkspaces();
+  } catch (e) {
+    console.error('Error loading workspaces:', e);
+  }
+}
+
+function renderWorkspaces() {
+  const forged = workspaces.filter(w => w.status === 'forged');
+  const active = workspaces.filter(w => w.status !== 'archived');
+  
+  // Forged section
+  const forgedSection = document.getElementById('forgedSection');
+  const forgeSection = document.getElementById('forgeSection');
+  
+  if (forged.length > 0) {
+    forgedSection.style.display = 'block';
+    forgeSection.style.display = 'block';
+    document.getElementById('forgedCount').textContent = forged.length;
+    document.getElementById('forgeCount').textContent = 
+      `${forged.length} workspace${forged.length > 1 ? 's' : ''} listo${forged.length > 1 ? 's' : ''} para forjar`;
+    document.getElementById('forgedGrid').innerHTML = forged.map(w => wsCard(w)).join('');
+  } else {
+    forgedSection.style.display = 'none';
+    forgeSection.style.display = 'none';
+  }
+  
+  // All workspaces
+  document.getElementById('wsCount').textContent = active.length;
+  document.getElementById('workspaceGrid').innerHTML = 
+    active.map(w => wsCard(w)).join('') +
+    `<div class="add-workspace-card" onclick="openNewWorkspace()">
+       <div class="plus">+</div>
+       <div style="font-size:0.8rem">Nuevo workspace</div>
+     </div>`;
+}
+
+function wsCard(w) {
+  const isForged = w.status === 'forged';
+  const isSelected = w.id === currentWorkspaceId;
+  return `
+    <div class="workspace-card ${isForged ? 'forged' : ''} ${isSelected ? 'selected' : ''}" 
+         onclick="selectWorkspace('${w.id}')">
+      <div class="ws-icon">${w.icon || '📁'}</div>
+      <div class="ws-name">${esc(w.name)}</div>
+      <div class="ws-meta">${w.pending_count || 0} pendientes · ${w.item_count || 0} total</div>
+      <div class="ws-actions" onclick="event.stopPropagation()">
+        <button class="ws-action-btn ${isForged ? '' : 'forge'}" 
+                onclick="toggleForge('${w.id}', ${isForged})">
+          ${isForged ? '✕ Quitar' : '🔥 Hoy'}
+        </button>
+        <button class="ws-action-btn" onclick="openEditWorkspace('${w.id}')">✏️</button>
+      </div>
+    </div>`;
+}
+
+async function selectWorkspace(id) {
+  currentWorkspaceId = id;
+  renderWorkspaces();
+  await loadItems(id);
+}
+
+async function toggleForge(id, isForged) {
+  await apiFetch(`/api/workspaces/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ status: isForged ? 'active' : 'forged' })
+  });
+  await loadWorkspaces();
+}
+
+// ─── Items ────────────────────────────────────────────
+async function loadItems(workspaceId) {
+  const ws = workspaces.find(w => w.id === workspaceId);
+  if (!ws) return;
+  
+  document.getElementById('panelIcon').textContent = ws.icon || '📁';
+  document.getElementById('panelName').textContent = ws.name;
+  document.getElementById('itemsPanel').style.display = 'block';
+  
+  try {
+    const data = await apiFetch(`/api/items/${workspaceId}`);
+    renderItems(data.items || []);
+  } catch (e) {
+    console.error('Error loading items:', e);
+  }
+}
+
+function renderItems(items) {
+  const list = document.getElementById('itemsList');
+  if (items.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>Sin items aún. Añade URLs, apps o notas.</p></div>`;
+    return;
+  }
+  
+  const pending = items.filter(i => i.status === 'pending');
+  const done = items.filter(i => i.status === 'done');
+  
+  list.innerHTML = [...pending, ...done].map(item => `
+    <div class="item-row ${item.status === 'done' ? 'done' : ''}" data-id="${item.id}">
+      <div class="item-checkbox ${item.status === 'done' ? 'checked' : ''}" 
+           onclick="toggleItem('${item.id}', '${item.status}')">
+        ${item.status === 'done' ? '✓' : ''}
+      </div>
+      <span class="item-type-icon">${TYPE_ICONS[item.type] || '📄'}</span>
+      <span class="item-label">${esc(item.label)}</span>
+      <span class="item-value">${esc(truncate(item.value, 40))}</span>
+      <button class="item-delete" onclick="deleteItem('${item.id}')" title="Eliminar">✕</button>
+    </div>
+  `).join('');
+}
+
+async function addItem() {
+  const type = document.getElementById('newItemType').value;
+  const value = document.getElementById('newItemValue').value.trim();
+  const label = document.getElementById('newItemLabel').value.trim();
+  
+  if (!value) return;
+  
+  await apiFetch('/api/items', {
+    method: 'POST',
+    body: JSON.stringify({
+      workspace_id: currentWorkspaceId,
+      type, value, label,
+      order: 999
+    })
+  });
+  
+  document.getElementById('newItemValue').value = '';
+  document.getElementById('newItemLabel').value = '';
+  await loadItems(currentWorkspaceId);
+  await loadWorkspaces();
+}
+
+async function toggleItem(id, currentStatus) {
+  const newStatus = currentStatus === 'pending' ? 'done' : 'pending';
+  await apiFetch(`/api/items/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify({ status: newStatus })
+  });
+  await loadItems(currentWorkspaceId);
+  await loadWorkspaces();
+}
+
+async function deleteItem(id) {
+  await apiFetch(`/api/items/${id}`, { method: 'DELETE' });
+  await loadItems(currentWorkspaceId);
+  await loadWorkspaces();
+}
+
+async function clearDoneItems() {
+  if (!currentWorkspaceId) return;
+  await apiFetch(`/api/items/${currentWorkspaceId}/clear-done`, { method: 'POST' });
+  await loadItems(currentWorkspaceId);
+  await loadWorkspaces();
+  toast('Items completados limpiados');
+}
+
+function closePanel() {
+  document.getElementById('itemsPanel').style.display = 'none';
+  currentWorkspaceId = null;
+  renderWorkspaces();
+}
+
+// ─── Forge Day ────────────────────────────────────────
+async function forgeDay() {
+  try {
+    const data = await apiFetch('/api/sessions/forge', { method: 'POST' });
+    const items = data.items_to_launch || [];
+    
+    if (items.length === 0) {
+      toast('No hay items pendientes para lanzar', true);
+      return;
+    }
+    
+    let launched = 0;
+    let agentAvailable = false;
+    
+    // Check agent
+    try {
+      const res = await fetch(`${AGENT_URL}/health`, { signal: AbortSignal.timeout(2000) });
+      agentAvailable = res.ok;
+    } catch {}
+    
+    for (const item of items) {
+      if (item.type === 'url') {
+        // URLs always open in browser
+        window.open(item.value, '_blank');
+        launched++;
+      } else if (item.type === 'note') {
+        // Notes don't launch
+        continue;
+      } else if (agentAvailable) {
+        // Apps and files via local agent
+        try {
+          await fetch(`${AGENT_URL}/launch`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ type: item.type, path: item.value, browser: item.browser })
+          });
+          launched++;
+        } catch (e) {
+          console.error('Agent launch failed:', e);
+        }
+      }
+    }
+    
+    toast(`🚀 Día forjado — ${launched} items lanzados`);
+    
+    // Refresh Hypatia after forging
+    setTimeout(() => loadHypatia(), 2000);
+    
+  } catch (e) {
+    toast('Error al forjar el día', true);
+    console.error(e);
+  }
+}
+
+// ─── Hypatia ──────────────────────────────────────────
+async function loadHypatia() {
+  const el = document.getElementById('hypatiaMessage');
+  try {
+    const hour = new Date().getHours();
+    const context = hour < 14 ? 'morning' : hour < 21 ? 'evening' : 'night';
+    const data = await apiFetch('/api/hypatia/observe', {
+      method: 'POST',
+      body: JSON.stringify({ context })
+    });
+    el.textContent = data.message || '💜';
+  } catch {
+    el.textContent = 'Conectando... 💜';
+  }
+}
+
+// ─── Workspace Modal ──────────────────────────────────
+function openNewWorkspace() {
+  editingWorkspaceId = null;
+  document.getElementById('wsModalTitle').textContent = 'Nuevo Workspace';
+  document.getElementById('wsName').value = '';
+  document.getElementById('wsIconCustom').value = '';
+  document.getElementById('wsDeleteBtn').style.display = 'none';
+  selectedEmoji = '📁';
+  renderEmojiPicker();
+  openModal('wsModal');
+}
+
+function openEditWorkspace(id) {
+  const ws = workspaces.find(w => w.id === id);
+  if (!ws) return;
+  editingWorkspaceId = id;
+  document.getElementById('wsModalTitle').textContent = 'Editar Workspace';
+  document.getElementById('wsName').value = ws.name;
+  document.getElementById('wsIconCustom').value = '';
+  document.getElementById('wsDeleteBtn').style.display = 'inline-block';
+  selectedEmoji = ws.icon || '📁';
+  renderEmojiPicker();
+  openModal('wsModal');
+}
+
+function renderEmojiPicker() {
+  document.getElementById('emojiPicker').innerHTML = EMOJIS.map(e => 
+    `<div class="emoji-pick ${e === selectedEmoji ? 'selected' : ''}" 
+          onclick="selectEmoji('${e}')">${e}</div>`
+  ).join('');
+}
+
+function selectEmoji(e) {
+  selectedEmoji = e;
+  document.getElementById('wsIconCustom').value = '';
+  renderEmojiPicker();
+}
+
+async function saveWorkspace() {
+  const name = document.getElementById('wsName').value.trim();
+  const customIcon = document.getElementById('wsIconCustom').value.trim();
+  const icon = customIcon || selectedEmoji;
+  
+  if (!name) { toast('Nombre requerido', true); return; }
+  
+  if (editingWorkspaceId) {
+    await apiFetch(`/api/workspaces/${editingWorkspaceId}`, {
+      method: 'PUT',
+      body: JSON.stringify({ name, icon })
+    });
+  } else {
+    await apiFetch('/api/workspaces', {
+      method: 'POST',
+      body: JSON.stringify({ name, icon, status: 'active', order: workspaces.length })
+    });
+  }
+  
+  closeModal('wsModal');
+  await loadWorkspaces();
+  toast(editingWorkspaceId ? 'Workspace actualizado' : 'Workspace creado');
+}
+
+async function deleteWorkspace() {
+  if (!editingWorkspaceId) return;
+  if (!confirm('¿Eliminar workspace y todos sus items?')) return;
+  await apiFetch(`/api/workspaces/${editingWorkspaceId}`, { method: 'DELETE' });
+  closeModal('wsModal');
+  closePanel();
+  await loadWorkspaces();
+  toast('Workspace eliminado');
+}
+
+// ─── Utils ────────────────────────────────────────────
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+function toast(msg, isError = false) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = `toast show ${isError ? 'error' : ''}`;
+  setTimeout(() => el.className = 'toast', 3000);
+}
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+function truncate(str, len) {
+  return (str || '').length > len ? str.substring(0, len) + '...' : str || '';
+}
+
+// Handle Enter on login
+document.getElementById('loginPass').addEventListener('keydown', e => {
+  if (e.key === 'Enter') doLogin();
+});
+
+// ─── Init ─────────────────────────────────────────────
+(async () => {
+  if (await checkAuth()) {
+    showApp();
+  } else {
+    document.getElementById('loginScreen').style.display = 'flex';
+  }
+})();
+</script>
+</body>
+</html>
