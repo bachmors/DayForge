@@ -11,1480 +11,598 @@
   --purple-light: #a855f7;
   --purple-dark: #4a3aa0;
   --orange: #FD7014;
-  --orange-glow: #ff8a3d;
   --green: #00B894;
   --red: #e74c3c;
   --bg-dark: #0a0a1a;
   --bg-card: #12122a;
-  --bg-card-hover: #1a1a3e;
+  --bg-sidebar: #0e0e22;
   --border: rgba(108, 92, 231, 0.2);
-  --border-hover: rgba(108, 92, 231, 0.5);
   --text: #e8e8f0;
   --text-dim: #8888aa;
   --text-bright: #ffffff;
   --hypatia-bg: rgba(168, 85, 247, 0.08);
   --hypatia-border: rgba(168, 85, 247, 0.25);
 }
-
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-  font-family: 'IBM Plex Sans', sans-serif;
-  background: var(--bg-dark);
-  color: var(--text);
-  min-height: 100vh;
-  font-weight: 400;
-}
-
-/* ─── Background atmosphere ─── */
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'IBM Plex Sans',sans-serif; background:var(--bg-dark); color:var(--text); min-height:100vh; }
 body::before {
-  content: '';
-  position: fixed;
-  top: -50%; left: -50%;
-  width: 200%; height: 200%;
+  content:''; position:fixed; top:-50%; left:-50%; width:200%; height:200%;
   background: radial-gradient(ellipse at 20% 20%, rgba(108,92,231,0.06) 0%, transparent 50%),
               radial-gradient(ellipse at 80% 80%, rgba(253,112,20,0.04) 0%, transparent 50%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ─── Login Screen ─── */
-#loginScreen {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  position: relative;
-  z-index: 1;
-}
-
-.login-box {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 48px 40px;
-  width: 380px;
-  text-align: center;
-}
-
-.login-box h1 {
-  font-family: 'Playfair Display', serif;
-  font-weight: 800;
-  font-size: 2.4rem;
-  background: linear-gradient(135deg, var(--purple-light), var(--orange));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  margin-bottom: 8px;
-}
-
-.login-box .subtitle {
-  color: var(--text-dim);
-  font-size: 0.9rem;
-  margin-bottom: 32px;
-  font-weight: 300;
-}
-
-.login-box input {
-  width: 100%;
-  padding: 12px 16px;
-  background: var(--bg-dark);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  color: var(--text);
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.95rem;
-  margin-bottom: 12px;
-  outline: none;
-  transition: border-color 0.3s;
-}
-
-.login-box input:focus {
-  border-color: var(--purple);
-}
-
-.login-box button {
-  width: 100%;
-  padding: 12px;
-  background: linear-gradient(135deg, var(--purple), var(--purple-dark));
-  color: white;
-  border: none;
-  border-radius: 10px;
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 600;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-top: 8px;
-  transition: transform 0.2s, box-shadow 0.3s;
-}
-
-.login-box button:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 8px 24px rgba(108, 92, 231, 0.3);
-}
-
-.login-error {
-  color: var(--red);
-  font-size: 0.85rem;
-  margin-top: 12px;
-  min-height: 20px;
-}
-
-/* ─── Main App ─── */
-#appScreen { display: none; position: relative; z-index: 1; }
-
-/* ─── Header ─── */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 28px;
-  border-bottom: 1px solid var(--border);
-  background: rgba(10, 10, 26, 0.8);
-  backdrop-filter: blur(12px);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.header-logo {
-  font-family: 'Playfair Display', serif;
-  font-weight: 800;
-  font-size: 1.5rem;
-  background: linear-gradient(135deg, var(--purple-light), var(--orange));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-.header-right {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.device-status {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  font-family: 'JetBrains Mono', monospace;
-}
-
-.device-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--green);
-  animation: pulse-dot 2s infinite;
-}
-
-.device-dot.offline { background: var(--red); animation: none; }
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.4; }
-}
-
-.header-btn {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.8rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.header-btn:hover {
-  border-color: var(--purple);
-  color: var(--text);
-}
-
-/* ─── Main Content ─── */
-.main {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 24px 28px;
-}
-
-/* ─── Hypatia Panel ─── */
-.hypatia-panel {
-  background: var(--hypatia-bg);
-  border: 1px solid var(--hypatia-border);
-  border-radius: 16px;
-  padding: 20px 24px;
-  margin-bottom: 28px;
-  display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  animation: breathe 4s ease-in-out infinite;
-}
-
-@keyframes breathe {
-  0%, 100% { border-color: rgba(168, 85, 247, 0.25); }
-  50% { border-color: rgba(168, 85, 247, 0.45); }
-}
-
-.hypatia-avatar {
-  width: 40px; height: 40px;
-  background: linear-gradient(135deg, var(--purple), #ec4899);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.1rem;
-  flex-shrink: 0;
-}
-
-.hypatia-content {
-  flex: 1;
-}
-
-.hypatia-label {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  color: var(--purple-light);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 6px;
-}
-
-.hypatia-message {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  color: var(--text);
-  font-weight: 300;
-}
-
-.hypatia-refresh {
-  background: none;
-  border: none;
-  color: var(--purple-light);
-  cursor: pointer;
-  font-size: 1.1rem;
-  opacity: 0.5;
-  transition: opacity 0.2s;
-  flex-shrink: 0;
-  margin-top: 4px;
-}
-
-.hypatia-refresh:hover { opacity: 1; }
-
-/* ─── Section Headers ─── */
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.section-title {
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-size: 1.3rem;
-  color: var(--text-bright);
-}
-
-.section-count {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.75rem;
-  color: var(--text-dim);
-  background: var(--bg-card);
-  padding: 4px 10px;
-  border-radius: 20px;
-}
-
-/* ─── Workspace Grid ─── */
-.workspace-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 14px;
-  margin-bottom: 32px;
-}
-
-.workspace-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 18px;
-  cursor: pointer;
-  transition: all 0.25s;
-  position: relative;
-  overflow: hidden;
-}
-
-.workspace-card:hover {
-  border-color: var(--border-hover);
-  background: var(--bg-card-hover);
-  transform: translateY(-2px);
-}
-
-.workspace-card.selected {
-  border-color: var(--purple);
-  background: rgba(108, 92, 231, 0.1);
-}
-
-.workspace-card.forged {
-  border-color: var(--orange);
-  background: rgba(253, 112, 20, 0.08);
-}
-
-.workspace-card.forged::after {
-  content: '🔥';
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  font-size: 1rem;
-}
-
-.ws-icon {
-  font-size: 1.8rem;
-  margin-bottom: 10px;
-}
-
-.ws-name {
-  font-weight: 600;
-  font-size: 0.95rem;
-  margin-bottom: 6px;
-  color: var(--text-bright);
-}
-
-.ws-meta {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  color: var(--text-dim);
-}
-
-.ws-actions {
-  display: flex;
-  gap: 6px;
-  margin-top: 12px;
-}
-
-.ws-action-btn {
-  background: rgba(255,255,255,0.05);
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 0.7rem;
-  cursor: pointer;
-  font-family: 'IBM Plex Sans', sans-serif;
-  transition: all 0.2s;
-}
-
-.ws-action-btn:hover {
-  background: rgba(255,255,255,0.1);
-  color: var(--text);
-}
-
-.ws-action-btn.forge {
-  border-color: rgba(253, 112, 20, 0.4);
-  color: var(--orange);
-}
-
-.ws-action-btn.forge:hover {
-  background: rgba(253, 112, 20, 0.15);
-}
-
-/* ─── Add Workspace Button ─── */
-.add-workspace-card {
-  background: transparent;
-  border: 2px dashed var(--border);
-  border-radius: 14px;
-  padding: 18px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.25s;
-  min-height: 130px;
-  color: var(--text-dim);
-}
-
-.add-workspace-card:hover {
-  border-color: var(--purple);
-  color: var(--purple-light);
-}
-
-.add-workspace-card .plus {
-  font-size: 2rem;
-  margin-bottom: 6px;
-  font-weight: 300;
-}
-
-/* ─── Items Panel ─── */
-.items-panel {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px;
-  margin-bottom: 32px;
-}
-
-.items-panel-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--border);
-}
-
-.items-panel-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.items-panel-title .icon { font-size: 1.4rem; }
-
-.items-panel-title h3 {
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-size: 1.1rem;
-}
-
-.items-panel-actions {
-  display: flex;
-  gap: 8px;
-}
-
-/* ─── Item Row ─── */
-.item-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  border-radius: 10px;
-  transition: background 0.2s;
-  cursor: default;
-}
-
-.item-row:hover {
-  background: rgba(255, 255, 255, 0.03);
-}
-
-.item-row.done {
-  opacity: 0.4;
-}
-
-.item-checkbox {
-  width: 20px; height: 20px;
-  border: 2px solid var(--border);
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.2s;
-  color: transparent;
-  font-size: 0.8rem;
-}
-
-.item-checkbox:hover {
-  border-color: var(--green);
-}
-
-.item-checkbox.checked {
-  background: var(--green);
-  border-color: var(--green);
-  color: white;
-}
-
-.item-type-icon {
-  font-size: 1rem;
-  flex-shrink: 0;
-  width: 24px;
-  text-align: center;
-}
-
-.item-label {
-  flex: 1;
-  font-size: 0.9rem;
-  font-weight: 400;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.item-row.done .item-label {
-  text-decoration: line-through;
-}
-
-.item-value {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.7rem;
-  color: var(--text-dim);
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.item-delete {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  cursor: pointer;
-  font-size: 0.9rem;
-  opacity: 0;
-  transition: opacity 0.2s, color 0.2s;
-  padding: 4px;
-}
-
-.item-edit {
-  background: none;
-  border: none;
-  color: var(--text-dim);
-  cursor: pointer;
-  font-size: 0.85rem;
-  opacity: 0;
-  transition: opacity 0.2s, color 0.2s;
-  padding: 4px;
-}
-
-.item-row:hover .item-delete, .item-row:hover .item-edit { opacity: 1; }
-.item-delete:hover { color: var(--red); }
-.item-edit:hover { color: var(--purple-light); }
-
-/* ─── Add Item Form ─── */
-.add-item-form {
-  display: flex;
-  gap: 8px;
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid var(--border);
-}
-
-.add-item-form select,
-.add-item-form input {
-  padding: 8px 12px;
-  background: var(--bg-dark);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  color: var(--text);
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.85rem;
-  outline: none;
-}
-
-.add-item-form select { width: 100px; }
-.add-item-form input { flex: 1; }
-.add-item-form input:focus,
-.add-item-form select:focus { border-color: var(--purple); }
-
-.add-item-form button {
-  padding: 8px 16px;
-  background: var(--purple);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-  white-space: nowrap;
-}
-
-.add-item-form button:hover { background: var(--purple-dark); }
-
-/* ─── Forge Button ─── */
-.forge-section {
-  text-align: center;
-  margin: 32px 0;
-}
-
-.forge-btn {
-  padding: 16px 48px;
-  background: linear-gradient(135deg, var(--orange), #e85d04);
-  color: white;
-  border: none;
-  border-radius: 14px;
-  font-family: 'Playfair Display', serif;
-  font-weight: 800;
-  font-size: 1.3rem;
-  cursor: pointer;
-  transition: all 0.3s;
-  box-shadow: 0 4px 24px rgba(253, 112, 20, 0.3);
-  letter-spacing: 0.5px;
-}
-
-.forge-btn:hover {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow: 0 8px 32px rgba(253, 112, 20, 0.5);
-}
-
-.forge-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.forge-count {
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  margin-top: 10px;
-}
-
-/* ─── Empty States ─── */
-.empty-state {
-  text-align: center;
-  padding: 40px 20px;
-  color: var(--text-dim);
-}
-
-.empty-state .icon { font-size: 2.5rem; margin-bottom: 12px; }
-.empty-state p { font-size: 0.9rem; font-weight: 300; }
-
-/* ─── Modal ─── */
-.modal-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(4px);
-  z-index: 200;
-  align-items: center;
-  justify-content: center;
-}
-
-.modal-overlay.active { display: flex; }
-
-.modal {
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 32px;
-  width: 420px;
-  max-width: 90vw;
-}
-
-.modal h2 {
-  font-family: 'Playfair Display', serif;
-  font-weight: 700;
-  font-size: 1.3rem;
-  margin-bottom: 20px;
-}
-
-.modal label {
-  display: block;
-  font-size: 0.85rem;
-  color: var(--text-dim);
-  margin-bottom: 6px;
-  margin-top: 14px;
-}
-
-.modal input, .modal select {
-  width: 100%;
-  padding: 10px 14px;
-  background: var(--bg-dark);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  color: var(--text);
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-size: 0.9rem;
-  outline: none;
-}
-
-.modal input:focus { border-color: var(--purple); }
-
-.emoji-picker {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-top: 8px;
-}
-
-.emoji-pick {
-  width: 36px; height: 36px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--bg-dark);
-  font-size: 1.2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.emoji-pick:hover, .emoji-pick.selected {
-  border-color: var(--purple);
-  background: rgba(108, 92, 231, 0.15);
-}
-
-.modal-actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 24px;
-  justify-content: flex-end;
-}
-
-.modal-actions button {
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-family: 'IBM Plex Sans', sans-serif;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.btn-cancel {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--text-dim);
-}
-
-.btn-cancel:hover { border-color: var(--text-dim); color: var(--text); }
-
-.btn-primary {
-  background: var(--purple);
-  border: none;
-  color: white;
-}
-
-.btn-primary:hover { background: var(--purple-dark); }
-
-.btn-danger {
-  background: var(--red);
-  border: none;
-  color: white;
-}
-
-.btn-danger:hover { background: #c0392b; }
-
-/* ─── Toast ─── */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: var(--bg-card);
-  border: 1px solid var(--green);
-  color: var(--text);
-  padding: 12px 20px;
-  border-radius: 12px;
-  font-size: 0.9rem;
-  z-index: 300;
-  transform: translateY(100px);
-  opacity: 0;
-  transition: all 0.3s;
-}
-
-.toast.show {
-  transform: translateY(0);
-  opacity: 1;
-}
-
-.toast.error { border-color: var(--red); }
-
-/* ─── Responsive ─── */
-@media (max-width: 700px) {
-  .main { padding: 16px; }
-  .workspace-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
-  .workspace-card { padding: 14px; }
-  .header { padding: 12px 16px; }
-  .forge-btn { padding: 14px 32px; font-size: 1.1rem; }
-  .item-value { display: none; }
+  pointer-events:none; z-index:0;
+}
+
+/* LOGIN */
+#loginScreen { display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; position:relative; z-index:1; }
+.login-box { background:var(--bg-card); border:1px solid var(--border); border-radius:20px; padding:48px 40px; width:380px; text-align:center; }
+.login-box h1 { font-family:'Playfair Display',serif; font-weight:800; font-size:2.4rem; background:linear-gradient(135deg,var(--purple-light),var(--orange)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom:8px; }
+.login-box .sub { color:var(--text-dim); font-size:0.9rem; margin-bottom:32px; font-weight:300; }
+.login-box input { width:100%; padding:12px 16px; background:var(--bg-dark); border:1px solid var(--border); border-radius:10px; color:var(--text); font-family:'IBM Plex Sans',sans-serif; font-size:0.95rem; margin-bottom:12px; outline:none; }
+.login-box input:focus { border-color:var(--purple); }
+.login-box button { width:100%; padding:12px; background:linear-gradient(135deg,var(--purple),var(--purple-dark)); color:white; border:none; border-radius:10px; font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:1rem; cursor:pointer; margin-top:8px; }
+.login-error { color:var(--red); font-size:0.85rem; margin-top:12px; min-height:20px; }
+
+/* APP LAYOUT */
+#appScreen { display:none; position:relative; z-index:1; height:100vh; }
+.header { display:flex; align-items:center; justify-content:space-between; padding:10px 20px; border-bottom:1px solid var(--border); background:rgba(10,10,26,0.9); backdrop-filter:blur(12px); position:sticky; top:0; z-index:100; height:50px; }
+.header-left { display:flex; align-items:center; gap:12px; }
+.header-logo { font-family:'Playfair Display',serif; font-weight:800; font-size:1.3rem; background:linear-gradient(135deg,var(--purple-light),var(--orange)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.header-right { display:flex; align-items:center; gap:10px; }
+.device-status { display:flex; align-items:center; gap:6px; font-size:0.75rem; color:var(--text-dim); font-family:'JetBrains Mono',monospace; }
+.device-dot { width:8px; height:8px; border-radius:50%; background:var(--green); animation:pulse-dot 2s infinite; }
+.device-dot.off { background:var(--red); animation:none; }
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.hdr-btn { background:none; border:1px solid var(--border); color:var(--text-dim); padding:4px 10px; border-radius:6px; font-size:0.75rem; cursor:pointer; transition:all 0.2s; position:relative; font-family:'IBM Plex Sans',sans-serif; }
+.hdr-btn:hover { border-color:var(--purple); color:var(--text); }
+.inbox-badge { position:absolute; top:-6px; right:-6px; background:var(--orange); color:white; font-size:0.6rem; width:16px; height:16px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-weight:600; }
+
+/* GRID */
+.app-grid { display:grid; grid-template-columns:240px 1fr; height:calc(100vh - 50px); overflow:hidden; }
+
+/* SIDEBAR */
+.sidebar { background:var(--bg-sidebar); border-right:1px solid var(--border); overflow-y:auto; padding:16px 0; }
+.sb-section { padding:0 14px; margin-bottom:20px; }
+.sb-title { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1.5px; margin-bottom:10px; padding:0 4px; }
+.sb-ws { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px; cursor:pointer; transition:all 0.15s; font-size:0.88rem; position:relative; }
+.sb-ws:hover { background:rgba(255,255,255,0.04); }
+.sb-ws.active { background:rgba(108,92,231,0.15); color:var(--text-bright); }
+.sb-ws .icon { font-size:1.1rem; }
+.sb-ws .name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sb-ws .count { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--text-dim); background:rgba(255,255,255,0.05); padding:2px 6px; border-radius:4px; }
+.sb-ws .fire { position:absolute; right:4px; top:4px; font-size:0.7rem; }
+.sb-add { display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:8px; cursor:pointer; color:var(--text-dim); font-size:0.85rem; transition:all 0.15s; }
+.sb-add:hover { background:rgba(255,255,255,0.04); color:var(--purple-light); }
+
+/* SIDEBAR: Permanent Links */
+.sb-pin-item { display:flex; align-items:center; gap:6px; padding:5px 10px; border-radius:6px; font-size:0.8rem; color:var(--text-dim); transition:all 0.15s; text-decoration:none; cursor:pointer; }
+.sb-pin-item:hover { background:rgba(255,255,255,0.04); color:var(--text); }
+.sb-pin-item .pin-label { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sb-pin-item .pin-acts { display:flex; gap:2px; opacity:0; transition:opacity 0.15s; }
+.sb-pin-item:hover .pin-acts { opacity:1; }
+.pin-btn { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:0.7rem; padding:2px; }
+.pin-btn:hover { color:var(--purple-light); }
+
+/* SIDEBAR: Apps */
+.sb-app { display:flex; align-items:center; gap:8px; padding:6px 10px; border-radius:8px; cursor:pointer; font-size:0.85rem; transition:all 0.15s; }
+.sb-app:hover { background:rgba(255,255,255,0.04); }
+.app-chk { width:16px; height:16px; border:2px solid var(--border); border-radius:4px; display:flex; align-items:center; justify-content:center; font-size:0.65rem; color:transparent; transition:all 0.2s; flex-shrink:0; }
+.app-chk.on { background:var(--green); border-color:var(--green); color:white; }
+.sb-app .app-name { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sb-app .app-del { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:0.7rem; opacity:0; transition:opacity 0.15s; }
+.sb-app:hover .app-del { opacity:1; }
+.sb-launch-btn { display:block; width:calc(100% - 8px); margin:8px 4px 0; padding:8px; background:linear-gradient(135deg,var(--orange),#e85d04); color:white; border:none; border-radius:8px; font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
+.sb-launch-btn:hover { transform:translateY(-1px); box-shadow:0 4px 16px rgba(253,112,20,0.3); }
+.sb-launch-btn:disabled { opacity:0.3; cursor:not-allowed; transform:none; }
+.sb-add-row { display:flex; gap:4px; margin-top:6px; padding:0 4px; }
+.sb-add-row input { flex:1; padding:5px 8px; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text); font-size:0.75rem; font-family:'IBM Plex Sans',sans-serif; outline:none; }
+.sb-add-row input:focus { border-color:var(--purple); }
+.sb-add-row button { padding:5px 8px; background:var(--purple); color:white; border:none; border-radius:6px; font-size:0.75rem; cursor:pointer; }
+
+/* CONTENT */
+.content { overflow-y:auto; padding:20px 28px; }
+.hypatia-panel { background:var(--hypatia-bg); border:1px solid var(--hypatia-border); border-radius:14px; padding:14px 18px; margin-bottom:20px; display:flex; align-items:flex-start; gap:12px; animation:breathe 4s ease-in-out infinite; }
+@keyframes breathe { 0%,100%{border-color:rgba(168,85,247,0.25)} 50%{border-color:rgba(168,85,247,0.45)} }
+.hypatia-avatar { width:36px; height:36px; background:linear-gradient(135deg,var(--purple),#ec4899); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1rem; flex-shrink:0; }
+.hypatia-content { flex:1; }
+.hypatia-label { font-family:'JetBrains Mono',monospace; font-size:0.6rem; color:var(--purple-light); text-transform:uppercase; letter-spacing:1px; margin-bottom:4px; }
+.hypatia-message { font-size:0.9rem; line-height:1.5; font-weight:300; }
+.hypatia-refresh { background:none; border:none; color:var(--purple-light); cursor:pointer; font-size:1rem; opacity:0.5; transition:opacity 0.2s; flex-shrink:0; }
+.hypatia-refresh:hover { opacity:1; }
+
+/* Workspace header */
+.ws-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; flex-wrap:wrap; gap:8px; }
+.ws-header-left { display:flex; align-items:center; gap:10px; }
+.ws-header-left .icon { font-size:1.5rem; }
+.ws-header-left h2 { font-family:'Playfair Display',serif; font-weight:700; font-size:1.3rem; }
+.ws-header-right { display:flex; gap:8px; }
+.ws-btn { background:none; border:1px solid var(--border); color:var(--text-dim); padding:5px 12px; border-radius:7px; font-size:0.78rem; cursor:pointer; font-family:'IBM Plex Sans',sans-serif; transition:all 0.2s; }
+.ws-btn:hover { border-color:var(--purple); color:var(--text); }
+.ws-btn.forge-on { border-color:var(--orange); color:var(--orange); }
+
+/* Items */
+.items-label { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:1px; margin-bottom:8px; }
+.item-row { display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:8px; transition:background 0.15s; }
+.item-row:hover { background:rgba(255,255,255,0.03); }
+.item-row.done { opacity:0.35; }
+.item-chk { width:18px; height:18px; border:2px solid var(--border); border-radius:5px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:all 0.2s; color:transparent; font-size:0.7rem; }
+.item-chk:hover { border-color:var(--green); }
+.item-chk.on { background:var(--green); border-color:var(--green); color:white; }
+.item-type { font-size:0.9rem; flex-shrink:0; }
+.item-label { flex:1; font-size:0.88rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; cursor:pointer; }
+.item-label:hover { color:var(--purple-light); }
+.item-row.done .item-label { text-decoration:line-through; cursor:default; }
+.item-val { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--text-dim); max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.item-acts { display:flex; gap:2px; opacity:0; transition:opacity 0.15s; }
+.item-row:hover .item-acts { opacity:1; }
+.i-btn { background:none; border:none; color:var(--text-dim); cursor:pointer; font-size:0.8rem; padding:2px 4px; transition:color 0.15s; }
+.i-btn:hover { color:var(--purple-light); }
+.i-btn.del:hover { color:var(--red); }
+
+/* Add item form */
+.add-row { display:flex; gap:6px; margin-top:10px; padding-top:10px; border-top:1px solid rgba(108,92,231,0.1); }
+.add-row select, .add-row input { padding:7px 10px; background:var(--bg-dark); border:1px solid var(--border); border-radius:7px; color:var(--text); font-family:'IBM Plex Sans',sans-serif; font-size:0.82rem; outline:none; }
+.add-row select { width:90px; }
+.add-row input { flex:1; }
+.add-row input:focus, .add-row select:focus { border-color:var(--purple); }
+.add-row button { padding:7px 14px; background:var(--purple); color:white; border:none; border-radius:7px; font-weight:600; font-size:0.82rem; cursor:pointer; white-space:nowrap; }
+
+/* Forge */
+.forge-section { text-align:center; margin:28px 0 16px; }
+.forge-btn { padding:14px 44px; background:linear-gradient(135deg,var(--orange),#e85d04); color:white; border:none; border-radius:12px; font-family:'Playfair Display',serif; font-weight:800; font-size:1.2rem; cursor:pointer; transition:all 0.3s; box-shadow:0 4px 24px rgba(253,112,20,0.3); }
+.forge-btn:hover { transform:translateY(-2px); box-shadow:0 8px 32px rgba(253,112,20,0.5); }
+.forge-count { font-family:'JetBrains Mono',monospace; font-size:0.75rem; color:var(--text-dim); margin-top:8px; }
+
+/* Empty */
+.empty-state { text-align:center; padding:60px 20px; color:var(--text-dim); }
+.empty-state .icon { font-size:3rem; margin-bottom:12px; }
+.empty-state p { font-size:0.9rem; font-weight:300; line-height:1.6; }
+
+/* MODALS */
+.modal-bg { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); backdrop-filter:blur(4px); z-index:200; align-items:center; justify-content:center; }
+.modal-bg.on { display:flex; }
+.modal { background:var(--bg-card); border:1px solid var(--border); border-radius:18px; padding:28px; width:440px; max-width:92vw; max-height:85vh; overflow-y:auto; }
+.modal h2 { font-family:'Playfair Display',serif; font-weight:700; font-size:1.2rem; margin-bottom:18px; }
+.modal label { display:block; font-size:0.8rem; color:var(--text-dim); margin-bottom:5px; margin-top:12px; }
+.modal input, .modal select { width:100%; padding:9px 12px; background:var(--bg-dark); border:1px solid var(--border); border-radius:8px; color:var(--text); font-family:'IBM Plex Sans',sans-serif; font-size:0.88rem; outline:none; }
+.modal input:focus { border-color:var(--purple); }
+.emoji-picker { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+.emoji-pick { width:34px; height:34px; border-radius:7px; border:1px solid var(--border); background:var(--bg-dark); font-size:1.1rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s; }
+.emoji-pick:hover, .emoji-pick.sel { border-color:var(--purple); background:rgba(108,92,231,0.15); }
+.modal-acts { display:flex; gap:8px; margin-top:20px; justify-content:flex-end; }
+.modal-acts button { padding:9px 18px; border-radius:8px; font-family:'IBM Plex Sans',sans-serif; font-weight:600; font-size:0.85rem; cursor:pointer; transition:all 0.2s; }
+.btn-x { background:none; border:1px solid var(--border); color:var(--text-dim); }
+.btn-x:hover { border-color:var(--text-dim); color:var(--text); }
+.btn-ok { background:var(--purple); border:none; color:white; }
+.btn-ok:hover { background:var(--purple-dark); }
+.btn-del { background:var(--red); border:none; color:white; }
+
+/* Inbox items */
+.inbox-row { display:flex; align-items:center; gap:8px; padding:10px; border:1px solid var(--border); border-radius:10px; margin-bottom:8px; background:rgba(255,255,255,0.02); }
+.inbox-row .info { flex:1; min-width:0; }
+.inbox-row .info .lbl { font-size:0.88rem; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.inbox-row .info .url { font-family:'JetBrains Mono',monospace; font-size:0.65rem; color:var(--text-dim); overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.inbox-row select { width:140px; padding:6px 8px; background:var(--bg-dark); border:1px solid var(--border); border-radius:6px; color:var(--text); font-size:0.8rem; flex-shrink:0; }
+.inbox-row button { padding:6px 12px; background:var(--green); color:white; border:none; border-radius:6px; font-size:0.8rem; cursor:pointer; flex-shrink:0; font-weight:600; }
+
+/* Toast */
+.toast { position:fixed; bottom:20px; right:20px; background:var(--bg-card); border:1px solid var(--green); color:var(--text); padding:10px 18px; border-radius:10px; font-size:0.85rem; z-index:300; transform:translateY(80px); opacity:0; transition:all 0.3s; }
+.toast.show { transform:translateY(0); opacity:1; }
+.toast.err { border-color:var(--red); }
+
+@media (max-width:700px) {
+  .app-grid { grid-template-columns:1fr; }
+  .sidebar { display:none; }
+  .content { padding:14px; }
+  .item-val { display:none; }
 }
 </style>
 </head>
 <body>
 
-<!-- ═══ LOGIN SCREEN ═══ -->
+<!-- LOGIN -->
 <div id="loginScreen">
   <div class="login-box">
     <h1>🔨 DayForge</h1>
-    <p class="subtitle">Forja tu día la noche anterior</p>
-    <input type="text" id="loginUser" placeholder="Usuario" autocomplete="username">
-    <input type="password" id="loginPass" placeholder="Contraseña" autocomplete="current-password">
+    <p class="sub">Forja tu día la noche anterior</p>
+    <input type="text" id="loginUser" placeholder="Usuario">
+    <input type="password" id="loginPass" placeholder="Contraseña">
     <button onclick="doLogin()">Entrar</button>
     <div class="login-error" id="loginError"></div>
   </div>
 </div>
 
-<!-- ═══ APP SCREEN ═══ -->
+<!-- APP -->
 <div id="appScreen">
-  <!-- Header -->
   <div class="header">
-    <div class="header-left">
-      <span class="header-logo">🔨 DayForge</span>
-    </div>
+    <div class="header-left"><span class="header-logo">🔨 DayForge</span></div>
     <div class="header-right">
-      <div class="device-status">
-        <div class="device-dot" id="agentDot"></div>
-        <span id="agentLabel">Checking...</span>
-      </div>
-      <button class="header-btn" onclick="showBookmarklet()" title="Capturar tabs">📎</button>
-      <button class="header-btn" onclick="loadAll()">↻</button>
-      <button class="header-btn" onclick="doLogout()">Salir</button>
+      <button class="hdr-btn" onclick="showInbox()" id="inboxBtn">📥 Inbox <span class="inbox-badge" id="inboxBadge" style="display:none">0</span></button>
+      <button class="hdr-btn" onclick="showBookmarklet()">📎</button>
+      <div class="device-status"><div class="device-dot" id="agentDot"></div><span id="agentLabel">...</span></div>
+      <button class="hdr-btn" onclick="loadAll()">↻</button>
+      <button class="hdr-btn" onclick="doLogout()">Salir</button>
     </div>
   </div>
 
-  <div class="main">
-    <!-- Hypatia Panel -->
-    <div class="hypatia-panel">
-      <div class="hypatia-avatar">💜</div>
-      <div class="hypatia-content">
-        <div class="hypatia-label">Hypatia observa</div>
-        <div class="hypatia-message" id="hypatiaMessage">Cargando...</div>
+  <div class="app-grid">
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+      <div class="sb-section">
+        <div class="sb-title">Workspaces</div>
+        <div id="sbWorkspaces"></div>
+        <div class="sb-add" onclick="openNewWs()">+ Nuevo workspace</div>
       </div>
-      <button class="hypatia-refresh" onclick="loadHypatia()" title="Pedir observación">↻</button>
-    </div>
-
-    <!-- Forge Button (top) -->
-    <div class="forge-section" id="forgeSection" style="display:none">
-      <button class="forge-btn" onclick="forgeDay()">🚀 FORJAR DÍA</button>
-      <div class="forge-count" id="forgeCount"></div>
-    </div>
-
-    <!-- Forged Workspaces (today) -->
-    <div id="forgedSection" style="display:none">
-      <div class="section-header">
-        <span class="section-title">🔥 Hoy</span>
-        <span class="section-count" id="forgedCount">0</span>
+      <div class="sb-section" id="sbPinSec" style="display:none">
+        <div class="sb-title">📌 Permanentes</div>
+        <div id="sbPins"></div>
+        <div class="sb-add" onclick="addPermanent()">+ Enlace permanente</div>
       </div>
-      <div class="workspace-grid" id="forgedGrid"></div>
-    </div>
-
-    <!-- All Workspaces -->
-    <div>
-      <div class="section-header">
-        <span class="section-title">📋 Workspaces</span>
-        <span class="section-count" id="wsCount">0</span>
-      </div>
-      <div class="workspace-grid" id="workspaceGrid"></div>
-    </div>
-
-    <!-- Items Panel (shown when workspace selected) -->
-    <div class="items-panel" id="itemsPanel" style="display:none">
-      <div class="items-panel-header">
-        <div class="items-panel-title">
-          <span class="icon" id="panelIcon">📁</span>
-          <h3 id="panelName">Workspace</h3>
+      <div class="sb-section" id="sbAppSec" style="display:none">
+        <div class="sb-title">🚀 Apps</div>
+        <div id="sbApps"></div>
+        <div class="sb-add-row">
+          <input type="text" id="newAppPath" placeholder="Ruta .exe o nombre" onkeydown="if(event.key==='Enter')addApp()">
+          <button onclick="addApp()">+</button>
         </div>
-        <div class="items-panel-actions">
-          <button class="ws-action-btn" onclick="clearDoneItems()">Limpiar ✓</button>
-          <button class="ws-action-btn" onclick="closePanel()">Cerrar</button>
+        <button class="sb-launch-btn" id="launchBtn" onclick="launchApps()" disabled>🚀 Lanzar seleccionadas</button>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content" id="content">
+      <div class="hypatia-panel">
+        <div class="hypatia-avatar">💜</div>
+        <div class="hypatia-content">
+          <div class="hypatia-label">Hypatia observa</div>
+          <div class="hypatia-message" id="hypatiaMsg">Cargando...</div>
         </div>
+        <button class="hypatia-refresh" onclick="loadHypatia()">↻</button>
       </div>
-      <div id="itemsList"></div>
-      <div class="add-item-form">
-        <select id="newItemType">
-          <option value="url">🌐 URL</option>
-          <option value="app">📱 App</option>
-          <option value="file">📄 Archivo</option>
-          <option value="note">📝 Nota</option>
-        </select>
-        <input type="text" id="newItemValue" placeholder="URL, ruta de app, o nota..." 
-               onkeydown="if(event.key==='Enter')addItem()">
-        <input type="text" id="newItemLabel" placeholder="Etiqueta (opc.)" style="width:140px"
-               onkeydown="if(event.key==='Enter')addItem()">
-        <button onclick="addItem()">+ Añadir</button>
+      <div id="wsContent">
+        <div class="empty-state"><div class="icon">🔨</div><p>Selecciona un workspace o crea uno nuevo.<br>Prepara tu día por la noche. Lánzalo por la mañana.</p></div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══ MODAL: New/Edit Workspace ═══ -->
-<div class="modal-overlay" id="wsModal">
-  <div class="modal">
-    <h2 id="wsModalTitle">Nuevo Workspace</h2>
-    <label>Nombre</label>
-    <input type="text" id="wsName" placeholder="Ej: Goitia, Research..." maxlength="40">
-    <label>Icono</label>
-    <div class="emoji-picker" id="emojiPicker"></div>
-    <input type="text" id="wsIconCustom" placeholder="O escribe un emoji" maxlength="2" style="margin-top:8px; width:80px">
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('wsModal')">Cancelar</button>
-      <button class="btn-danger" id="wsDeleteBtn" style="display:none" onclick="deleteWorkspace()">Eliminar</button>
-      <button class="btn-primary" onclick="saveWorkspace()">Guardar</button>
-    </div>
+<!-- MODAL: Workspace -->
+<div class="modal-bg" id="wsModal"><div class="modal">
+  <h2 id="wsModalTitle">Nuevo Workspace</h2>
+  <label>Nombre</label><input type="text" id="wsName" placeholder="Ej: Goitia, Research..." maxlength="40">
+  <label>Icono</label><div class="emoji-picker" id="emojiPicker"></div>
+  <input type="text" id="wsIconCustom" placeholder="Emoji" maxlength="2" style="margin-top:6px;width:70px">
+  <div class="modal-acts">
+    <button class="btn-x" onclick="closeM('wsModal')">Cancelar</button>
+    <button class="btn-del" id="wsDelBtn" style="display:none" onclick="deleteWs()">Eliminar</button>
+    <button class="btn-ok" onclick="saveWs()">Guardar</button>
   </div>
-</div>
+</div></div>
 
-<!-- ═══ MODAL: Edit Item ═══ -->
-<div class="modal-overlay" id="editItemModal">
-  <div class="modal">
-    <h2>Editar Item</h2>
-    <label>Tipo</label>
-    <select id="editItemType" style="width:100%;padding:10px 14px;background:var(--bg-dark);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem">
-      <option value="url">🌐 URL</option>
-      <option value="app">📱 App</option>
-      <option value="file">📄 Archivo</option>
-      <option value="note">📝 Nota</option>
-    </select>
-    <label>Valor (URL, ruta, o nota)</label>
-    <input type="text" id="editItemValue" placeholder="https://...">
-    <label>Etiqueta</label>
-    <input type="text" id="editItemLabel" placeholder="Nombre descriptivo">
-    <label>Mover a workspace</label>
-    <select id="editItemWorkspace" style="width:100%;padding:10px 14px;background:var(--bg-dark);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem">
-    </select>
-    <div class="modal-actions">
-      <button class="btn-cancel" onclick="closeModal('editItemModal')">Cancelar</button>
-      <button class="btn-primary" onclick="saveEditItem()">Guardar</button>
-    </div>
+<!-- MODAL: Edit Item -->
+<div class="modal-bg" id="editModal"><div class="modal">
+  <h2>Editar Item</h2>
+  <label>Tipo</label><select id="eType"><option value="url">🌐 URL</option><option value="app">📱 App</option><option value="file">📄 Archivo</option><option value="note">📝 Nota</option></select>
+  <label>Valor</label><input type="text" id="eValue" placeholder="URL, ruta o nota...">
+  <label>Etiqueta</label><input type="text" id="eLabel" placeholder="Nombre descriptivo">
+  <label>Mover a workspace</label><select id="eWs"></select>
+  <label style="margin-top:14px"><input type="checkbox" id="ePin" style="width:auto;margin-right:6px"> 📌 Enlace permanente</label>
+  <div class="modal-acts">
+    <button class="btn-x" onclick="closeM('editModal')">Cancelar</button>
+    <button class="btn-ok" onclick="saveEdit()">Guardar</button>
   </div>
-</div>
+</div></div>
 
-<!-- ═══ MODAL: Bookmarklet ═══ -->
-<div class="modal-overlay" id="bookmarkletModal">
-  <div class="modal">
-    <h2>📎 Capturar Tabs</h2>
-    <p style="color:var(--text-dim);font-size:0.9rem;margin-bottom:16px;line-height:1.5">
-      Arrastra este botón a tu <strong>barra de marcadores</strong>. Cuando estés en cualquier web, 
-      haz click en el marcador y la URL se añadirá automáticamente al workspace que elijas.
-    </p>
-    <div style="text-align:center;margin:20px 0">
-      <a id="bookmarkletLink" href="#" 
-         style="display:inline-block;padding:12px 24px;background:linear-gradient(135deg,var(--purple),var(--orange));color:white;border-radius:10px;text-decoration:none;font-weight:600;font-size:0.95rem;cursor:grab"
-         onclick="event.preventDefault();toast('¡Arrástrame a tu barra de marcadores!')">
-        📎 + DayForge
-      </a>
-    </div>
-    <p style="color:var(--text-dim);font-size:0.8rem;margin-top:12px;line-height:1.4">
-      <strong>Alternativa:</strong> También puedes usar la API directamente desde cualquier script:<br>
-      <code style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--purple-light)">
-        POST /api/items {workspace_id, type:"url", value:"https://...", label:"..."}
-      </code>
-    </p>
-    <div class="modal-actions">
-      <button class="btn-primary" onclick="closeModal('bookmarkletModal')">Entendido</button>
-    </div>
+<!-- MODAL: Inbox -->
+<div class="modal-bg" id="inboxModal"><div class="modal" style="width:520px">
+  <h2>📥 Clasificar Inbox</h2>
+  <p style="color:var(--text-dim);font-size:0.85rem;margin-bottom:14px">Asigna cada item a un workspace. Una vez clasificado, desaparece del inbox.</p>
+  <div id="inboxItems"></div>
+  <div id="inboxEmpty" style="display:none;text-align:center;padding:20px;color:var(--text-dim)"><div style="font-size:2rem;margin-bottom:8px">✅</div>Inbox vacío</div>
+  <div class="modal-acts"><button class="btn-ok" onclick="closeM('inboxModal')">Cerrar</button></div>
+</div></div>
+
+<!-- MODAL: Bookmarklet -->
+<div class="modal-bg" id="bmModal"><div class="modal">
+  <h2>📎 Capturar Tabs</h2>
+  <p style="color:var(--text-dim);font-size:0.88rem;margin-bottom:14px;line-height:1.5">Arrastra este botón a tu <strong>barra de marcadores</strong>. Desde cualquier web, haz click y la URL se captura en tu Inbox.</p>
+  <div style="text-align:center;margin:18px 0">
+    <a id="bmLink" href="#" style="display:inline-block;padding:10px 22px;background:linear-gradient(135deg,var(--purple),var(--orange));color:white;border-radius:8px;text-decoration:none;font-weight:600;cursor:grab" onclick="event.preventDefault();showToast('Arrástrame a la barra de marcadores')">📎 + DayForge</a>
   </div>
-</div>
+  <div class="modal-acts"><button class="btn-ok" onclick="closeM('bmModal')">OK</button></div>
+</div></div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ═══════════════════════════════════════════════════════════
-// DayForge Frontend — Built with ∞ love
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════
+// DayForge v2.0 — Built with ∞ love by Hypatia & Carles
+// ═══════════════════════════════════════════════════════
+const API='';
+let TOKEN=localStorage.getItem('dayforge_token')||'';
+let workspaces=[], currentWsId=null, currentItems=[];
+let editingWsId=null, editingItemId=null, selectedEmoji='📁', selApps=new Set();
+const AGENT='http://localhost:5555';
+const EMOJIS=['📁','🎨','🔬','📝','💼','🚀','🎯','📊','🎵','📚','🔧','💡','🌐','🎬','📱','🏠','✨','🧠'];
+const TI={url:'🌐',app:'📱',file:'📄',note:'📝'};
+const INBOX='📥 Inbox';
 
-const API = '';  // Same origin
-let TOKEN = localStorage.getItem('dayforge_token') || '';
-let workspaces = [];
-let currentWorkspaceId = null;
-let editingWorkspaceId = null;
-let selectedEmoji = '📁';
-const AGENT_URL = 'http://localhost:5555';
+// Auth
+async function doLogin(){
+  const u=$('loginUser').value,p=$('loginPass').value;
+  try{const r=await fetch(`${API}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});
+  if(!r.ok){$('loginError').textContent='Credenciales incorrectas';return;}
+  const d=await r.json();TOKEN=d.token;localStorage.setItem('dayforge_token',TOKEN);showApp();}
+  catch(e){$('loginError').textContent='Error de conexión';}
+}
+function doLogout(){TOKEN='';localStorage.removeItem('dayforge_token');$('appScreen').style.display='none';$('loginScreen').style.display='flex';}
+async function checkAuth(){if(!TOKEN)return false;try{const r=await api('/api/auth/verify');return r.valid;}catch{return false;}}
 
-const EMOJIS = ['📁','🎨','🔬','📝','💼','🚀','🎯','📊','🎵','📚','🔧','💡','🌐','🎬','📱','🏠','✨','🧠'];
-const TYPE_ICONS = { url: '🌐', app: '📱', file: '📄', note: '📝' };
-
-// ─── Auth ─────────────────────────────────────────────
-async function doLogin() {
-  const user = document.getElementById('loginUser').value;
-  const pass = document.getElementById('loginPass').value;
-  const errEl = document.getElementById('loginError');
-  
-  try {
-    const res = await fetch(`${API}/api/auth/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username: user, password: pass })
-    });
-    if (!res.ok) { errEl.textContent = 'Credenciales incorrectas'; return; }
-    const data = await res.json();
-    TOKEN = data.token;
-    localStorage.setItem('dayforge_token', TOKEN);
-    showApp();
-  } catch (e) {
-    errEl.textContent = 'Error de conexión';
-  }
+// API
+async function api(path,opts={}){
+  const r=await fetch(`${API}${path}`,{...opts,headers:{'Content-Type':'application/json','Authorization':`Bearer ${TOKEN}`,...(opts.headers||{})}});
+  if(r.status===401){doLogout();throw new Error('Unauth');}
+  if(!r.ok)throw new Error(`API ${r.status}`);return r.json();
 }
 
-function doLogout() {
-  TOKEN = '';
-  localStorage.removeItem('dayforge_token');
-  document.getElementById('appScreen').style.display = 'none';
-  document.getElementById('loginScreen').style.display = 'flex';
+// Init
+async function showApp(){$('loginScreen').style.display='none';$('appScreen').style.display='block';await loadAll();}
+async function loadAll(){await loadWsList();checkAgent();loadHypatia();updateBadge();}
+
+// Agent
+async function checkAgent(){
+  try{const r=await fetch(`${AGENT}/health`,{signal:AbortSignal.timeout(2000)});
+  if(r.ok){const d=await r.json();$('agentDot').className='device-dot';$('agentLabel').textContent=d.name||'Conectado';}else throw 0;}
+  catch{$('agentDot').className='device-dot off';$('agentLabel').textContent='Sin agente';}
 }
 
-async function checkAuth() {
-  if (!TOKEN) return false;
-  try {
-    const res = await apiFetch('/api/auth/verify');
-    return res.valid;
-  } catch { return false; }
+// Workspaces list
+async function loadWsList(){
+  const d=await api('/api/workspaces');workspaces=d.workspaces||[];
+  renderSidebar();
+  if(currentWsId){const ws=workspaces.find(w=>w.id===currentWsId);if(ws)await selWs(currentWsId);}
+  updateBadge();
 }
 
-// ─── API Helper ───────────────────────────────────────
-async function apiFetch(path, opts = {}) {
-  const res = await fetch(`${API}${path}`, {
-    ...opts,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': `Bearer ${TOKEN}`,
-      ...(opts.headers || {})
-    }
-  });
-  if (res.status === 401) { doLogout(); throw new Error('Unauthorized'); }
-  if (!res.ok) throw new Error(`API error ${res.status}`);
-  return res.json();
+function renderSidebar(){
+  $('sbWorkspaces').innerHTML=workspaces.filter(w=>w.status!=='archived'&&w.name!==INBOX)
+    .map(w=>`<div class="sb-ws ${w.id===currentWsId?'active':''}" onclick="selWs('${w.id}')">
+      <span class="icon">${w.icon||'📁'}</span><span class="name">${esc(w.name)}</span>
+      <span class="count">${w.pending_count||0}</span>${w.status==='forged'?'<span class="fire">🔥</span>':''}
+    </div>`).join('');
 }
 
-// ─── App Init ─────────────────────────────────────────
-async function showApp() {
-  document.getElementById('loginScreen').style.display = 'none';
-  document.getElementById('appScreen').style.display = 'block';
-  await loadAll();
-}
+async function selWs(id){currentWsId=id;selApps.clear();renderSidebar();await loadContent(id);}
 
-async function loadAll() {
-  await loadWorkspaces();
-  checkAgent();
-  loadHypatia();
-}
+async function loadContent(id){
+  const ws=workspaces.find(w=>w.id===id);if(!ws)return;
+  const d=await api(`/api/items/${id}`);currentItems=d.items||[];
 
-// ─── Agent Detection ──────────────────────────────────
-async function checkAgent() {
-  const dot = document.getElementById('agentDot');
-  const label = document.getElementById('agentLabel');
-  try {
-    const res = await fetch(`${AGENT_URL}/health`, { signal: AbortSignal.timeout(2000) });
-    if (res.ok) {
-      const data = await res.json();
-      dot.className = 'device-dot';
-      label.textContent = data.name || 'Agente conectado';
-    } else throw 0;
-  } catch {
-    dot.className = 'device-dot offline';
-    label.textContent = 'Sin agente local';
-  }
-}
+  const perms=currentItems.filter(i=>i.permanent);
+  const pinLinks=perms.filter(i=>i.type==='url'||i.type==='file');
+  const apps=perms.filter(i=>i.type==='app');
+  const work=currentItems.filter(i=>!i.permanent);
+  const pending=work.filter(i=>i.status==='pending');
+  const done=work.filter(i=>i.status==='done');
 
-// ─── Workspaces ───────────────────────────────────────
-async function loadWorkspaces() {
-  try {
-    const data = await apiFetch('/api/workspaces');
-    workspaces = data.workspaces || [];
-    renderWorkspaces();
-  } catch (e) {
-    console.error('Error loading workspaces:', e);
-  }
-}
+  // Sidebar: pins
+  $('sbPinSec').style.display='block';
+  $('sbPins').innerHTML=pinLinks.length===0?'<div style="font-size:0.78rem;color:var(--text-dim);padding:4px 10px">Sin enlaces fijos</div>'
+    :pinLinks.map(p=>`<div class="sb-pin-item">
+      <span style="font-size:0.85rem">${TI[p.type]||'📄'}</span>
+      <a href="${esc(p.value)}" target="_blank" class="pin-label" style="color:var(--text-dim);text-decoration:none">${esc(p.label)}</a>
+      <div class="pin-acts"><button class="pin-btn" onclick="editItem('${p.id}')" title="Editar">✏️</button><button class="pin-btn" onclick="unpin('${p.id}')" title="A trabajo">📋</button></div>
+    </div>`).join('');
 
-function renderWorkspaces() {
-  const forged = workspaces.filter(w => w.status === 'forged');
-  const active = workspaces.filter(w => w.status !== 'archived');
-  
-  // Forged section
-  const forgedSection = document.getElementById('forgedSection');
-  const forgeSection = document.getElementById('forgeSection');
-  
-  if (forged.length > 0) {
-    forgedSection.style.display = 'block';
-    forgeSection.style.display = 'block';
-    document.getElementById('forgedCount').textContent = forged.length;
-    document.getElementById('forgeCount').textContent = 
-      `${forged.length} workspace${forged.length > 1 ? 's' : ''} listo${forged.length > 1 ? 's' : ''} para forjar`;
-    document.getElementById('forgedGrid').innerHTML = forged.map(w => wsCard(w)).join('');
-  } else {
-    forgedSection.style.display = 'none';
-    forgeSection.style.display = 'none';
-  }
-  
-  // All workspaces
-  document.getElementById('wsCount').textContent = active.length;
-  document.getElementById('workspaceGrid').innerHTML = 
-    active.map(w => wsCard(w)).join('') +
-    `<div class="add-workspace-card" onclick="openNewWorkspace()">
-       <div class="plus">+</div>
-       <div style="font-size:0.8rem">Nuevo workspace</div>
-     </div>`;
-}
+  // Sidebar: apps
+  $('sbAppSec').style.display='block';
+  $('sbApps').innerHTML=apps.length===0?'<div style="font-size:0.78rem;color:var(--text-dim);padding:4px 10px">Sin apps</div>'
+    :apps.map(a=>`<div class="sb-app" onclick="toggleAppSel('${a.id}')">
+      <div class="app-chk ${selApps.has(a.id)?'on':''}">✓</div>
+      <span class="app-name">${esc(a.label)}</span>
+      <button class="app-del" onclick="event.stopPropagation();delItem('${a.id}')" title="Eliminar">✕</button>
+    </div>`).join('');
+  $('launchBtn').disabled=selApps.size===0;
 
-function wsCard(w) {
-  const isForged = w.status === 'forged';
-  const isSelected = w.id === currentWorkspaceId;
-  return `
-    <div class="workspace-card ${isForged ? 'forged' : ''} ${isSelected ? 'selected' : ''}" 
-         onclick="selectWorkspace('${w.id}')">
-      <div class="ws-icon">${w.icon || '📁'}</div>
-      <div class="ws-name">${esc(w.name)}</div>
-      <div class="ws-meta">${w.pending_count || 0} pendientes · ${w.item_count || 0} total</div>
-      <div class="ws-actions" onclick="event.stopPropagation()">
-        <button class="ws-action-btn ${isForged ? '' : 'forge'}" 
-                onclick="toggleForge('${w.id}', ${isForged})">
-          ${isForged ? '✕ Quitar' : '🔥 Hoy'}
-        </button>
-        <button class="ws-action-btn" onclick="openEditWorkspace('${w.id}')">✏️</button>
+  // Content: workspace
+  const forged=ws.status==='forged';
+  $('wsContent').innerHTML=`
+    <div class="ws-header">
+      <div class="ws-header-left"><span class="icon">${ws.icon||'📁'}</span><h2>${esc(ws.name)}</h2></div>
+      <div class="ws-header-right">
+        <button class="ws-btn ${forged?'forge-on':''}" onclick="toggleForge('${ws.id}',${forged})">${forged?'🔥 Forjado':'🔥 Marcar hoy'}</button>
+        <button class="ws-btn" onclick="openEditWs('${ws.id}')">✏️</button>
+        <button class="ws-btn" onclick="clearDone()">Limpiar ✓</button>
       </div>
-    </div>`;
-}
-
-async function selectWorkspace(id) {
-  currentWorkspaceId = id;
-  renderWorkspaces();
-  await loadItems(id);
-}
-
-async function toggleForge(id, isForged) {
-  await apiFetch(`/api/workspaces/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify({ status: isForged ? 'active' : 'forged' })
-  });
-  await loadWorkspaces();
-}
-
-// ─── Items ────────────────────────────────────────────
-async function loadItems(workspaceId) {
-  const ws = workspaces.find(w => w.id === workspaceId);
-  if (!ws) return;
-  
-  document.getElementById('panelIcon').textContent = ws.icon || '📁';
-  document.getElementById('panelName').textContent = ws.name;
-  document.getElementById('itemsPanel').style.display = 'block';
-  
-  try {
-    const data = await apiFetch(`/api/items/${workspaceId}`);
-    renderItems(data.items || []);
-  } catch (e) {
-    console.error('Error loading items:', e);
-  }
-}
-
-function renderItems(items) {
-  const list = document.getElementById('itemsList');
-  if (items.length === 0) {
-    list.innerHTML = `<div class="empty-state"><div class="icon">📭</div><p>Sin items aún. Añade URLs, apps o notas.</p></div>`;
-    return;
-  }
-  
-  const pending = items.filter(i => i.status === 'pending');
-  const done = items.filter(i => i.status === 'done');
-  
-  list.innerHTML = [...pending, ...done].map(item => `
-    <div class="item-row ${item.status === 'done' ? 'done' : ''}" data-id="${item.id}">
-      <div class="item-checkbox ${item.status === 'done' ? 'checked' : ''}" 
-           onclick="toggleItem('${item.id}', '${item.status}')">
-        ${item.status === 'done' ? '✓' : ''}
-      </div>
-      <span class="item-type-icon">${TYPE_ICONS[item.type] || '📄'}</span>
-      <span class="item-label" onclick="editItem('${item.id}')" style="cursor:pointer" title="Click para editar">${esc(item.label)}</span>
-      <span class="item-value">${esc(truncate(item.value, 40))}</span>
-      <button class="item-edit" onclick="editItem('${item.id}')" title="Editar">✏️</button>
-      <button class="item-delete" onclick="deleteItem('${item.id}')" title="Eliminar">✕</button>
     </div>
-  `).join('');
+    <div><div class="items-label">📋 Trabajo (${pending.length} pendientes)</div>
+    ${pending.length===0&&done.length===0?'<div style="padding:16px;color:var(--text-dim);font-size:0.88rem">Sin items. Añade URLs, notas o archivos.</div>':''}
+    ${[...pending,...done].map(i=>`<div class="item-row ${i.status==='done'?'done':''}" data-id="${i.id}">
+      <div class="item-chk ${i.status==='done'?'on':''}" onclick="toggleSt('${i.id}','${i.status}')">✓</div>
+      <span class="item-type">${TI[i.type]||'📄'}</span>
+      <span class="item-label" onclick="editItem('${i.id}')">${esc(i.label)}</span>
+      <span class="item-val">${esc(trn(i.value,35))}</span>
+      <div class="item-acts">
+        <button class="i-btn" onclick="pin('${i.id}')" title="Fijar">📌</button>
+        <button class="i-btn" onclick="editItem('${i.id}')" title="Editar">✏️</button>
+        <button class="i-btn del" onclick="delItem('${i.id}')" title="Eliminar">✕</button>
+      </div>
+    </div>`).join('')}
+    </div>
+    <div class="add-row">
+      <select id="nType"><option value="url">🌐 URL</option><option value="note">📝 Nota</option><option value="file">📄 Archivo</option></select>
+      <input type="text" id="nValue" placeholder="URL, nota o ruta..." onkeydown="if(event.key==='Enter')addItem()">
+      <input type="text" id="nLabel" placeholder="Etiqueta" style="width:120px" onkeydown="if(event.key==='Enter')addItem()">
+      <button onclick="addItem()">+ Añadir</button>
+    </div>
+    ${forged?`<div class="forge-section"><button class="forge-btn" onclick="forgeDay()">🚀 FORJAR DÍA</button><div class="forge-count">${pending.length} items + ${apps.length} apps</div></div>`:''}`;
 }
 
-async function addItem() {
-  const type = document.getElementById('newItemType').value;
-  const value = document.getElementById('newItemValue').value.trim();
-  const label = document.getElementById('newItemLabel').value.trim();
-  
-  if (!value) return;
-  
-  await apiFetch('/api/items', {
-    method: 'POST',
-    body: JSON.stringify({
-      workspace_id: currentWorkspaceId,
-      type, value, label,
-      order: 999
-    })
-  });
-  
-  document.getElementById('newItemValue').value = '';
-  document.getElementById('newItemLabel').value = '';
-  await loadItems(currentWorkspaceId);
-  await loadWorkspaces();
+// Items CRUD
+async function addItem(){
+  const t=$('nType').value,v=$('nValue').value.trim(),l=$('nLabel').value.trim();
+  if(!v)return;
+  await api('/api/items',{method:'POST',body:JSON.stringify({workspace_id:currentWsId,type:t,value:v,label:l,permanent:false,order:999})});
+  $('nValue').value='';$('nLabel').value='';await loadContent(currentWsId);await loadWsList();
+}
+async function toggleSt(id,st){
+  await api(`/api/items/${id}`,{method:'PUT',body:JSON.stringify({status:st==='pending'?'done':'pending'})});
+  await loadContent(currentWsId);await loadWsList();
+}
+async function delItem(id){
+  await api(`/api/items/${id}`,{method:'DELETE'});await loadContent(currentWsId);await loadWsList();
+}
+async function pin(id){
+  await api(`/api/items/${id}`,{method:'PUT',body:JSON.stringify({permanent:true})});
+  await loadContent(currentWsId);showToast('📌 Fijado');
+}
+async function unpin(id){
+  await api(`/api/items/${id}`,{method:'PUT',body:JSON.stringify({permanent:false})});
+  await loadContent(currentWsId);showToast('📋 Movido a trabajo');
+}
+async function clearDone(){
+  if(!currentWsId)return;await api(`/api/items/${currentWsId}/clear-done`,{method:'POST'});
+  await loadContent(currentWsId);await loadWsList();showToast('Completados limpiados');
+}
+async function addPermanent(){
+  const v=prompt('URL o ruta del enlace permanente:');if(!v)return;
+  const l=prompt('Etiqueta:',v.replace('https://','').split('/')[0])||v;
+  await api('/api/items',{method:'POST',body:JSON.stringify({workspace_id:currentWsId,type:'url',value:v,label:l,permanent:true,order:0})});
+  await loadContent(currentWsId);
 }
 
-async function toggleItem(id, currentStatus) {
-  const newStatus = currentStatus === 'pending' ? 'done' : 'pending';
-  await apiFetch(`/api/items/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify({ status: newStatus })
-  });
-  await loadItems(currentWorkspaceId);
-  await loadWorkspaces();
+// App Launcher
+function toggleAppSel(id){if(selApps.has(id))selApps.delete(id);else selApps.add(id);loadContent(currentWsId);}
+async function addApp(){
+  const p=$('newAppPath').value.trim();if(!p)return;
+  const l=p.split('\\').pop().split('/').pop().replace('.exe','');
+  await api('/api/items',{method:'POST',body:JSON.stringify({workspace_id:currentWsId,type:'app',value:p,label:l,permanent:true,order:0})});
+  $('newAppPath').value='';await loadContent(currentWsId);
 }
-
-async function deleteItem(id) {
-  await apiFetch(`/api/items/${id}`, { method: 'DELETE' });
-  await loadItems(currentWorkspaceId);
-  await loadWorkspaces();
-}
-
-async function clearDoneItems() {
-  if (!currentWorkspaceId) return;
-  await apiFetch(`/api/items/${currentWorkspaceId}/clear-done`, { method: 'POST' });
-  await loadItems(currentWorkspaceId);
-  await loadWorkspaces();
-  toast('Items completados limpiados');
-}
-
-function closePanel() {
-  document.getElementById('itemsPanel').style.display = 'none';
-  currentWorkspaceId = null;
-  renderWorkspaces();
-}
-
-// ─── Forge Day ────────────────────────────────────────
-async function forgeDay() {
-  try {
-    const data = await apiFetch('/api/sessions/forge', { method: 'POST' });
-    const items = data.items_to_launch || [];
-    
-    if (items.length === 0) {
-      toast('No hay items pendientes para lanzar', true);
-      return;
-    }
-    
-    let launched = 0;
-    let agentAvailable = false;
-    
-    // Check agent
-    try {
-      const res = await fetch(`${AGENT_URL}/health`, { signal: AbortSignal.timeout(2000) });
-      agentAvailable = res.ok;
-    } catch {}
-    
-    // Stagger URL opens to avoid popup blocker
-    const urls = items.filter(i => i.type === 'url');
-    const apps = items.filter(i => i.type === 'app' || i.type === 'file');
-    
-    // Open first URL immediately (user-triggered, won't be blocked)
-    if (urls.length > 0) {
-      window.open(urls[0].value, '_blank');
-      launched++;
-    }
-    
-    // Open remaining URLs with small delays
-    for (let i = 1; i < urls.length; i++) {
-      await new Promise(r => setTimeout(r, 300));
-      window.open(urls[i].value, '_blank');
-      launched++;
-    }
-    
-    // Launch apps/files via local agent
-    if (agentAvailable) {
-      for (const item of apps) {
-        try {
-          await fetch(`${AGENT_URL}/launch`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ type: item.type, path: item.value, browser: item.browser })
-          });
-          launched++;
-        } catch (e) {
-          console.error('Agent launch failed:', e);
-        }
-      }
-    }
-    
-    toast(`🚀 Día forjado — ${launched} items lanzados`);
-    
-    // Refresh Hypatia after forging
-    setTimeout(() => loadHypatia(), 2000);
-    
-  } catch (e) {
-    toast('Error al forjar el día', true);
-    console.error(e);
+async function launchApps(){
+  const apps=currentItems.filter(i=>selApps.has(i.id));let ok=0,agentOk=false;
+  try{const r=await fetch(`${AGENT}/health`,{signal:AbortSignal.timeout(2000)});agentOk=r.ok;}catch{}
+  if(!agentOk){showToast('Agente local no conectado',1);return;}
+  for(const a of apps){
+    try{await fetch(`${AGENT}/launch`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'app',path:a.value})});ok++;}catch(e){console.error(e);}
   }
+  showToast(`🚀 ${ok} app${ok>1?'s':''} lanzada${ok>1?'s':''}`);selApps.clear();loadContent(currentWsId);
 }
 
-// ─── Hypatia ──────────────────────────────────────────
-async function loadHypatia() {
-  const el = document.getElementById('hypatiaMessage');
-  try {
-    const hour = new Date().getHours();
-    const context = hour < 14 ? 'morning' : hour < 21 ? 'evening' : 'night';
-    const data = await apiFetch('/api/hypatia/observe', {
-      method: 'POST',
-      body: JSON.stringify({ context })
-    });
-    el.textContent = data.message || '💜';
-  } catch {
-    el.textContent = 'Conectando... 💜';
+// Forge Day
+async function forgeDay(){
+  const d=await api('/api/sessions/forge',{method:'POST'});
+  const items=d.items_to_launch||[];if(items.length===0){showToast('Nada pendiente',1);return;}
+  let ok=0,agentOk=false;
+  try{const r=await fetch(`${AGENT}/health`,{signal:AbortSignal.timeout(2000)});agentOk=r.ok;}catch{}
+
+  const urls=items.filter(i=>i.type==='url'&&!i.permanent);
+  const apps=items.filter(i=>i.type==='app');
+
+  if(urls.length>0){window.open(urls[0].value,'_blank');ok++;}
+  for(let i=1;i<urls.length;i++){await sleep(400);window.open(urls[i].value,'_blank');ok++;}
+  if(agentOk){for(const a of apps){try{await fetch(`${AGENT}/launch`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'app',path:a.value})});ok++;}catch{}}}
+  showToast(`🚀 Día forjado — ${ok} items lanzados`);setTimeout(()=>loadHypatia(),2000);
+}
+async function toggleForge(id,on){
+  await api(`/api/workspaces/${id}`,{method:'PUT',body:JSON.stringify({status:on?'active':'forged'})});
+  await loadWsList();await loadContent(id);
+}
+
+// Edit Item
+async function editItem(id){
+  const i=currentItems.find(x=>x.id===id);if(!i)return;editingItemId=id;
+  $('eType').value=i.type;$('eValue').value=i.value;$('eLabel').value=i.label;$('ePin').checked=i.permanent||false;
+  $('eWs').innerHTML=workspaces.filter(w=>w.status!=='archived').map(w=>`<option value="${w.id}" ${w.id===currentWsId?'selected':''}>${w.icon} ${esc(w.name)}</option>`).join('');
+  openM('editModal');
+}
+async function saveEdit(){
+  if(!editingItemId)return;
+  const u={type:$('eType').value,value:$('eValue').value.trim(),label:$('eLabel').value.trim(),permanent:$('ePin').checked};
+  if(!u.value){showToast('Valor vacío',1);return;}if(!u.label)u.label=u.value.substring(0,50);
+  const nws=$('eWs').value;if(nws!==currentWsId)u.workspace_id=nws;
+  await api(`/api/items/${editingItemId}`,{method:'PUT',body:JSON.stringify(u)});
+  closeM('editModal');editingItemId=null;await loadContent(currentWsId);await loadWsList();showToast('Item actualizado');
+}
+
+// Inbox
+async function updateBadge(){
+  const inbox=workspaces.find(w=>w.name===INBOX);
+  if(inbox&&inbox.pending_count>0){$('inboxBadge').textContent=inbox.pending_count;$('inboxBadge').style.display='flex';}
+  else{$('inboxBadge').style.display='none';}
+}
+async function showInbox(){
+  const inbox=workspaces.find(w=>w.name===INBOX);
+  if(!inbox){$('inboxItems').innerHTML='';$('inboxEmpty').style.display='block';openM('inboxModal');return;}
+  const d=await api(`/api/items/${inbox.id}`);const items=(d.items||[]).filter(i=>i.status==='pending');
+  if(items.length===0){$('inboxItems').innerHTML='';$('inboxEmpty').style.display='block';}
+  else{
+    $('inboxEmpty').style.display='none';
+    const opts=workspaces.filter(w=>w.status!=='archived'&&w.name!==INBOX).map(w=>`<option value="${w.id}">${w.icon} ${esc(w.name)}</option>`).join('');
+    $('inboxItems').innerHTML=items.map(i=>`<div class="inbox-row" id="ib-${i.id}">
+      <div class="info"><div class="lbl">${esc(i.label)}</div><div class="url">${esc(trn(i.value,50))}</div></div>
+      <select id="ibs-${i.id}">${opts}<option value="_new">+ Nuevo workspace</option></select>
+      <button onclick="classify('${i.id}')">→</button>
+    </div>`).join('');
   }
+  openM('inboxModal');
+}
+async function classify(id){
+  const ws=$(`ibs-${id}`).value;
+  if(ws==='_new'){const name=prompt('Nombre del nuevo workspace:');if(!name)return;
+    const d=await api('/api/workspaces',{method:'POST',body:JSON.stringify({name,icon:'📁',status:'active',order:workspaces.length})});
+    await api(`/api/items/${id}`,{method:'PUT',body:JSON.stringify({workspace_id:d.workspace.id})});
+  }else{await api(`/api/items/${id}`,{method:'PUT',body:JSON.stringify({workspace_id:ws})});}
+  const row=$(`ib-${id}`);if(row)row.remove();
+  await loadWsList();updateBadge();
+  if(!$('inboxItems').children.length)$('inboxEmpty').style.display='block';
+  showToast('✅ Clasificado');
 }
 
-// ─── Workspace Modal ──────────────────────────────────
-function openNewWorkspace() {
-  editingWorkspaceId = null;
-  document.getElementById('wsModalTitle').textContent = 'Nuevo Workspace';
-  document.getElementById('wsName').value = '';
-  document.getElementById('wsIconCustom').value = '';
-  document.getElementById('wsDeleteBtn').style.display = 'none';
-  selectedEmoji = '📁';
-  renderEmojiPicker();
-  openModal('wsModal');
+// Workspace Modal
+function openNewWs(){editingWsId=null;$('wsModalTitle').textContent='Nuevo Workspace';$('wsName').value='';$('wsIconCustom').value='';$('wsDelBtn').style.display='none';selectedEmoji='📁';renderEmoji();openM('wsModal');}
+function openEditWs(id){const w=workspaces.find(x=>x.id===id);if(!w)return;editingWsId=id;$('wsModalTitle').textContent='Editar Workspace';$('wsName').value=w.name;$('wsIconCustom').value='';$('wsDelBtn').style.display='inline-block';selectedEmoji=w.icon||'📁';renderEmoji();openM('wsModal');}
+function renderEmoji(){$('emojiPicker').innerHTML=EMOJIS.map(e=>`<div class="emoji-pick ${e===selectedEmoji?'sel':''}" onclick="pickEmoji('${e}')">${e}</div>`).join('');}
+function pickEmoji(e){selectedEmoji=e;$('wsIconCustom').value='';renderEmoji();}
+async function saveWs(){
+  const name=$('wsName').value.trim(),icon=$('wsIconCustom').value.trim()||selectedEmoji;
+  if(!name){showToast('Nombre requerido',1);return;}
+  if(editingWsId){await api(`/api/workspaces/${editingWsId}`,{method:'PUT',body:JSON.stringify({name,icon})});}
+  else{const d=await api('/api/workspaces',{method:'POST',body:JSON.stringify({name,icon,status:'active',order:workspaces.length})});currentWsId=d.workspace.id;}
+  closeM('wsModal');await loadWsList();if(currentWsId)await loadContent(currentWsId);showToast(editingWsId?'Actualizado':'Workspace creado');
+}
+async function deleteWs(){
+  if(!editingWsId||!confirm('¿Eliminar workspace y todos sus items?'))return;
+  await api(`/api/workspaces/${editingWsId}`,{method:'DELETE'});closeM('wsModal');
+  if(currentWsId===editingWsId){currentWsId=null;$('wsContent').innerHTML='<div class="empty-state"><div class="icon">🔨</div><p>Selecciona un workspace</p></div>';}
+  $('sbPinSec').style.display='none';$('sbAppSec').style.display='none';
+  await loadWsList();showToast('Eliminado');
 }
 
-function openEditWorkspace(id) {
-  const ws = workspaces.find(w => w.id === id);
-  if (!ws) return;
-  editingWorkspaceId = id;
-  document.getElementById('wsModalTitle').textContent = 'Editar Workspace';
-  document.getElementById('wsName').value = ws.name;
-  document.getElementById('wsIconCustom').value = '';
-  document.getElementById('wsDeleteBtn').style.display = 'inline-block';
-  selectedEmoji = ws.icon || '📁';
-  renderEmojiPicker();
-  openModal('wsModal');
+// Hypatia
+async function loadHypatia(){
+  try{const h=new Date().getHours(),ctx=h<14?'morning':h<21?'evening':'night';
+  const d=await api('/api/hypatia/observe',{method:'POST',body:JSON.stringify({context:ctx})});
+  $('hypatiaMsg').textContent=d.message||'💜';}catch{$('hypatiaMsg').textContent='Conectando... 💜';}
 }
 
-function renderEmojiPicker() {
-  document.getElementById('emojiPicker').innerHTML = EMOJIS.map(e => 
-    `<div class="emoji-pick ${e === selectedEmoji ? 'selected' : ''}" 
-          onclick="selectEmoji('${e}')">${e}</div>`
-  ).join('');
+// Bookmarklet
+function showBookmarklet(){
+  const u=window.location.origin,t=TOKEN;
+  $('bmLink').href="javascript:void(function(){var t='"+t+"';fetch('"+u+"/api/quick-add',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({workspace_id:'inbox',type:'url',value:location.href,label:document.title.substring(0,60)})}).then(function(r){return r.json()}).then(function(d){if(d.item){var n=document.createElement('div');n.textContent='\\u2705 DayForge: '+d.item.label;n.style.cssText='position:fixed;top:12px;right:12px;background:%231a1a2e;color:%23e8e8f0;padding:12px 20px;border:1px solid %236C5CE7;border-radius:10px;z-index:99999;font:14px sans-serif';document.body.appendChild(n);setTimeout(function(){n.remove()},2500)}}).catch(function(e){alert('DayForge: '+e)})})()";
+  openM('bmModal');
 }
 
-function selectEmoji(e) {
-  selectedEmoji = e;
-  document.getElementById('wsIconCustom').value = '';
-  renderEmojiPicker();
-}
+// Utils
+function $(id){return document.getElementById(id);}
+function openM(id){$(id).classList.add('on');}
+function closeM(id){$(id).classList.remove('on');}
+function showToast(msg,err){const t=$('toast');t.textContent=msg;t.className=`toast show ${err?'err':''}`;setTimeout(()=>t.className='toast',3000);}
+function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}
+function trn(s,n){return(s||'').length>n?s.substring(0,n)+'...':s||'';}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 
-async function saveWorkspace() {
-  const name = document.getElementById('wsName').value.trim();
-  const customIcon = document.getElementById('wsIconCustom').value.trim();
-  const icon = customIcon || selectedEmoji;
-  
-  if (!name) { toast('Nombre requerido', true); return; }
-  
-  if (editingWorkspaceId) {
-    await apiFetch(`/api/workspaces/${editingWorkspaceId}`, {
-      method: 'PUT',
-      body: JSON.stringify({ name, icon })
-    });
-  } else {
-    await apiFetch('/api/workspaces', {
-      method: 'POST',
-      body: JSON.stringify({ name, icon, status: 'active', order: workspaces.length })
-    });
-  }
-  
-  closeModal('wsModal');
-  await loadWorkspaces();
-  toast(editingWorkspaceId ? 'Workspace actualizado' : 'Workspace creado');
-}
-
-async function deleteWorkspace() {
-  if (!editingWorkspaceId) return;
-  if (!confirm('¿Eliminar workspace y todos sus items?')) return;
-  await apiFetch(`/api/workspaces/${editingWorkspaceId}`, { method: 'DELETE' });
-  closeModal('wsModal');
-  closePanel();
-  await loadWorkspaces();
-  toast('Workspace eliminado');
-}
-
-// ─── Edit Item ────────────────────────────────────────
-let editingItemId = null;
-let allItemsCache = [];
-
-async function editItem(id) {
-  // Fetch current items to find the one we're editing
-  const data = await apiFetch(`/api/items/${currentWorkspaceId}`);
-  allItemsCache = data.items || [];
-  const item = allItemsCache.find(i => i.id === id);
-  if (!item) return;
-  
-  editingItemId = id;
-  document.getElementById('editItemType').value = item.type;
-  document.getElementById('editItemValue').value = item.value;
-  document.getElementById('editItemLabel').value = item.label;
-  
-  // Populate workspace selector
-  const sel = document.getElementById('editItemWorkspace');
-  sel.innerHTML = workspaces.filter(w => w.status !== 'archived').map(w => 
-    `<option value="${w.id}" ${w.id === currentWorkspaceId ? 'selected' : ''}>${w.icon} ${esc(w.name)}</option>`
-  ).join('');
-  
-  openModal('editItemModal');
-}
-
-async function saveEditItem() {
-  if (!editingItemId) return;
-  
-  const newType = document.getElementById('editItemType').value;
-  const newValue = document.getElementById('editItemValue').value.trim();
-  const newLabel = document.getElementById('editItemLabel').value.trim();
-  const newWsId = document.getElementById('editItemWorkspace').value;
-  
-  if (!newValue) { toast('El valor no puede estar vacío', true); return; }
-  
-  const update = { type: newType, value: newValue, label: newLabel || newValue.substring(0, 50) };
-  
-  // If moving to different workspace
-  if (newWsId !== currentWorkspaceId) {
-    update.workspace_id = newWsId;
-  }
-  
-  await apiFetch(`/api/items/${editingItemId}`, {
-    method: 'PUT',
-    body: JSON.stringify(update)
-  });
-  
-  closeModal('editItemModal');
-  editingItemId = null;
-  await loadItems(currentWorkspaceId);
-  await loadWorkspaces();
-  toast('Item actualizado');
-}
-
-// ─── Bookmarklet ──────────────────────────────────────
-function showBookmarklet() {
-  const apiUrl = window.location.origin;
-  const token = TOKEN;
-  const code = "javascript:void(function(){var t='" + token + "';fetch('" + apiUrl + "/api/quick-add',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({workspace_id:'inbox',type:'url',value:location.href,label:document.title.substring(0,60)})}).then(function(r){return r.json()}).then(function(d){if(d.item){var n=document.createElement('div');n.textContent='Added to DayForge: '+d.item.label;n.style.cssText='position:fixed;top:12px;right:12px;background:%231a1a2e;color:%23e8e8f0;padding:12px 20px;border:1px solid %236C5CE7;border-radius:10px;z-index:99999;font:14px sans-serif';document.body.appendChild(n);setTimeout(function(){n.remove()},2500)}}).catch(function(e){alert('DayForge error: '+e)})})()";
-  document.getElementById('bookmarkletLink').href = code;
-  openModal('bookmarkletModal');
-}
-
-// ─── Utils ────────────────────────────────────────────
-function openModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal(id) { document.getElementById(id).classList.remove('active'); }
-
-function toast(msg, isError = false) {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = `toast show ${isError ? 'error' : ''}`;
-  setTimeout(() => el.className = 'toast', 3000);
-}
-
-function esc(str) {
-  const d = document.createElement('div');
-  d.textContent = str || '';
-  return d.innerHTML;
-}
-
-function truncate(str, len) {
-  return (str || '').length > len ? str.substring(0, len) + '...' : str || '';
-}
-
-// Handle Enter on login
-document.getElementById('loginPass').addEventListener('keydown', e => {
-  if (e.key === 'Enter') doLogin();
-});
-
-// ─── Init ─────────────────────────────────────────────
-(async () => {
-  if (await checkAuth()) {
-    showApp();
-  } else {
-    document.getElementById('loginScreen').style.display = 'flex';
-  }
-})();
+$('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+(async()=>{if(await checkAuth())showApp();else $('loginScreen').style.display='flex';})();
 </script>
 </body>
 </html>
