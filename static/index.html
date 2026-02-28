@@ -543,8 +543,20 @@ body::before {
   padding: 4px;
 }
 
-.item-row:hover .item-delete { opacity: 1; }
+.item-edit {
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  cursor: pointer;
+  font-size: 0.85rem;
+  opacity: 0;
+  transition: opacity 0.2s, color 0.2s;
+  padding: 4px;
+}
+
+.item-row:hover .item-delete, .item-row:hover .item-edit { opacity: 1; }
 .item-delete:hover { color: var(--red); }
+.item-edit:hover { color: var(--purple-light); }
 
 /* ─── Add Item Form ─── */
 .add-item-form {
@@ -815,6 +827,7 @@ body::before {
         <div class="device-dot" id="agentDot"></div>
         <span id="agentLabel">Checking...</span>
       </div>
+      <button class="header-btn" onclick="showBookmarklet()" title="Capturar tabs">📎</button>
       <button class="header-btn" onclick="loadAll()">↻</button>
       <button class="header-btn" onclick="doLogout()">Salir</button>
     </div>
@@ -898,6 +911,58 @@ body::before {
       <button class="btn-cancel" onclick="closeModal('wsModal')">Cancelar</button>
       <button class="btn-danger" id="wsDeleteBtn" style="display:none" onclick="deleteWorkspace()">Eliminar</button>
       <button class="btn-primary" onclick="saveWorkspace()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Edit Item ═══ -->
+<div class="modal-overlay" id="editItemModal">
+  <div class="modal">
+    <h2>Editar Item</h2>
+    <label>Tipo</label>
+    <select id="editItemType" style="width:100%;padding:10px 14px;background:var(--bg-dark);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem">
+      <option value="url">🌐 URL</option>
+      <option value="app">📱 App</option>
+      <option value="file">📄 Archivo</option>
+      <option value="note">📝 Nota</option>
+    </select>
+    <label>Valor (URL, ruta, o nota)</label>
+    <input type="text" id="editItemValue" placeholder="https://...">
+    <label>Etiqueta</label>
+    <input type="text" id="editItemLabel" placeholder="Nombre descriptivo">
+    <label>Mover a workspace</label>
+    <select id="editItemWorkspace" style="width:100%;padding:10px 14px;background:var(--bg-dark);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:0.9rem">
+    </select>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeModal('editItemModal')">Cancelar</button>
+      <button class="btn-primary" onclick="saveEditItem()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: Bookmarklet ═══ -->
+<div class="modal-overlay" id="bookmarkletModal">
+  <div class="modal">
+    <h2>📎 Capturar Tabs</h2>
+    <p style="color:var(--text-dim);font-size:0.9rem;margin-bottom:16px;line-height:1.5">
+      Arrastra este botón a tu <strong>barra de marcadores</strong>. Cuando estés en cualquier web, 
+      haz click en el marcador y la URL se añadirá automáticamente al workspace que elijas.
+    </p>
+    <div style="text-align:center;margin:20px 0">
+      <a id="bookmarkletLink" href="#" 
+         style="display:inline-block;padding:12px 24px;background:linear-gradient(135deg,var(--purple),var(--orange));color:white;border-radius:10px;text-decoration:none;font-weight:600;font-size:0.95rem;cursor:grab"
+         onclick="event.preventDefault();toast('¡Arrástrame a tu barra de marcadores!')">
+        📎 + DayForge
+      </a>
+    </div>
+    <p style="color:var(--text-dim);font-size:0.8rem;margin-top:12px;line-height:1.4">
+      <strong>Alternativa:</strong> También puedes usar la API directamente desde cualquier script:<br>
+      <code style="font-family:'JetBrains Mono',monospace;font-size:0.75rem;color:var(--purple-light)">
+        POST /api/items {workspace_id, type:"url", value:"https://...", label:"..."}
+      </code>
+    </p>
+    <div class="modal-actions">
+      <button class="btn-primary" onclick="closeModal('bookmarkletModal')">Entendido</button>
     </div>
   </div>
 </div>
@@ -1111,8 +1176,9 @@ function renderItems(items) {
         ${item.status === 'done' ? '✓' : ''}
       </div>
       <span class="item-type-icon">${TYPE_ICONS[item.type] || '📄'}</span>
-      <span class="item-label">${esc(item.label)}</span>
+      <span class="item-label" onclick="editItem('${item.id}')" style="cursor:pointer" title="Click para editar">${esc(item.label)}</span>
       <span class="item-value">${esc(truncate(item.value, 40))}</span>
+      <button class="item-edit" onclick="editItem('${item.id}')" title="Editar">✏️</button>
       <button class="item-delete" onclick="deleteItem('${item.id}')" title="Eliminar">✕</button>
     </div>
   `).join('');
@@ -1190,16 +1256,26 @@ async function forgeDay() {
       agentAvailable = res.ok;
     } catch {}
     
-    for (const item of items) {
-      if (item.type === 'url') {
-        // URLs always open in browser
-        window.open(item.value, '_blank');
-        launched++;
-      } else if (item.type === 'note') {
-        // Notes don't launch
-        continue;
-      } else if (agentAvailable) {
-        // Apps and files via local agent
+    // Stagger URL opens to avoid popup blocker
+    const urls = items.filter(i => i.type === 'url');
+    const apps = items.filter(i => i.type === 'app' || i.type === 'file');
+    
+    // Open first URL immediately (user-triggered, won't be blocked)
+    if (urls.length > 0) {
+      window.open(urls[0].value, '_blank');
+      launched++;
+    }
+    
+    // Open remaining URLs with small delays
+    for (let i = 1; i < urls.length; i++) {
+      await new Promise(r => setTimeout(r, 300));
+      window.open(urls[i].value, '_blank');
+      launched++;
+    }
+    
+    // Launch apps/files via local agent
+    if (agentAvailable) {
+      for (const item of apps) {
         try {
           await fetch(`${AGENT_URL}/launch`, {
             method: 'POST',
@@ -1310,6 +1386,69 @@ async function deleteWorkspace() {
   closePanel();
   await loadWorkspaces();
   toast('Workspace eliminado');
+}
+
+// ─── Edit Item ────────────────────────────────────────
+let editingItemId = null;
+let allItemsCache = [];
+
+async function editItem(id) {
+  // Fetch current items to find the one we're editing
+  const data = await apiFetch(`/api/items/${currentWorkspaceId}`);
+  allItemsCache = data.items || [];
+  const item = allItemsCache.find(i => i.id === id);
+  if (!item) return;
+  
+  editingItemId = id;
+  document.getElementById('editItemType').value = item.type;
+  document.getElementById('editItemValue').value = item.value;
+  document.getElementById('editItemLabel').value = item.label;
+  
+  // Populate workspace selector
+  const sel = document.getElementById('editItemWorkspace');
+  sel.innerHTML = workspaces.filter(w => w.status !== 'archived').map(w => 
+    `<option value="${w.id}" ${w.id === currentWorkspaceId ? 'selected' : ''}>${w.icon} ${esc(w.name)}</option>`
+  ).join('');
+  
+  openModal('editItemModal');
+}
+
+async function saveEditItem() {
+  if (!editingItemId) return;
+  
+  const newType = document.getElementById('editItemType').value;
+  const newValue = document.getElementById('editItemValue').value.trim();
+  const newLabel = document.getElementById('editItemLabel').value.trim();
+  const newWsId = document.getElementById('editItemWorkspace').value;
+  
+  if (!newValue) { toast('El valor no puede estar vacío', true); return; }
+  
+  const update = { type: newType, value: newValue, label: newLabel || newValue.substring(0, 50) };
+  
+  // If moving to different workspace
+  if (newWsId !== currentWorkspaceId) {
+    update.workspace_id = newWsId;
+  }
+  
+  await apiFetch(`/api/items/${editingItemId}`, {
+    method: 'PUT',
+    body: JSON.stringify(update)
+  });
+  
+  closeModal('editItemModal');
+  editingItemId = null;
+  await loadItems(currentWorkspaceId);
+  await loadWorkspaces();
+  toast('Item actualizado');
+}
+
+// ─── Bookmarklet ──────────────────────────────────────
+function showBookmarklet() {
+  const apiUrl = window.location.origin;
+  const token = TOKEN;
+  const code = "javascript:void(function(){var t='" + token + "';fetch('" + apiUrl + "/api/quick-add',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({workspace_id:'inbox',type:'url',value:location.href,label:document.title.substring(0,60)})}).then(function(r){return r.json()}).then(function(d){if(d.item){var n=document.createElement('div');n.textContent='Added to DayForge: '+d.item.label;n.style.cssText='position:fixed;top:12px;right:12px;background:%231a1a2e;color:%23e8e8f0;padding:12px 20px;border:1px solid %236C5CE7;border-radius:10px;z-index:99999;font:14px sans-serif';document.body.appendChild(n);setTimeout(function(){n.remove()},2500)}}).catch(function(e){alert('DayForge error: '+e)})})()";
+  document.getElementById('bookmarkletLink').href = code;
+  openModal('bookmarkletModal');
 }
 
 // ─── Utils ────────────────────────────────────────────
