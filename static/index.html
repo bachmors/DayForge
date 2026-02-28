@@ -3,476 +3,308 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DayForge — Forja tu Día</title>
+<title>DayForge v4 — Forja tu Día</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--purple:#6C5CE7;--purple-light:#a855f7;--purple-dark:#4a3aa0;--orange:#FD7014;--green:#00B894;--red:#e74c3c;--bg-dark:#0a0a1a;--bg-card:#12122a;--bg-sidebar:#0e0e22;--border:rgba(108,92,231,0.2);--text:#e8e8f0;--text-dim:#8888aa;--text-bright:#fff;--hyp-bg:rgba(168,85,247,0.08);--hyp-border:rgba(168,85,247,0.25)}
+:root{--p:#6C5CE7;--pl:#a855f7;--pd:#4a3aa0;--o:#FD7014;--g:#00B894;--r:#e74c3c;--bg:#0a0a1a;--card:#12122a;--sb:#0e0e22;--brd:rgba(108,92,231,0.2);--tx:#e8e8f0;--dim:#8888aa;--wh:#fff;--hbg:rgba(168,85,247,0.08);--hbr:rgba(168,85,247,0.25)}
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg-dark);color:var(--text);min-height:100vh}
-body::before{content:'';position:fixed;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(ellipse at 20% 20%,rgba(108,92,231,0.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(253,112,20,0.04) 0%,transparent 50%);pointer-events:none;z-index:0}
-
-/* LOGIN */
+body{font-family:'IBM Plex Sans',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at 20% 20%,rgba(108,92,231,0.06) 0%,transparent 50%),radial-gradient(ellipse at 80% 80%,rgba(253,112,20,0.04) 0%,transparent 50%);pointer-events:none;z-index:0}
 #loginScreen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;position:relative;z-index:1}
-.login-box{background:var(--bg-card);border:1px solid var(--border);border-radius:20px;padding:48px 40px;width:380px;text-align:center}
-.login-box h1{font-family:'Playfair Display',serif;font-weight:800;font-size:2.4rem;background:linear-gradient(135deg,var(--purple-light),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
-.login-box .sub{color:var(--text-dim);font-size:0.9rem;margin-bottom:32px;font-weight:300}
-.login-box input{width:100%;padding:12px 16px;background:var(--bg-dark);border:1px solid var(--border);border-radius:10px;color:var(--text);font-family:inherit;font-size:0.95rem;margin-bottom:12px;outline:none}
-.login-box input:focus{border-color:var(--purple)}
-.login-box button{width:100%;padding:12px;background:linear-gradient(135deg,var(--purple),var(--purple-dark));color:white;border:none;border-radius:10px;font-weight:600;font-size:1rem;cursor:pointer;margin-top:8px}
-.login-error{color:var(--red);font-size:0.85rem;margin-top:12px;min-height:20px}
-
-/* APP */
+.lbox{background:var(--card);border:1px solid var(--brd);border-radius:20px;padding:48px 40px;width:380px;text-align:center}
+.lbox h1{font-family:'Playfair Display',serif;font-weight:800;font-size:2.4rem;background:linear-gradient(135deg,var(--pl),var(--o));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.lbox .sub{color:var(--dim);font-size:.9rem;margin-bottom:32px;font-weight:300}
+.lbox input{width:100%;padding:12px 16px;background:var(--bg);border:1px solid var(--brd);border-radius:10px;color:var(--tx);font-family:inherit;font-size:.95rem;margin-bottom:12px;outline:none}
+.lbox input:focus{border-color:var(--p)}
+.lbox button{width:100%;padding:12px;background:linear-gradient(135deg,var(--p),var(--pd));color:#fff;border:none;border-radius:10px;font-weight:600;font-size:1rem;cursor:pointer;margin-top:8px}
+.lerr{color:var(--r);font-size:.85rem;margin-top:12px;min-height:20px}
 #appScreen{display:none;position:relative;z-index:1;height:100vh}
-.header{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;border-bottom:1px solid var(--border);background:rgba(10,10,26,0.9);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;height:50px}
-.header-left{display:flex;align-items:center;gap:12px}
-.header-logo{font-family:'Playfair Display',serif;font-weight:800;font-size:1.3rem;background:linear-gradient(135deg,var(--purple-light),var(--orange));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.header-right{display:flex;align-items:center;gap:10px}
-.dev-st{display:flex;align-items:center;gap:6px;font-size:0.75rem;color:var(--text-dim);font-family:'JetBrains Mono',monospace}
-.dev-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
-.dev-dot.off{background:var(--red);animation:none}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-.hdr-btn{background:none;border:1px solid var(--border);color:var(--text-dim);padding:4px 10px;border-radius:6px;font-size:0.75rem;cursor:pointer;transition:all 0.2s;position:relative;font-family:inherit}
-.hdr-btn:hover{border-color:var(--purple);color:var(--text)}
-.badge{position:absolute;top:-6px;right:-6px;background:var(--orange);color:white;font-size:0.6rem;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600}
-
-/* GRID */
-.app-grid{display:grid;grid-template-columns:240px 1fr;height:calc(100vh - 50px);overflow:hidden}
-
-/* SIDEBAR */
-.sidebar{background:var(--bg-sidebar);border-right:1px solid var(--border);overflow-y:auto;padding:16px 0}
-.sb-sec{padding:0 14px;margin-bottom:18px}
-.sb-title{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;padding:0 4px}
-.sb-ws{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;cursor:pointer;transition:all 0.15s;font-size:0.87rem;position:relative}
-.sb-ws:hover{background:rgba(255,255,255,0.04)}
-.sb-ws.active{background:rgba(108,92,231,0.15);color:var(--text-bright)}
-.sb-ws .icon{font-size:1.1rem}
-.sb-ws .name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-ws .cnt{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-dim);background:rgba(255,255,255,0.05);padding:2px 6px;border-radius:4px}
-.sb-ws .fire{position:absolute;right:4px;top:4px;font-size:0.7rem}
-.sb-add{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:8px;cursor:pointer;color:var(--text-dim);font-size:0.82rem;transition:all 0.15s}
-.sb-add:hover{background:rgba(255,255,255,0.04);color:var(--purple-light)}
-
-/* Sidebar pins */
-.sb-pin{display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:6px;font-size:0.78rem;color:var(--text-dim);transition:all 0.15s;cursor:pointer}
-.sb-pin:hover{background:rgba(255,255,255,0.04);color:var(--text)}
-.sb-pin .lbl{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:none;color:inherit}
-.sb-pin .acts{display:flex;gap:2px;opacity:0;transition:opacity 0.15s}
-.sb-pin:hover .acts{opacity:1}
-.pbtn{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.7rem;padding:2px}
-.pbtn:hover{color:var(--purple-light)}
-
-/* Sidebar apps */
-.sb-app{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:8px;cursor:pointer;font-size:0.83rem;transition:all 0.15s}
-.sb-app:hover{background:rgba(255,255,255,0.04)}
-.achk{width:16px;height:16px;border:2px solid var(--border);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:0.65rem;color:transparent;transition:all 0.2s;flex-shrink:0}
-.achk.on{background:var(--green);border-color:var(--green);color:white}
-.sb-app .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sb-app .dl{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.7rem;opacity:0;transition:opacity 0.15s}
-.sb-app:hover .dl{opacity:1}
-.sb-launch{display:block;width:calc(100% - 8px);margin:8px 4px 0;padding:7px;background:linear-gradient(135deg,var(--orange),#e85d04);color:white;border:none;border-radius:8px;font-family:inherit;font-weight:600;font-size:0.83rem;cursor:pointer;transition:all 0.2s}
-.sb-launch:disabled{opacity:0.3;cursor:not-allowed}
-.sb-row{display:flex;gap:4px;margin-top:6px;padding:0 4px}
-.sb-row input{flex:1;padding:5px 8px;background:var(--bg-dark);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:0.73rem;font-family:inherit;outline:none}
-.sb-row button{padding:5px 8px;background:var(--purple);color:white;border:none;border-radius:6px;font-size:0.73rem;cursor:pointer}
-
-/* CONTENT */
-.content{overflow-y:auto;padding:20px 28px;position:relative}
-
-/* Hypatia observe */
-.hyp-panel{background:var(--hyp-bg);border:1px solid var(--hyp-border);border-radius:14px;padding:12px 16px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px;animation:breathe 4s ease-in-out infinite}
-@keyframes breathe{0%,100%{border-color:rgba(168,85,247,0.25)}50%{border-color:rgba(168,85,247,0.45)}}
-.hyp-av{width:34px;height:34px;background:linear-gradient(135deg,var(--purple),#ec4899);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1rem;flex-shrink:0}
-.hyp-panel .body{flex:1}
-.hyp-panel .lab{font-family:'JetBrains Mono',monospace;font-size:0.6rem;color:var(--purple-light);text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
-.hyp-panel .msg{font-size:0.88rem;line-height:1.5;font-weight:300}
-.hyp-panel .rf{background:none;border:none;color:var(--purple-light);cursor:pointer;font-size:1rem;opacity:0.5;transition:opacity 0.2s;flex-shrink:0}
-.hyp-panel .rf:hover{opacity:1}
-
-/* Workspace header */
-.ws-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px}
-.ws-hdr-left{display:flex;align-items:center;gap:10px}
-.ws-hdr-left .ic{font-size:1.4rem}
-.ws-hdr-left h2{font-family:'Playfair Display',serif;font-weight:700;font-size:1.25rem}
-.ws-hdr-right{display:flex;gap:6px}
-.wb{background:none;border:1px solid var(--border);color:var(--text-dim);padding:4px 10px;border-radius:7px;font-size:0.76rem;cursor:pointer;font-family:inherit;transition:all 0.2s}
-.wb:hover{border-color:var(--purple);color:var(--text)}
-.wb.fon{border-color:var(--orange);color:var(--orange)}
-
-/* Categories / filter bar */
-.cat-bar{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
-.cat-pill{padding:4px 12px;border-radius:16px;font-size:0.78rem;cursor:pointer;transition:all 0.2s;border:1px solid var(--border);background:none;color:var(--text-dim);font-family:inherit}
-.cat-pill:hover{border-color:var(--purple);color:var(--text)}
-.cat-pill.on{background:rgba(108,92,231,0.2);border-color:var(--purple);color:var(--purple-light)}
-.cat-pill .cnt{font-family:'JetBrains Mono',monospace;font-size:0.6rem;margin-left:4px;opacity:0.6}
-
-/* Items */
-.itm-label{font-family:'JetBrains Mono',monospace;font-size:0.65rem;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;margin-top:12px}
-.itm{display:flex;align-items:center;gap:8px;padding:8px 10px;border-radius:8px;transition:background 0.15s}
-.itm:hover{background:rgba(255,255,255,0.03)}
-.itm.done{opacity:0.35}
-.ichk{width:17px;height:17px;border:2px solid var(--border);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all 0.2s;color:transparent;font-size:0.65rem}
-.ichk:hover{border-color:var(--green)}
-.ichk.on{background:var(--green);border-color:var(--green);color:white}
-.itm .tp{font-size:0.85rem;flex-shrink:0}
-.itm .lb{flex:1;font-size:0.86rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
-.itm .lb:hover{color:var(--purple-light)}
-.itm.done .lb{text-decoration:line-through;cursor:default}
-.itm .vl{font-family:'JetBrains Mono',monospace;font-size:0.63rem;color:var(--text-dim);max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.itm .nt{font-size:0.72rem;color:var(--purple-light);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-style:italic}
-.itm .iacts{display:flex;gap:2px;opacity:0;transition:opacity 0.15s}
-.itm:hover .iacts{opacity:1}
-.ib{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.78rem;padding:2px 3px;transition:color 0.15s}
-.ib:hover{color:var(--purple-light)}
-.ib.del:hover{color:var(--red)}
-
-/* Add item */
-.add-row{display:flex;gap:5px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(108,92,231,0.1)}
-.add-row select,.add-row input{padding:6px 9px;background:var(--bg-dark);border:1px solid var(--border);border-radius:7px;color:var(--text);font-family:inherit;font-size:0.8rem;outline:none}
-.add-row select{width:82px}
-.add-row input{flex:1}
-.add-row input:focus,.add-row select:focus{border-color:var(--purple)}
-.add-row button{padding:6px 12px;background:var(--purple);color:white;border:none;border-radius:7px;font-weight:600;font-size:0.8rem;cursor:pointer;white-space:nowrap}
-
-/* Forge */
-.forge-sec{text-align:center;margin:24px 0 14px}
-.forge-btn{padding:13px 40px;background:linear-gradient(135deg,var(--orange),#e85d04);color:white;border:none;border-radius:12px;font-family:'Playfair Display',serif;font-weight:800;font-size:1.15rem;cursor:pointer;transition:all 0.3s;box-shadow:0 4px 24px rgba(253,112,20,0.3)}
-.forge-btn:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(253,112,20,0.5)}
-.forge-cnt{font-family:'JetBrains Mono',monospace;font-size:0.73rem;color:var(--text-dim);margin-top:6px}
-
-/* Empty */
-.empty{text-align:center;padding:60px 20px;color:var(--text-dim)}
-.empty .ic{font-size:3rem;margin-bottom:12px}
-.empty p{font-size:0.9rem;font-weight:300;line-height:1.6}
-
-/* CHAT PANEL */
-.chat-toggle{position:fixed;bottom:20px;right:20px;width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--purple),#ec4899);border:none;color:white;font-size:1.3rem;cursor:pointer;z-index:150;box-shadow:0 4px 20px rgba(108,92,231,0.4);transition:all 0.3s;display:flex;align-items:center;justify-content:center}
-.chat-toggle:hover{transform:scale(1.1)}
-.chat-panel{position:fixed;bottom:80px;right:20px;width:380px;max-height:500px;background:var(--bg-card);border:1px solid var(--hyp-border);border-radius:16px;z-index:150;display:none;flex-direction:column;overflow:hidden;box-shadow:0 8px 40px rgba(0,0,0,0.5)}
-.chat-panel.open{display:flex}
-.chat-hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);background:rgba(168,85,247,0.06)}
-.chat-hdr .av{width:28px;height:28px;background:linear-gradient(135deg,var(--purple),#ec4899);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;flex-shrink:0}
-.chat-hdr .title{flex:1;font-weight:600;font-size:0.9rem}
-.chat-hdr select{padding:3px 6px;background:var(--bg-dark);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:0.72rem;max-width:130px}
-.chat-hdr .close{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:1rem}
-.chat-body{flex:1;overflow-y:auto;padding:12px;max-height:340px;min-height:200px}
-.chat-msg{margin-bottom:10px;max-width:90%}
-.chat-msg.user{margin-left:auto;text-align:right}
-.chat-msg .bubble{display:inline-block;padding:8px 12px;border-radius:12px;font-size:0.84rem;line-height:1.4}
-.chat-msg.user .bubble{background:rgba(108,92,231,0.2);border:1px solid rgba(108,92,231,0.3)}
-.chat-msg.hyp .bubble{background:rgba(168,85,247,0.1);border:1px solid var(--hyp-border)}
-.chat-msg .who{font-size:0.6rem;color:var(--text-dim);margin-bottom:2px;font-family:'JetBrains Mono',monospace}
-.chat-input-row{display:flex;gap:6px;padding:10px 12px;border-top:1px solid var(--border)}
-.chat-input-row input{flex:1;padding:8px 12px;background:var(--bg-dark);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:0.85rem;outline:none}
-.chat-input-row input:focus{border-color:var(--purple)}
-.chat-input-row button{padding:8px 14px;background:var(--purple);color:white;border:none;border-radius:8px;font-weight:600;font-size:0.85rem;cursor:pointer}
-.chat-typing{padding:8px 12px;font-size:0.78rem;color:var(--purple-light);font-style:italic;display:none}
-
-/* MODALS */
-.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center}
-.mbg.on{display:flex}
-.modal{background:var(--bg-card);border:1px solid var(--border);border-radius:18px;padding:28px;width:440px;max-width:92vw;max-height:85vh;overflow-y:auto}
-.modal h2{font-family:'Playfair Display',serif;font-weight:700;font-size:1.15rem;margin-bottom:16px}
-.modal label{display:block;font-size:0.78rem;color:var(--text-dim);margin-bottom:4px;margin-top:10px}
-.modal input,.modal select,.modal textarea{width:100%;padding:8px 11px;background:var(--bg-dark);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:0.86rem;outline:none}
-.modal textarea{resize:vertical;min-height:60px}
-.modal input:focus,.modal textarea:focus{border-color:var(--purple)}
-.emoji-picker{display:flex;gap:5px;flex-wrap:wrap;margin-top:5px}
-.ep{width:32px;height:32px;border-radius:7px;border:1px solid var(--border);background:var(--bg-dark);font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.2s}
-.ep:hover,.ep.sel{border-color:var(--purple);background:rgba(108,92,231,0.15)}
-.macts{display:flex;gap:8px;margin-top:18px;justify-content:flex-end}
-.macts button{padding:8px 16px;border-radius:8px;font-family:inherit;font-weight:600;font-size:0.83rem;cursor:pointer;transition:all 0.2s}
-.bx{background:none;border:1px solid var(--border);color:var(--text-dim)}
-.bx:hover{border-color:var(--text-dim);color:var(--text)}
-.bok{background:var(--purple);border:none;color:white}
-.bok:hover{background:var(--purple-dark)}
-.bdel{background:var(--red);border:none;color:white}
-
-/* Inbox row */
-.inb{display:flex;align-items:center;gap:8px;padding:9px;border:1px solid var(--border);border-radius:10px;margin-bottom:7px;background:rgba(255,255,255,0.02)}
-.inb .info{flex:1;min-width:0}
-.inb .info .lbl{font-size:0.86rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.inb .info .url{font-family:'JetBrains Mono',monospace;font-size:0.63rem;color:var(--text-dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.inb select{width:130px;padding:5px 7px;background:var(--bg-dark);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:0.78rem;flex-shrink:0}
-.inb button{padding:5px 10px;border:none;border-radius:6px;font-size:0.78rem;cursor:pointer;flex-shrink:0;font-weight:600}
-.inb .classify{background:var(--green);color:white}
-.inb .trash{background:var(--red);color:white}
-
-/* Toast */
-.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--bg-card);border:1px solid var(--green);color:var(--text);padding:10px 18px;border-radius:10px;font-size:0.85rem;z-index:300;opacity:0;transition:all 0.3s}
-.toast.show{transform:translateX(-50%) translateY(0);opacity:1}
-.toast.err{border-color:var(--red)}
-
-@media(max-width:700px){.app-grid{grid-template-columns:1fr}.sidebar{display:none}.content{padding:14px}.itm .vl,.itm .nt{display:none}.chat-panel{width:calc(100vw - 20px);right:10px;bottom:70px}}
+.hdr{display:flex;align-items:center;justify-content:space-between;padding:8px 20px;border-bottom:1px solid var(--brd);background:rgba(10,10,26,.9);backdrop-filter:blur(12px);position:sticky;top:0;z-index:100;height:48px}
+.hdr-l{display:flex;align-items:center;gap:12px}
+.logo{font-family:'Playfair Display',serif;font-weight:800;font-size:1.2rem;background:linear-gradient(135deg,var(--pl),var(--o));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hdr-r{display:flex;align-items:center;gap:8px}
+.hb{background:none;border:1px solid var(--brd);color:var(--dim);padding:3px 9px;border-radius:6px;font-size:.73rem;cursor:pointer;font-family:inherit;transition:all .2s;position:relative}
+.hb:hover{border-color:var(--p);color:var(--tx)}
+.badge{position:absolute;top:-6px;right:-6px;background:var(--o);color:#fff;font-size:.58rem;width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700}
+.dev{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--dim);font-family:'JetBrains Mono',monospace}
+.ddot{width:7px;height:7px;border-radius:50%;background:var(--g);animation:pls 2s infinite}
+.ddot.off{background:var(--r);animation:none}
+@keyframes pls{0%,100%{opacity:1}50%{opacity:.4}}
+.grid{display:grid;grid-template-columns:220px 1fr;height:calc(100vh - 48px);overflow:hidden}
+.sb{background:var(--sb);border-right:1px solid var(--brd);overflow-y:auto;padding:12px 0;display:flex;flex-direction:column}
+.sbs{padding:0 12px;margin-bottom:14px}
+.sbt{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--dim);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:6px;padding:0 4px}
+.sw{display:flex;align-items:center;gap:7px;padding:6px 8px;border-radius:7px;cursor:pointer;transition:all .15s;font-size:.84rem;position:relative}
+.sw:hover{background:rgba(255,255,255,.04)}.sw.on{background:rgba(108,92,231,.15);color:var(--wh)}
+.sw .ic{font-size:1rem}.sw .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sw .ct{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--dim);background:rgba(255,255,255,.05);padding:1px 5px;border-radius:3px}
+.sw .fr{position:absolute;right:3px;top:3px;font-size:.65rem}
+.sadd{display:flex;align-items:center;gap:7px;padding:4px 8px;border-radius:7px;cursor:pointer;color:var(--dim);font-size:.78rem;transition:all .15s}
+.sadd:hover{background:rgba(255,255,255,.04);color:var(--pl)}
+.sp{display:flex;align-items:center;gap:5px;padding:3px 8px;border-radius:5px;font-size:.76rem;color:var(--dim);transition:all .15s;cursor:default}
+.sp:hover{background:rgba(255,255,255,.04);color:var(--tx)}
+.sp a{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-decoration:none;color:inherit;font-size:.76rem}
+.sp .ax{display:flex;gap:1px;opacity:0;transition:opacity .15s}.sp:hover .ax{opacity:1}
+.xb{background:none;border:none;color:var(--dim);cursor:pointer;font-size:.68rem;padding:2px}.xb:hover{color:var(--pl)}
+.sa{display:flex;align-items:center;gap:6px;padding:4px 8px;border-radius:7px;font-size:.8rem;transition:all .15s}.sa:hover{background:rgba(255,255,255,.04)}
+.ack{width:15px;height:15px;border:2px solid var(--brd);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:.6rem;color:transparent;transition:all .2s;flex-shrink:0;cursor:pointer}
+.ack.on{background:var(--g);border-color:var(--g);color:#fff}
+.sa .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
+.sa .dl{background:none;border:none;color:var(--dim);cursor:pointer;font-size:.65rem;opacity:0;transition:opacity .15s}.sa:hover .dl{opacity:1}
+.slaunch{display:block;width:calc(100% - 6px);margin:6px 3px 0;padding:6px;background:linear-gradient(135deg,var(--o),#e85d04);color:#fff;border:none;border-radius:7px;font-family:inherit;font-weight:600;font-size:.78rem;cursor:pointer}
+.slaunch:disabled{opacity:.3;cursor:not-allowed}
+.srow{display:flex;gap:3px;margin-top:5px;padding:0 3px}
+.srow input{flex:1;padding:4px 7px;background:var(--bg);border:1px solid var(--brd);border-radius:5px;color:var(--tx);font-size:.7rem;font-family:inherit;outline:none}
+.srow button{padding:4px 7px;background:var(--p);color:#fff;border:none;border-radius:5px;font-size:.7rem;cursor:pointer}
+.cnt{overflow-y:auto;padding:18px 24px;position:relative}
+.hyp{background:var(--hbg);border:1px solid var(--hbr);border-radius:13px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:flex-start;gap:10px;animation:br 4s ease-in-out infinite}
+@keyframes br{0%,100%{border-color:rgba(168,85,247,.25)}50%{border-color:rgba(168,85,247,.45)}}
+.hyp .av{width:30px;height:30px;background:linear-gradient(135deg,var(--p),#ec4899);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.hyp .bd{flex:1}.hyp .lb{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--pl);text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.hyp .mg{font-size:.85rem;line-height:1.5;font-weight:300}
+.hyp .rf{background:none;border:none;color:var(--pl);cursor:pointer;font-size:.9rem;opacity:.5;flex-shrink:0}.hyp .rf:hover{opacity:1}
+.wh{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:6px}
+.wh-l{display:flex;align-items:center;gap:8px}.wh-l .ic{font-size:1.3rem}.wh-l h2{font-family:'Playfair Display',serif;font-weight:700;font-size:1.15rem}
+.wh-r{display:flex;gap:5px}
+.wb{background:none;border:1px solid var(--brd);color:var(--dim);padding:3px 9px;border-radius:6px;font-size:.73rem;cursor:pointer;font-family:inherit;transition:all .2s}.wb:hover{border-color:var(--p);color:var(--tx)}.wb.fon{border-color:var(--o);color:var(--o)}
+.cb{display:flex;gap:5px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.cp{padding:3px 10px;border-radius:14px;font-size:.75rem;cursor:pointer;transition:all .2s;border:1px solid var(--brd);background:none;color:var(--dim);font-family:inherit}.cp:hover{border-color:var(--p);color:var(--tx)}.cp.on{background:rgba(108,92,231,.2);border-color:var(--p);color:var(--pl)}
+.cp .n{font-family:'JetBrains Mono',monospace;font-size:.58rem;margin-left:3px;opacity:.6}
+.il{font-family:'JetBrains Mono',monospace;font-size:.62rem;color:var(--dim);text-transform:uppercase;letter-spacing:1px;margin:10px 0 5px}
+.it{display:flex;align-items:center;gap:6px;padding:6px 8px;border-radius:7px;transition:background .15s}.it:hover{background:rgba(255,255,255,.03)}.it.dn{opacity:.3}
+.ik{width:16px;height:16px;border:2px solid var(--brd);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;color:transparent;font-size:.6rem}.ik:hover{border-color:var(--g)}.ik.on{background:var(--g);border-color:var(--g);color:#fff}
+.it .tp{font-size:.8rem;flex-shrink:0}
+.it .lb{flex:1;font-size:.84rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}.it .lb:hover{color:var(--pl)}.it.dn .lb{text-decoration:line-through;cursor:default}
+.it .vl{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--dim);max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.it .nt{font-size:.68rem;color:var(--pl);max-width:100px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-style:italic}
+.it .cat-tag{font-size:.58rem;color:var(--pl);background:rgba(108,92,231,.1);padding:1px 5px;border-radius:3px}
+.it .ia{display:flex;gap:1px;opacity:0;transition:opacity .15s}.it:hover .ia{opacity:1}
+.ab{background:none;border:none;color:var(--dim);cursor:pointer;font-size:.73rem;padding:2px;transition:color .15s}.ab:hover{color:var(--pl)}.ab.dl:hover{color:var(--r)}
+.lnch{background:none;border:1px solid rgba(0,184,148,.3);color:var(--g);cursor:pointer;font-size:.68rem;padding:2px 6px;border-radius:4px;transition:all .2s;font-family:inherit}.lnch:hover{background:rgba(0,184,148,.15);border-color:var(--g)}
+.ar{display:flex;gap:4px;margin-top:8px;padding-top:8px;border-top:1px solid rgba(108,92,231,.1)}
+.ar select,.ar input{padding:5px 8px;background:var(--bg);border:1px solid var(--brd);border-radius:6px;color:var(--tx);font-family:inherit;font-size:.78rem;outline:none}
+.ar select{width:72px}.ar input{flex:1}.ar input:focus,.ar select:focus{border-color:var(--p)}
+.ar button{padding:5px 10px;background:var(--p);color:#fff;border:none;border-radius:6px;font-weight:600;font-size:.78rem;cursor:pointer;white-space:nowrap}
+.fgs{text-align:center;margin:20px 0 12px}
+.fg{padding:12px 36px;background:linear-gradient(135deg,var(--o),#e85d04);color:#fff;border:none;border-radius:11px;font-family:'Playfair Display',serif;font-weight:800;font-size:1.1rem;cursor:pointer;transition:all .3s;box-shadow:0 4px 20px rgba(253,112,20,.3)}.fg:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(253,112,20,.5)}
+.fc{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--dim);margin-top:5px}
+.emp{text-align:center;padding:50px 20px;color:var(--dim)}.emp .ic{font-size:2.5rem;margin-bottom:10px}.emp p{font-size:.88rem;font-weight:300;line-height:1.6}
+.cht-tog{position:fixed;bottom:18px;right:18px;width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--p),#ec4899);border:none;color:#fff;font-size:1.2rem;cursor:pointer;z-index:150;box-shadow:0 4px 18px rgba(108,92,231,.4);transition:all .3s;display:flex;align-items:center;justify-content:center}.cht-tog:hover{transform:scale(1.1)}
+.cht{position:fixed;bottom:72px;right:18px;width:370px;max-height:480px;background:var(--card);border:1px solid var(--hbr);border-radius:15px;z-index:150;display:none;flex-direction:column;overflow:hidden;box-shadow:0 8px 36px rgba(0,0,0,.5)}.cht.open{display:flex}
+.cht-h{display:flex;align-items:center;gap:8px;padding:10px 14px;border-bottom:1px solid var(--brd);background:rgba(168,85,247,.06)}
+.cht-h .av{width:26px;height:26px;background:linear-gradient(135deg,var(--p),#ec4899);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.75rem;flex-shrink:0}
+.cht-h .tt{flex:1;font-weight:600;font-size:.87rem}
+.cht-h select{padding:2px 5px;background:var(--bg);border:1px solid var(--brd);border-radius:5px;color:var(--tx);font-size:.7rem;max-width:120px}
+.cht-h .cl{background:none;border:none;color:var(--dim);cursor:pointer;font-size:.9rem}
+.cht-b{flex:1;overflow-y:auto;padding:10px;max-height:320px;min-height:180px}
+.cm{margin-bottom:8px;max-width:88%}.cm.u{margin-left:auto;text-align:right}
+.cm .bbl{display:inline-block;padding:7px 10px;border-radius:10px;font-size:.82rem;line-height:1.4}
+.cm.u .bbl{background:rgba(108,92,231,.2);border:1px solid rgba(108,92,231,.3)}
+.cm.h .bbl{background:rgba(168,85,247,.1);border:1px solid var(--hbr)}
+.cm .w{font-size:.55rem;color:var(--dim);margin-bottom:1px;font-family:'JetBrains Mono',monospace}
+.cht-t{padding:6px 10px;font-size:.75rem;color:var(--pl);font-style:italic;display:none}
+.cht-i{display:flex;gap:5px;padding:8px 10px;border-top:1px solid var(--brd)}
+.cht-i input{flex:1;padding:7px 10px;background:var(--bg);border:1px solid var(--brd);border-radius:7px;color:var(--tx);font-family:inherit;font-size:.83rem;outline:none}.cht-i input:focus{border-color:var(--p)}
+.cht-i button{padding:7px 12px;background:var(--p);color:#fff;border:none;border-radius:7px;font-weight:600;font-size:.83rem;cursor:pointer}
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(4px);z-index:200;align-items:center;justify-content:center}.mbg.on{display:flex}
+.modal{background:var(--card);border:1px solid var(--brd);border-radius:16px;padding:24px;width:440px;max-width:92vw;max-height:85vh;overflow-y:auto}
+.modal h2{font-family:'Playfair Display',serif;font-weight:700;font-size:1.1rem;margin-bottom:14px}
+.modal label{display:block;font-size:.75rem;color:var(--dim);margin-bottom:3px;margin-top:8px}
+.modal input,.modal select,.modal textarea{width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--brd);border-radius:7px;color:var(--tx);font-family:inherit;font-size:.84rem;outline:none}
+.modal textarea{resize:vertical;min-height:50px}.modal input:focus,.modal textarea:focus{border-color:var(--p)}
+.emj{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.ep{width:30px;height:30px;border-radius:6px;border:1px solid var(--brd);background:var(--bg);font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s}.ep:hover,.ep.sel{border-color:var(--p);background:rgba(108,92,231,.15)}
+.macts{display:flex;gap:7px;margin-top:16px;justify-content:flex-end}
+.macts button{padding:7px 14px;border-radius:7px;font-family:inherit;font-weight:600;font-size:.8rem;cursor:pointer;transition:all .2s}
+.bx{background:none;border:1px solid var(--brd);color:var(--dim)}.bx:hover{border-color:var(--dim);color:var(--tx)}
+.bok{background:var(--p);border:none;color:#fff}.bok:hover{background:var(--pd)}
+.bdel{background:var(--r);border:none;color:#fff}
+.inb{display:flex;align-items:center;gap:7px;padding:8px;border:1px solid var(--brd);border-radius:9px;margin-bottom:6px;background:rgba(255,255,255,.02)}
+.inb .inf{flex:1;min-width:0}.inb .inf .lbl{font-size:.84rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inb .inf .url{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.inb select{width:120px;padding:4px 6px;background:var(--bg);border:1px solid var(--brd);border-radius:5px;color:var(--tx);font-size:.75rem;flex-shrink:0}
+.inb button{padding:4px 8px;border:none;border-radius:5px;font-size:.75rem;cursor:pointer;flex-shrink:0;font-weight:600}
+.inb .cfy{background:var(--g);color:#fff}.inb .trsh{background:var(--r);color:#fff}
+.note-modal{width:700px;max-width:95vw;max-height:90vh;display:flex;flex-direction:column}
+.ne-toolbar{display:flex;gap:3px;flex-wrap:wrap;padding:6px 0;border-bottom:1px solid var(--brd);margin-bottom:8px}
+.ne-toolbar button{background:var(--bg);border:1px solid var(--brd);color:var(--tx);padding:4px 8px;border-radius:5px;cursor:pointer;font-size:.75rem;font-family:inherit;transition:all .15s}.ne-toolbar button:hover{border-color:var(--p);color:var(--pl)}
+.ne-toolbar .sep{width:1px;background:var(--brd);margin:0 4px}
+.ne-editor{width:100%;min-height:300px;max-height:50vh;background:var(--bg);border:1px solid var(--brd);border-radius:8px;color:var(--tx);font-family:'JetBrains Mono',monospace;font-size:.85rem;line-height:1.6;padding:12px;outline:none;resize:vertical;tab-size:2}.ne-editor:focus{border-color:var(--p)}
+.ne-meta{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}.ne-meta select{flex:1;min-width:120px}
+.nlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:10px}
+.ncard{background:rgba(255,255,255,.02);border:1px solid var(--brd);border-radius:10px;padding:12px;cursor:pointer;transition:all .2s;position:relative}.ncard:hover{border-color:var(--p);background:rgba(108,92,231,.05)}
+.ncard .ntitle{font-weight:600;font-size:.88rem;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ncard .nprev{font-size:.76rem;color:var(--dim);line-height:1.4;max-height:3.2em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ncard .nmeta{font-family:'JetBrains Mono',monospace;font-size:.58rem;color:var(--dim);margin-top:6px;display:flex;gap:6px;flex-wrap:wrap}
+.ncard .ndel{position:absolute;top:6px;right:6px;background:none;border:none;color:var(--dim);cursor:pointer;font-size:.7rem;opacity:0;transition:opacity .15s}.ncard:hover .ndel{opacity:1}.ncard .ndel:hover{color:var(--r)}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--g);color:var(--tx);padding:8px 16px;border-radius:9px;font-size:.83rem;z-index:300;opacity:0;transition:all .3s}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1}.toast.err{border-color:var(--r)}
+@media(max-width:700px){.grid{grid-template-columns:1fr}.sb{display:none}.cnt{padding:12px}.it .vl,.it .nt,.it .cat-tag{display:none}.cht{width:calc(100vw - 16px);right:8px;bottom:66px}.note-modal{width:95vw}}
 </style>
 </head>
 <body>
-
-<div id="loginScreen">
-  <div class="login-box">
-    <h1>🔨 DayForge</h1>
-    <p class="sub">Forja tu día la noche anterior</p>
-    <input type="text" id="loginUser" placeholder="Usuario">
-    <input type="password" id="loginPass" placeholder="Contraseña">
-    <button onclick="doLogin()">Entrar</button>
-    <div class="login-error" id="loginError"></div>
-  </div>
-</div>
-
+<div id="loginScreen"><div class="lbox"><h1>🔨 DayForge</h1><p class="sub">Forja tu día la noche anterior</p><input type="text" id="loginUser" placeholder="Usuario"><input type="password" id="loginPass" placeholder="Contraseña"><button onclick="doLogin()">Entrar</button><div class="lerr" id="loginErr"></div></div></div>
 <div id="appScreen">
-  <div class="header">
-    <div class="header-left"><span class="header-logo">🔨 DayForge</span></div>
-    <div class="header-right">
-      <button class="hdr-btn" onclick="showInbox()" id="inboxBtn">📥 Inbox <span class="badge" id="inboxBadge" style="display:none">0</span></button>
-      <button class="hdr-btn" onclick="showBm()">📎</button>
-      <div class="dev-st"><div class="dev-dot" id="agentDot"></div><span id="agentLbl">...</span></div>
-      <button class="hdr-btn" onclick="loadAll()">↻</button>
-      <button class="hdr-btn" onclick="doLogout()">Salir</button>
-    </div>
-  </div>
-
-  <div class="app-grid">
-    <div class="sidebar" id="sidebar">
-      <div class="sb-sec"><div class="sb-title">Workspaces</div><div id="sbWs"></div><div class="sb-add" onclick="openNewWs()">+ Nuevo workspace</div></div>
-      <div class="sb-sec" id="pinSec" style="display:none"><div class="sb-title">📌 Permanentes</div><div id="sbPins"></div><div class="sb-add" onclick="addPerm()">+ Enlace permanente</div></div>
-      <div class="sb-sec" id="appSec" style="display:none"><div class="sb-title">🚀 Apps</div><div id="sbApps"></div>
-        <div class="sb-row"><input type="text" id="newApp" placeholder="Ruta .exe" onkeydown="if(event.key==='Enter')addApp()"><button onclick="addApp()">+</button></div>
-        <button class="sb-launch" id="launchBtn" onclick="launchApps()" disabled>🚀 Lanzar seleccionadas</button>
-      </div>
-    </div>
-
-    <div class="content" id="content">
-      <div class="hyp-panel"><div class="hyp-av">💜</div><div class="body"><div class="lab">Hypatia observa</div><div class="msg" id="hypMsg">Cargando...</div></div><button class="rf" onclick="loadHyp()">↻</button></div>
-      <div id="wsContent"><div class="empty"><div class="ic">🔨</div><p>Selecciona un workspace o crea uno nuevo.<br>Prepara tu día por la noche. Lánzalo por la mañana.</p></div></div>
-    </div>
-  </div>
-
-  <!-- Hypatia Chat -->
-  <button class="chat-toggle" id="chatToggle" onclick="toggleChat()">💜</button>
-  <div class="chat-panel" id="chatPanel">
-    <div class="chat-hdr">
-      <div class="av">💜</div>
-      <span class="title">Hypatia</span>
-      <select id="chatWs" onchange="loadChatHistory()"></select>
-      <button class="close" onclick="toggleChat()">✕</button>
-    </div>
-    <div class="chat-body" id="chatBody"></div>
-    <div class="chat-typing" id="chatTyping">Hypatia está pensando...</div>
-    <div class="chat-input-row">
-      <input type="text" id="chatInput" placeholder="Háblame del proyecto..." onkeydown="if(event.key==='Enter')sendChat()">
-      <button onclick="sendChat()">→</button>
-    </div>
-  </div>
+<div class="hdr"><div class="hdr-l"><span class="logo">🔨 DayForge</span></div><div class="hdr-r">
+<button class="hb" onclick="showInbox()" id="inboxBtn">📥<span class="badge" id="ibBadge" style="display:none">0</span></button>
+<button class="hb" onclick="showNotesList()">📝</button>
+<button class="hb" onclick="showBm()">📎</button>
+<div class="dev"><div class="ddot" id="agDot"></div><span id="agLbl">...</span></div>
+<button class="hb" onclick="loadAll()">↻</button><button class="hb" onclick="doLogout()">Salir</button></div></div>
+<div class="grid">
+<div class="sb" id="sidebar">
+<div class="sbs"><div class="sbt">Workspaces</div><div id="sbW"></div><div class="sadd" onclick="openNewWs()">+ Nuevo</div></div>
+<div class="sbs" id="pinSec" style="display:none"><div class="sbt">📌 Permanentes</div><div id="sbP"></div><div class="sadd" onclick="addPerm()">+ Enlace fijo</div></div>
+<div class="sbs" style="border-top:1px solid var(--brd);padding-top:10px;margin-top:auto"><div class="sbt">🚀 Apps (global)</div><div id="sbA"></div>
+<div class="srow"><input type="text" id="newAppP" placeholder="Ruta .exe o nombre" onkeydown="if(event.key==='Enter')addGApp()"><button onclick="addGApp()">+</button></div>
+<button class="slaunch" id="launchBtn" onclick="launchSelApps()" disabled>🚀 Lanzar</button></div></div>
+<div class="cnt" id="content">
+<div class="hyp"><div class="av">💜</div><div class="bd"><div class="lb">Hypatia</div><div class="mg" id="hypMsg">Cargando...</div></div><button class="rf" onclick="loadHyp()">↻</button></div>
+<div id="wsC"><div class="emp"><div class="ic">🔨</div><p>Selecciona un workspace o crea uno nuevo.<br>Prepara por la noche, lanza por la mañana.</p></div></div></div></div>
+<button class="cht-tog" onclick="togChat()">💜</button>
+<div class="cht" id="chatP"><div class="cht-h"><div class="av">💜</div><span class="tt">Hypatia</span><select id="chatWs" onchange="loadCHist()"></select><button class="cl" onclick="togChat()">✕</button></div>
+<div class="cht-b" id="chatB"></div><div class="cht-t" id="chatT">Hypatia piensa...</div>
+<div class="cht-i"><input type="text" id="chatIn" placeholder="Háblame del proyecto..." onkeydown="if(event.key==='Enter')sendChat()"><button onclick="sendChat()">→</button></div></div>
 </div>
-
-<!-- Modal: Workspace -->
-<div class="mbg" id="wsModal"><div class="modal">
-  <h2 id="wsModalTitle">Nuevo Workspace</h2>
-  <label>Nombre</label><input type="text" id="wsName" maxlength="40">
-  <label>Icono</label><div class="emoji-picker" id="emojiP"></div>
-  <input type="text" id="wsIconC" placeholder="Emoji" maxlength="2" style="margin-top:5px;width:60px">
-  <div class="macts"><button class="bx" onclick="closeM('wsModal')">Cancelar</button><button class="bdel" id="wsDelBtn" style="display:none" onclick="deleteWs()">Eliminar</button><button class="bok" onclick="saveWs()">Guardar</button></div>
-</div></div>
-
-<!-- Modal: Edit Item -->
-<div class="mbg" id="editModal"><div class="modal">
-  <h2>Editar Item</h2>
-  <label>Tipo</label><select id="eType"><option value="url">🌐 URL</option><option value="app">📱 App</option><option value="file">📄 Archivo</option><option value="note">📝 Nota</option></select>
-  <label>Valor</label><input type="text" id="eValue">
-  <label>Etiqueta</label><input type="text" id="eLabel">
-  <label>Categoría</label><select id="eCat"></select>
-  <label>Notas / Anotaciones</label><textarea id="eNotes" placeholder="Apuntes sobre este enlace..."></textarea>
-  <label>Mover a workspace</label><select id="eWs"></select>
-  <label style="margin-top:12px"><input type="checkbox" id="ePin" style="width:auto;margin-right:6px"> 📌 Enlace permanente</label>
-  <div class="macts"><button class="bx" onclick="closeM('editModal')">Cancelar</button><button class="bok" onclick="saveEdit()">Guardar</button></div>
-</div></div>
-
-<!-- Modal: Category -->
-<div class="mbg" id="catModal"><div class="modal">
-  <h2 id="catModalTitle">Nueva Categoría</h2>
-  <label>Nombre</label><input type="text" id="catName" maxlength="40">
-  <label>Descripción</label><textarea id="catDesc" placeholder="¿Para qué es esta categoría?"></textarea>
-  <div class="macts"><button class="bx" onclick="closeM('catModal')">Cancelar</button><button class="bdel" id="catDelBtn" style="display:none" onclick="deleteCat()">Eliminar</button><button class="bok" onclick="saveCat()">Guardar</button></div>
-</div></div>
-
-<!-- Modal: Inbox -->
-<div class="mbg" id="inboxModal"><div class="modal" style="width:520px">
-  <h2>📥 Clasificar Inbox</h2>
-  <p style="color:var(--text-dim);font-size:0.83rem;margin-bottom:12px">Asigna cada item a un workspace o elimínalo.</p>
-  <div id="inboxItems"></div>
-  <div id="inboxEmpty" style="display:none;text-align:center;padding:20px;color:var(--text-dim)"><div style="font-size:2rem;margin-bottom:8px">✅</div>Inbox vacío</div>
-  <div class="macts"><button class="bok" onclick="closeM('inboxModal')">Cerrar</button></div>
-</div></div>
-
-<!-- Modal: Bookmarklet -->
-<div class="mbg" id="bmModal"><div class="modal">
-  <h2>📎 Capturar Tabs</h2>
-  <p style="color:var(--text-dim);font-size:0.86rem;margin-bottom:14px;line-height:1.5">Arrastra este botón a tu <strong>barra de marcadores</strong>.</p>
-  <div style="text-align:center;margin:16px 0"><a id="bmLink" href="#" style="display:inline-block;padding:10px 20px;background:linear-gradient(135deg,var(--purple),var(--orange));color:white;border-radius:8px;text-decoration:none;font-weight:600;cursor:grab" onclick="event.preventDefault();showToast('Arrástrame a la barra')">📎 + DayForge</a></div>
-  <div class="macts"><button class="bok" onclick="closeM('bmModal')">OK</button></div>
-</div></div>
-
+<div class="mbg" id="wsM"><div class="modal"><h2 id="wsMT">Nuevo Workspace</h2><label>Nombre</label><input type="text" id="wsN" maxlength="40"><label>Icono</label><div class="emj" id="emjP"></div><input type="text" id="wsIC" placeholder="Emoji" maxlength="2" style="margin-top:4px;width:55px"><div class="macts"><button class="bx" onclick="closeM('wsM')">Cancelar</button><button class="bdel" id="wsDel" style="display:none" onclick="deleteWs()">Eliminar</button><button class="bok" onclick="saveWs()">Guardar</button></div></div></div>
+<div class="mbg" id="eiM"><div class="modal"><h2>Editar Item</h2><label>Tipo</label><select id="eT"><option value="url">🌐 URL</option><option value="file">📄 Archivo</option><option value="note">📝 Nota</option></select><label>Valor</label><input type="text" id="eV"><label>Etiqueta</label><input type="text" id="eL"><label>Categoría</label><select id="eC"></select><label>Notas</label><textarea id="eN" placeholder="Apuntes sobre este enlace..."></textarea><label>Mover a</label><select id="eW"></select><label style="margin-top:10px"><input type="checkbox" id="eP" style="width:auto;margin-right:5px"> 📌 Permanente</label><div class="macts"><button class="bx" onclick="closeM('eiM')">Cancelar</button><button class="bok" onclick="saveEdit()">Guardar</button></div></div></div>
+<div class="mbg" id="catM"><div class="modal"><h2 id="catMT">Nueva Categoría</h2><label>Nombre</label><input type="text" id="catN" maxlength="40"><label>Descripción</label><textarea id="catD" placeholder="¿Para qué es esta categoría?"></textarea><div class="macts"><button class="bx" onclick="closeM('catM')">Cancelar</button><button class="bdel" id="catDel" style="display:none" onclick="deleteCat()">Eliminar</button><button class="bok" onclick="saveCat()">Guardar</button></div></div></div>
+<div class="mbg" id="ibM"><div class="modal" style="width:500px"><h2>📥 Clasificar Inbox</h2><p style="color:var(--dim);font-size:.8rem;margin-bottom:10px">Asigna a un workspace o elimina.</p><div id="ibItems"></div><div id="ibEmpty" style="display:none;text-align:center;padding:16px;color:var(--dim)"><div style="font-size:1.8rem;margin-bottom:6px">✅</div>Vacío</div><div class="macts"><button class="bok" onclick="closeM('ibM')">Cerrar</button></div></div></div>
+<div class="mbg" id="bmM"><div class="modal"><h2>📎 Bookmarklet</h2><p style="color:var(--dim);font-size:.84rem;margin-bottom:12px;line-height:1.5">Arrastra a la <strong>barra de marcadores</strong>:</p><div style="text-align:center;margin:14px 0"><a id="bmL" href="#" style="display:inline-block;padding:9px 18px;background:linear-gradient(135deg,var(--p),var(--o));color:#fff;border-radius:7px;text-decoration:none;font-weight:600;cursor:grab" onclick="event.preventDefault()">📎 + DayForge</a></div><div class="macts"><button class="bok" onclick="closeM('bmM')">OK</button></div></div></div>
+<div class="mbg" id="nlM"><div class="modal" style="width:700px;max-width:95vw"><h2>📝 Notas</h2><div style="display:flex;gap:6px;margin-bottom:10px;align-items:center"><select id="nlWsF" onchange="loadNotes()" style="padding:5px 8px;background:var(--bg);border:1px solid var(--brd);border-radius:6px;color:var(--tx);font-size:.78rem"><option value="">Todos</option></select><button class="bok" style="font-size:.78rem;padding:5px 12px" onclick="openNewNote()">+ Nueva nota</button></div><div id="nlGrid" class="nlist"></div><div class="macts" style="margin-top:14px"><button class="bok" onclick="closeM('nlM')">Cerrar</button></div></div></div>
+<div class="mbg" id="neM"><div class="modal note-modal"><h2 id="neMT">Nueva Nota</h2><input type="text" id="neTitle" placeholder="Título de la nota..." style="font-size:1rem;font-weight:600;padding:10px 12px;margin-bottom:4px">
+<div class="ne-toolbar"><button onclick="neFmt('**','**')" title="Negrita"><b>B</b></button><button onclick="neFmt('*','*')" title="Cursiva"><i>I</i></button><button onclick="neFmt('~~','~~')" title="Tachado"><s>S</s></button><button onclick="neFmt('`','`')" title="Código">⌨</button><div class="sep"></div><button onclick="neIns('# ')" title="H1">H1</button><button onclick="neIns('## ')" title="H2">H2</button><button onclick="neIns('### ')" title="H3">H3</button><div class="sep"></div><button onclick="neIns('- ')" title="Lista">• Lista</button><button onclick="neIns('1. ')" title="Num">1. Num</button><button onclick="neIns('- [ ] ')" title="Check">☐ Check</button><div class="sep"></div><button onclick="neIns('> ')" title="Cita">❝ Cita</button><button onclick="neFmt('\n```\n','\n```\n')" title="Code">{ } Código</button><button onclick="neIns('---\n')" title="Línea">— Línea</button><button onclick="neFmt('[','](url)')" title="Link">🔗</button><div class="sep"></div><button onclick="nePreview()" title="Preview">👁 Preview</button></div>
+<textarea class="ne-editor" id="neBody" placeholder="Escribe en markdown..."></textarea><div id="nePreviewBox" style="display:none;background:var(--bg);border:1px solid var(--brd);border-radius:8px;padding:12px;min-height:200px;max-height:50vh;overflow-y:auto;font-size:.88rem;line-height:1.7"></div>
+<div class="ne-meta"><div style="flex:1"><label style="font-size:.7rem;margin:0">Workspaces</label><select id="neWs" multiple size="3" style="font-size:.75rem"></select></div><div style="flex:1"><label style="font-size:.7rem;margin:0">Categorías</label><select id="neCat" multiple size="3" style="font-size:.75rem"></select></div></div>
+<div class="macts"><button class="bx" onclick="closeNoteEd()">Cancelar</button><button class="bdel" id="neDel" style="display:none" onclick="deleteNote()">Eliminar</button><button class="bok" onclick="saveNote()">Guardar</button></div></div></div>
 <div class="toast" id="toast"></div>
-
 <script>
-// ═══ DayForge v3.0 ═══
-const API='';
-let TOKEN=localStorage.getItem('dayforge_token')||'';
-let workspaces=[],categories=[],currentWsId=null,currentItems=[],curFilter='';
-let editingWsId=null,editingItemId=null,editingCatId=null,selectedEmoji='📁',selApps=new Set();
-let chatOpen=false;
-const AGENT='http://localhost:5555';
-const EMOJIS=['📁','🎨','🔬','📝','💼','🚀','🎯','📊','🎵','📚','🔧','💡','🌐','🎬','📱','🏠','✨','🧠','📂','🎓'];
-const TI={url:'🌐',app:'📱',file:'📄',note:'📝'};
-const INBOX='📥 Inbox';
-
-// ─── Auth ───
-async function doLogin(){const u=$('loginUser').value,p=$('loginPass').value;try{const r=await fetch(`${API}/api/auth/login`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:p})});if(!r.ok){$('loginError').textContent='Credenciales incorrectas';return;}const d=await r.json();TOKEN=d.token;localStorage.setItem('dayforge_token',TOKEN);showApp();}catch(e){$('loginError').textContent='Error de conexión';}}
-function doLogout(){TOKEN='';localStorage.removeItem('dayforge_token');$('appScreen').style.display='none';$('loginScreen').style.display='flex';}
-async function checkAuth(){if(!TOKEN)return false;try{return(await api('/api/auth/verify')).valid;}catch{return false;}}
-
-// ─── API ───
-async function api(path,opts={}){const r=await fetch(`${API}${path}`,{...opts,headers:{'Content-Type':'application/json','Authorization':`Bearer ${TOKEN}`,...(opts.headers||{})}});if(r.status===401){doLogout();throw Error('Unauth');}if(!r.ok)throw Error(`API ${r.status}`);return r.json();}
-
-// ─── Init ───
-async function showApp(){$('loginScreen').style.display='none';$('appScreen').style.display='block';await loadAll();}
-async function loadAll(){await loadWsList();checkAgent();loadHyp();updateBadge();updateChatWsSelect();}
-
-// ─── Agent ───
-async function checkAgent(){try{const r=await fetch(`${AGENT}/health`,{signal:AbortSignal.timeout(2000)});if(r.ok){const d=await r.json();$('agentDot').className='dev-dot';$('agentLbl').textContent=d.name||'OK';}else throw 0;}catch{$('agentDot').className='dev-dot off';$('agentLbl').textContent='Sin agente';}}
-
-// ─── Workspaces ───
-async function loadWsList(){const d=await api('/api/workspaces');workspaces=d.workspaces||[];renderSb();if(currentWsId&&workspaces.find(w=>w.id===currentWsId))await selWs(currentWsId);updateBadge();}
-function renderSb(){$('sbWs').innerHTML=workspaces.filter(w=>w.status!=='archived'&&w.name!==INBOX).map(w=>`<div class="sb-ws ${w.id===currentWsId?'active':''}" onclick="selWs('${w.id}')"><span class="icon">${w.icon||'📁'}</span><span class="name">${esc(w.name)}</span><span class="cnt">${w.pending_count||0}</span>${w.status==='forged'?'<span class="fire">🔥</span>':''}</div>`).join('');}
-async function selWs(id){currentWsId=id;curFilter='';selApps.clear();renderSb();await loadCats(id);await loadContent(id);}
-
-// ─── Categories ───
-async function loadCats(wid){const d=await api(`/api/categories/${wid}`);categories=d.categories||[];}
-function renderCatBar(){
-  if(categories.length===0)return `<div class="cat-bar"><button class="cat-pill on" onclick="filterCat('')">Todo</button><button class="cat-pill" onclick="openNewCat()">+ Categoría</button></div>`;
-  return `<div class="cat-bar"><button class="cat-pill ${curFilter===''?'on':''}" onclick="filterCat('')">Todo</button>${categories.map(c=>`<button class="cat-pill ${curFilter===c.id?'on':''}" onclick="filterCat('${c.id}')" ondblclick="openEditCat('${c.id}')" title="${esc(c.description||'Doble click para editar')}">${esc(c.name)}<span class="cnt">${c.item_count||0}</span></button>`).join('')}<button class="cat-pill" onclick="openNewCat()">+</button></div>`;
-}
-function filterCat(cid){curFilter=cid;loadContent(currentWsId);}
-
-// Category modal
-function openNewCat(){editingCatId=null;$('catModalTitle').textContent='Nueva Categoría';$('catName').value='';$('catDesc').value='';$('catDelBtn').style.display='none';openM('catModal');}
-function openEditCat(id){const c=categories.find(x=>x.id===id);if(!c)return;editingCatId=id;$('catModalTitle').textContent='Editar Categoría';$('catName').value=c.name;$('catDesc').value=c.description||'';$('catDelBtn').style.display='inline-block';openM('catModal');}
-async function saveCat(){const name=$('catName').value.trim(),desc=$('catDesc').value.trim();if(!name){showToast('Nombre requerido',1);return;}if(editingCatId){await api(`/api/categories/${editingCatId}`,{method:'PUT',body:JSON.stringify({name,description:desc})});}else{await api('/api/categories',{method:'POST',body:JSON.stringify({workspace_id:currentWsId,name,description:desc,order:categories.length})});}closeM('catModal');await loadCats(currentWsId);await loadContent(currentWsId);showToast(editingCatId?'Categoría actualizada':'Categoría creada');}
-async function deleteCat(){if(!editingCatId||!confirm('¿Eliminar categoría? Los items se quedarán sin categoría.'))return;await api(`/api/categories/${editingCatId}`,{method:'DELETE'});closeM('catModal');curFilter='';await loadCats(currentWsId);await loadContent(currentWsId);showToast('Categoría eliminada');}
-
-// ─── Content ───
-async function loadContent(id){
-  const ws=workspaces.find(w=>w.id===id);if(!ws)return;
-  let url=`/api/items/${id}`;if(curFilter)url+=`?category=${curFilter}`;
-  const d=await api(url);currentItems=d.items||[];
-  // Also load all items for sidebar counts
-  const allD=curFilter?await api(`/api/items/${id}`):d;const allItems=allD.items||[];
-
-  const perms=allItems.filter(i=>i.permanent);
-  const pinLinks=perms.filter(i=>i.type!=='app');
-  const apps=perms.filter(i=>i.type==='app');
-  const work=currentItems.filter(i=>!i.permanent);
-  const pending=work.filter(i=>i.status==='pending');
-  const done=work.filter(i=>i.status==='done');
-
-  // Sidebar: pins
-  $('pinSec').style.display='block';
-  $('sbPins').innerHTML=pinLinks.length===0?'<div style="font-size:0.76rem;color:var(--text-dim);padding:4px 10px">Sin enlaces fijos</div>':pinLinks.map(p=>`<div class="sb-pin"><span style="font-size:0.8rem">${TI[p.type]||'📄'}</span><a href="${esc(p.value)}" target="_blank" class="lbl">${esc(p.label)}</a><div class="acts"><button class="pbtn" onclick="editItem('${p.id}')">✏️</button><button class="pbtn" onclick="unpin('${p.id}')">📋</button></div></div>`).join('');
-
-  // Sidebar: apps
-  $('appSec').style.display='block';
-  $('sbApps').innerHTML=apps.length===0?'<div style="font-size:0.76rem;color:var(--text-dim);padding:4px 10px">Sin apps</div>':apps.map(a=>`<div class="sb-app" onclick="toggleAppSel('${a.id}')"><div class="achk ${selApps.has(a.id)?'on':''}">✓</div><span class="nm">${esc(a.label)}</span><button class="dl" onclick="event.stopPropagation();delItem('${a.id}')">✕</button></div>`).join('');
-  $('launchBtn').disabled=selApps.size===0;
-
-  const forged=ws.status==='forged';
-  const catMap={};categories.forEach(c=>catMap[c.id]=c.name);
-
-  $('wsContent').innerHTML=`
-    <div class="ws-hdr"><div class="ws-hdr-left"><span class="ic">${ws.icon||'📁'}</span><h2>${esc(ws.name)}</h2></div>
-    <div class="ws-hdr-right"><button class="wb ${forged?'fon':''}" onclick="toggleForge('${ws.id}',${forged})">${forged?'🔥 Forjado':'🔥 Marcar hoy'}</button><button class="wb" onclick="openEditWs('${ws.id}')">✏️</button><button class="wb" onclick="clearDone()">Limpiar ✓</button></div></div>
-    ${renderCatBar()}
-    <div class="itm-label">📋 Items (${pending.length} pendientes${curFilter?' — filtro activo':''})</div>
-    ${pending.length===0&&done.length===0?'<div style="padding:14px;color:var(--text-dim);font-size:0.86rem">Sin items. Añade URLs, notas o archivos.</div>':''}
-    ${[...pending,...done].map(i=>{
-      const catName=catMap[i.category||'']||'';
-      const notePrev=i.notes?(i.notes.length>30?i.notes.substring(0,30)+'...':i.notes):'';
-      return `<div class="itm ${i.status==='done'?'done':''}" data-id="${i.id}">
-      <div class="ichk ${i.status==='done'?'on':''}" onclick="toggleSt('${i.id}','${i.status}')">✓</div>
-      <span class="tp">${TI[i.type]||'📄'}</span>
-      <span class="lb" onclick="editItem('${i.id}')">${esc(i.label)}</span>
-      ${catName?`<span style="font-size:0.62rem;color:var(--purple-light);background:rgba(108,92,231,0.1);padding:1px 6px;border-radius:4px">${esc(catName)}</span>`:''}
-      ${notePrev?`<span class="nt" title="${esc(i.notes||'')}">📝 ${esc(notePrev)}</span>`:''}
-      <span class="vl">${esc(trn(i.value,30))}</span>
-      <div class="iacts"><button class="ib" onclick="pin('${i.id}')" title="Fijar">📌</button><button class="ib" onclick="editItem('${i.id}')" title="Editar">✏️</button><button class="ib del" onclick="delItem('${i.id}')" title="Eliminar">✕</button></div>
-    </div>`;}).join('')}
-    <div class="add-row">
-      <select id="nType"><option value="url">🌐</option><option value="note">📝</option><option value="file">📄</option></select>
-      <input type="text" id="nValue" placeholder="URL, nota o ruta..." onkeydown="if(event.key==='Enter')addItem()">
-      <input type="text" id="nLabel" placeholder="Etiqueta" style="width:110px" onkeydown="if(event.key==='Enter')addItem()">
-      ${categories.length>0?`<select id="nCat"><option value="">Sin cat.</option>${categories.map(c=>`<option value="${c.id}" ${c.id===curFilter?'selected':''}>${esc(c.name)}</option>`).join('')}</select>`:''}
-      <button onclick="addItem()">+</button>
-    </div>
-    ${forged?`<div class="forge-sec"><button class="forge-btn" onclick="forgeDay()">🚀 FORJAR DÍA</button><div class="forge-cnt">${pending.length} items + ${apps.length} apps</div></div>`:''}`;
-}
-
-// ─── Items ───
-async function addItem(){const t=$('nType').value,v=$('nValue').value.trim(),l=$('nLabel').value.trim(),catEl=$('nCat'),cat=catEl?catEl.value:'';if(!v)return;await api('/api/items',{method:'POST',body:JSON.stringify({workspace_id:currentWsId,type:t,value:v,label:l,permanent:false,category:cat,order:999})});$('nValue').value='';$('nLabel').value='';await loadContent(currentWsId);await loadWsList();}
-async function toggleSt(id,st){await api(`/api/items/${id}`,{method:'PUT',body:JSON.stringify({status:st==='pending'?'done':'pending'})});await loadContent(currentWsId);await loadWsList();}
-async function delItem(id){await api(`/api/items/${id}`,{method:'DELETE'});await loadContent(currentWsId);await loadWsList();}
-async function pin(id){await api(`/api/items/${id}`,{method:'PUT',body:JSON.stringify({permanent:true})});await loadContent(currentWsId);showToast('📌 Fijado');}
-async function unpin(id){await api(`/api/items/${id}`,{method:'PUT',body:JSON.stringify({permanent:false})});await loadContent(currentWsId);showToast('📋 A trabajo');}
-async function clearDone(){if(!currentWsId)return;await api(`/api/items/${currentWsId}/clear-done`,{method:'POST'});await loadContent(currentWsId);await loadWsList();showToast('Limpiado');}
-async function addPerm(){const v=prompt('URL o ruta:');if(!v)return;const l=prompt('Etiqueta:',v.replace('https://','').split('/')[0])||v;await api('/api/items',{method:'POST',body:JSON.stringify({workspace_id:currentWsId,type:'url',value:v,label:l,permanent:true,order:0})});await loadContent(currentWsId);}
-
-// ─── Apps ───
-function toggleAppSel(id){if(selApps.has(id))selApps.delete(id);else selApps.add(id);loadContent(currentWsId);}
-async function addApp(){const p=$('newApp').value.trim();if(!p)return;const l=p.split('\\').pop().split('/').pop().replace('.exe','');await api('/api/items',{method:'POST',body:JSON.stringify({workspace_id:currentWsId,type:'app',value:p,label:l,permanent:true,order:0})});$('newApp').value='';await loadContent(currentWsId);}
-async function launchApps(){const apps=currentItems.filter(i=>selApps.has(i.id));let ok=0,agOk=false;try{const r=await fetch(`${AGENT}/health`,{signal:AbortSignal.timeout(2000)});agOk=r.ok;}catch{}if(!agOk){showToast('Sin agente',1);return;}for(const a of apps){try{await fetch(`${AGENT}/launch`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'app',path:a.value})});ok++;}catch{}}showToast(`🚀 ${ok} app${ok>1?'s':''} lanzada${ok>1?'s':''}`);selApps.clear();loadContent(currentWsId);}
-
-// ─── Forge ───
-async function forgeDay(){const d=await api('/api/sessions/forge',{method:'POST'});const items=d.items_to_launch||[];if(!items.length){showToast('Nada pendiente',1);return;}let ok=0,agOk=false;try{const r=await fetch(`${AGENT}/health`,{signal:AbortSignal.timeout(2000)});agOk=r.ok;}catch{}const urls=items.filter(i=>i.type==='url'&&!i.permanent),apps=items.filter(i=>i.type==='app');if(urls.length>0){window.open(urls[0].value,'_blank');ok++;}for(let i=1;i<urls.length;i++){await sleep(400);window.open(urls[i].value,'_blank');ok++;}if(agOk){for(const a of apps){try{await fetch(`${AGENT}/launch`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'app',path:a.value})});ok++;}catch{}}}showToast(`🚀 ${ok} items lanzados`);setTimeout(()=>loadHyp(),2000);}
-async function toggleForge(id,on){await api(`/api/workspaces/${id}`,{method:'PUT',body:JSON.stringify({status:on?'active':'forged'})});await loadWsList();await loadContent(id);}
-
-// ─── Edit Item ───
-async function editItem(id){const i=currentItems.find(x=>x.id===id);if(!i)return;editingItemId=id;$('eType').value=i.type;$('eValue').value=i.value;$('eLabel').value=i.label;$('eNotes').value=i.notes||'';$('ePin').checked=i.permanent||false;$('eCat').innerHTML=`<option value="">Sin categoría</option>${categories.map(c=>`<option value="${c.id}" ${c.id===(i.category||'')?'selected':''}>${esc(c.name)}</option>`).join('')}`;$('eWs').innerHTML=workspaces.filter(w=>w.status!=='archived').map(w=>`<option value="${w.id}" ${w.id===currentWsId?'selected':''}>${w.icon} ${esc(w.name)}</option>`).join('');openM('editModal');}
-async function saveEdit(){if(!editingItemId)return;const u={type:$('eType').value,value:$('eValue').value.trim(),label:$('eLabel').value.trim(),notes:$('eNotes').value.trim(),category:$('eCat').value,permanent:$('ePin').checked};if(!u.value){showToast('Valor vacío',1);return;}if(!u.label)u.label=u.value.substring(0,50);const nws=$('eWs').value;if(nws!==currentWsId)u.workspace_id=nws;await api(`/api/items/${editingItemId}`,{method:'PUT',body:JSON.stringify(u)});closeM('editModal');editingItemId=null;await loadCats(currentWsId);await loadContent(currentWsId);await loadWsList();showToast('Actualizado');}
-
-// ─── Inbox ───
-async function updateBadge(){const ib=workspaces.find(w=>w.name===INBOX);if(ib&&ib.pending_count>0){$('inboxBadge').textContent=ib.pending_count;$('inboxBadge').style.display='flex';}else $('inboxBadge').style.display='none';}
-async function showInbox(){const ib=workspaces.find(w=>w.name===INBOX);if(!ib){$('inboxItems').innerHTML='';$('inboxEmpty').style.display='block';openM('inboxModal');return;}const d=await api(`/api/items/${ib.id}`);const items=(d.items||[]).filter(i=>i.status==='pending');if(!items.length){$('inboxItems').innerHTML='';$('inboxEmpty').style.display='block';}else{$('inboxEmpty').style.display='none';const opts=workspaces.filter(w=>w.status!=='archived'&&w.name!==INBOX).map(w=>`<option value="${w.id}">${w.icon} ${esc(w.name)}</option>`).join('');$('inboxItems').innerHTML=items.map(i=>`<div class="inb" id="ib-${i.id}"><div class="info"><div class="lbl">${esc(i.label)}</div><div class="url">${esc(trn(i.value,50))}</div></div><select id="ibs-${i.id}">${opts}<option value="_new">+ Nuevo</option></select><button class="classify" onclick="classify('${i.id}')">→</button><button class="trash" onclick="delInbox('${i.id}')">✕</button></div>`).join('');}openM('inboxModal');}
-async function classify(id){const ws=$(`ibs-${id}`).value;if(ws==='_new'){const name=prompt('Nombre del nuevo workspace:');if(!name)return;const d=await api('/api/workspaces',{method:'POST',body:JSON.stringify({name,icon:'📁',status:'active',order:workspaces.length})});await api(`/api/items/${id}`,{method:'PUT',body:JSON.stringify({workspace_id:d.workspace.id})});}else{await api(`/api/items/${id}`,{method:'PUT',body:JSON.stringify({workspace_id:ws})});}$(`ib-${id}`)?.remove();await loadWsList();updateBadge();if(!$('inboxItems').children.length)$('inboxEmpty').style.display='block';showToast('✅ Clasificado');}
-async function delInbox(id){await api(`/api/items/${id}`,{method:'DELETE'});$(`ib-${id}`)?.remove();await loadWsList();updateBadge();if(!$('inboxItems').children.length)$('inboxEmpty').style.display='block';showToast('Eliminado del inbox');}
-
-// ─── Workspace Modal ───
-function openNewWs(){editingWsId=null;$('wsModalTitle').textContent='Nuevo Workspace';$('wsName').value='';$('wsIconC').value='';$('wsDelBtn').style.display='none';selectedEmoji='📁';renderEmoji();openM('wsModal');}
-function openEditWs(id){const w=workspaces.find(x=>x.id===id);if(!w)return;editingWsId=id;$('wsModalTitle').textContent='Editar';$('wsName').value=w.name;$('wsIconC').value='';$('wsDelBtn').style.display='inline-block';selectedEmoji=w.icon||'📁';renderEmoji();openM('wsModal');}
-function renderEmoji(){$('emojiP').innerHTML=EMOJIS.map(e=>`<div class="ep ${e===selectedEmoji?'sel':''}" onclick="pickE('${e}')">${e}</div>`).join('');}
-function pickE(e){selectedEmoji=e;$('wsIconC').value='';renderEmoji();}
-async function saveWs(){const name=$('wsName').value.trim(),icon=$('wsIconC').value.trim()||selectedEmoji;if(!name){showToast('Nombre',1);return;}if(editingWsId){await api(`/api/workspaces/${editingWsId}`,{method:'PUT',body:JSON.stringify({name,icon})});}else{const d=await api('/api/workspaces',{method:'POST',body:JSON.stringify({name,icon,status:'active',order:workspaces.length})});currentWsId=d.workspace.id;}closeM('wsModal');await loadWsList();if(currentWsId)await selWs(currentWsId);showToast(editingWsId?'Actualizado':'Creado');}
-async function deleteWs(){if(!editingWsId||!confirm('¿Eliminar workspace y todo su contenido?'))return;await api(`/api/workspaces/${editingWsId}`,{method:'DELETE'});closeM('wsModal');if(currentWsId===editingWsId){currentWsId=null;$('wsContent').innerHTML='<div class="empty"><div class="ic">🔨</div><p>Selecciona un workspace</p></div>';$('pinSec').style.display='none';$('appSec').style.display='none';}await loadWsList();showToast('Eliminado');}
-
-// ─── Hypatia Observe ───
-async function loadHyp(){try{const h=new Date().getHours(),ctx=h<14?'morning':h<21?'evening':'night';const d=await api('/api/hypatia/observe',{method:'POST',body:JSON.stringify({context:ctx})});$('hypMsg').textContent=d.message||'💜';}catch{$('hypMsg').textContent='Conectando... 💜';}}
-
-// ─── Hypatia Chat ───
-function toggleChat(){chatOpen=!chatOpen;$('chatPanel').className=chatOpen?'chat-panel open':'chat-panel';if(chatOpen){updateChatWsSelect();if(currentWsId)$('chatWs').value=currentWsId;loadChatHistory();$('chatInput').focus();}}
-function updateChatWsSelect(){$('chatWs').innerHTML=`<option value="general">💬 General</option>${workspaces.filter(w=>w.status!=='archived'&&w.name!==INBOX).map(w=>`<option value="${w.id}" ${w.id===currentWsId?'selected':''}>${w.icon} ${esc(w.name)}</option>`).join('')}`;}
-async function loadChatHistory(){const wid=$('chatWs').value||'general';try{const d=await api(`/api/hypatia/chat-history/${wid}`);const hist=d.history||[];renderChat(hist);}catch{renderChat([]);}}
-function renderChat(hist){const body=$('chatBody');body.innerHTML=hist.length===0?'<div style="text-align:center;padding:30px;color:var(--text-dim);font-size:0.85rem">💜 Háblame sobre este proyecto...</div>':hist.map(h=>`<div class="chat-msg user"><div class="who">Carles</div><div class="bubble">${esc(h.user)}</div></div><div class="chat-msg hyp"><div class="who">Hypatia</div><div class="bubble">${esc(h.hypatia)}</div></div>`).join('');body.scrollTop=body.scrollHeight;}
-async function sendChat(){const input=$('chatInput'),msg=input.value.trim();if(!msg)return;const wid=$('chatWs').value||'general';input.value='';const body=$('chatBody');body.innerHTML+=`<div class="chat-msg user"><div class="who">Carles</div><div class="bubble">${esc(msg)}</div></div>`;body.scrollTop=body.scrollHeight;$('chatTyping').style.display='block';try{const d=await api('/api/hypatia/chat',{method:'POST',body:JSON.stringify({workspace_id:wid,message:msg})});$('chatTyping').style.display='none';body.innerHTML+=`<div class="chat-msg hyp"><div class="who">Hypatia</div><div class="bubble">${esc(d.reply)}</div></div>`;body.scrollTop=body.scrollHeight;}catch(e){$('chatTyping').style.display='none';body.innerHTML+=`<div class="chat-msg hyp"><div class="who">Hypatia</div><div class="bubble">Error de conexión 💜</div></div>`;}}
-
-// ─── Bookmarklet ───
-function showBm(){const u=window.location.origin,t=TOKEN;$('bmLink').href="javascript:void(function(){var t='"+t+"';fetch('"+u+"/api/quick-add',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({workspace_id:'inbox',type:'url',value:location.href,label:document.title.substring(0,60)})}).then(function(r){return r.json()}).then(function(d){if(d.item){var n=document.createElement('div');n.textContent='\\u2705 DayForge: '+d.item.label;n.style.cssText='position:fixed;top:12px;right:12px;background:%231a1a2e;color:%23e8e8f0;padding:12px 20px;border:1px solid %236C5CE7;border-radius:10px;z-index:99999;font:14px sans-serif';document.body.appendChild(n);setTimeout(function(){n.remove()},2500)}}).catch(function(e){alert('DayForge: '+e)})})()";openM('bmModal');}
-
-// ─── Utils ───
+const API='',AGENT='http://localhost:5555',INBOX_NM='\u{1F4E5} Inbox';
+const EMOJIS=['\u{1F4C1}','\u{1F3A8}','\u{1F52C}','\u{1F4DD}','\u{1F4BC}','\u{1F680}','\u{1F3AF}','\u{1F4CA}','\u{1F3B5}','\u{1F4DA}','\u{1F527}','\u{1F4A1}','\u{1F310}','\u{1F3AC}','\u{1F4F1}','\u{1F3E0}','\u2728','\u{1F9E0}','\u{1F4C2}','\u{1F393}'];
+const TI={url:'\u{1F310}',app:'\u{1F4F1}',file:'\u{1F4C4}',note:'\u{1F4DD}'};
+let TOKEN=localStorage.getItem('dayforge_token')||'',workspaces=[],categories=[],globalApps=[];
+let curWs=null,curItems=[],curFilter='',editWsId=null,editItemId=null,editCatId=null,editNoteId=null;
+let selEmoji='\u{1F4C1}',selApps=new Set(),chatOpen=false,notePreviewing=false;
 function $(id){return document.getElementById(id)}
-function openM(id){$(id).classList.add('on')}
-function closeM(id){$(id).classList.remove('on')}
-function showToast(msg,err){const t=$('toast');t.textContent=msg;t.className=`toast show ${err?'err':''}`;setTimeout(()=>t.className='toast',3000);}
+function openM(id){$(id).classList.add('on')}function closeM(id){$(id).classList.remove('on')}
+function toast(m,e){const t=$('toast');t.textContent=m;t.className='toast show'+(e?' err':'');setTimeout(()=>t.className='toast',3000)}
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML}
-function trn(s,n){return(s||'').length>n?s.substring(0,n)+'...':s||''}
+function trn(s,n){return(s||'').length>n?s.substring(0,n)+'\u2026':s||''}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
-$('loginPass').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
-(async()=>{if(await checkAuth())showApp();else $('loginScreen').style.display='flex';})();
+async function doLogin(){try{const r=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:$('loginUser').value,password:$('loginPass').value})});if(!r.ok){$('loginErr').textContent='Credenciales incorrectas';return}const d=await r.json();TOKEN=d.token;localStorage.setItem('dayforge_token',TOKEN);showApp()}catch(e){$('loginErr').textContent='Error'}}
+function doLogout(){TOKEN='';localStorage.removeItem('dayforge_token');$('appScreen').style.display='none';$('loginScreen').style.display='flex'}
+async function checkAuth(){if(!TOKEN)return false;try{return(await api('/api/auth/verify')).valid}catch{return false}}
+async function api(p,o={}){const r=await fetch(API+p,{...o,headers:{'Content-Type':'application/json','Authorization':'Bearer '+TOKEN,...(o.headers||{})}});if(r.status===401){doLogout();throw Error('Unauth')}if(!r.ok)throw Error('API '+r.status);return r.json()}
+async function showApp(){$('loginScreen').style.display='none';$('appScreen').style.display='block';await loadAll()}
+async function loadAll(){await loadWsList();await loadGApps();checkAgent();loadHyp();updateBadge();updateChatSel()}
+async function checkAgent(){try{const r=await fetch(AGENT+'/health',{signal:AbortSignal.timeout(2000)});if(r.ok){$('agDot').className='ddot';$('agLbl').textContent='OK'}else throw 0}catch{$('agDot').className='ddot off';$('agLbl').textContent='sin agente'}}
+async function loadWsList(){const d=await api('/api/workspaces');workspaces=d.workspaces||[];renderSb();if(curWs&&workspaces.find(w=>w.id===curWs))await selWs(curWs);updateBadge()}
+function renderSb(){$('sbW').innerHTML=workspaces.filter(w=>w.status!=='archived'&&w.name!==INBOX_NM).map(w=>'<div class="sw'+(w.id===curWs?' on':'')+'" onclick="selWs(\''+w.id+'\')"><span class="ic">'+esc(w.icon||'\u{1F4C1}')+'</span><span class="nm">'+esc(w.name)+'</span><span class="ct">'+(w.pending_count||0)+'</span>'+(w.status==='forged'?'<span class="fr">\u{1F525}</span>':'')+'</div>').join('')}
+async function selWs(id){curWs=id;curFilter='';renderSb();await loadCats(id);await loadContent(id)}
+function openNewWs(){editWsId=null;$('wsMT').textContent='Nuevo Workspace';$('wsN').value='';$('wsIC').value='';$('wsDel').style.display='none';selEmoji='\u{1F4C1}';rendEmj();openM('wsM')}
+function openEditWs(id){const w=workspaces.find(x=>x.id===id);if(!w)return;editWsId=id;$('wsMT').textContent='Editar';$('wsN').value=w.name;$('wsIC').value='';$('wsDel').style.display='inline-block';selEmoji=w.icon||'\u{1F4C1}';rendEmj();openM('wsM')}
+function rendEmj(){$('emjP').innerHTML=EMOJIS.map(e=>'<div class="ep'+(e===selEmoji?' sel':'')+'" onclick="pkE(\''+e+'\')">'+e+'</div>').join('')}
+function pkE(e){selEmoji=e;$('wsIC').value='';rendEmj()}
+async function saveWs(){const n=$('wsN').value.trim(),i=$('wsIC').value.trim()||selEmoji;if(!n)return toast('Nombre',1);if(editWsId)await api('/api/workspaces/'+editWsId,{method:'PUT',body:JSON.stringify({name:n,icon:i})});else{const d=await api('/api/workspaces',{method:'POST',body:JSON.stringify({name:n,icon:i,status:'active',order:workspaces.length})});curWs=d.workspace.id}closeM('wsM');await loadWsList();if(curWs)await selWs(curWs);toast(editWsId?'Actualizado':'Creado')}
+async function deleteWs(){if(!editWsId||!confirm('\u00bfEliminar workspace y contenido?'))return;await api('/api/workspaces/'+editWsId,{method:'DELETE'});closeM('wsM');if(curWs===editWsId){curWs=null;$('wsC').innerHTML='<div class="emp"><div class="ic">\u{1F528}</div><p>Selecciona un workspace</p></div>';$('pinSec').style.display='none'}await loadWsList();toast('Eliminado')}
+async function loadCats(wid){const d=await api('/api/categories/'+wid);categories=d.categories||[]}
+function renderCatBar(){return '<div class="cb"><button class="cp'+(curFilter===''?' on':'')+'" onclick="fltCat(\'\')">Todo</button>'+categories.map(c=>'<button class="cp'+(curFilter===c.id?' on':'')+'" onclick="fltCat(\''+c.id+'\')" ondblclick="openEditCat(\''+c.id+'\')" title="'+esc(c.description||'Doble click para editar')+'">'+esc(c.name)+'<span class="n">'+(c.item_count||0)+'</span></button>').join('')+'<button class="cp" onclick="openNewCat()">+</button></div>'}
+function fltCat(id){curFilter=id;loadContent(curWs)}
+function openNewCat(){editCatId=null;$('catMT').textContent='Nueva Categor\u00eda';$('catN').value='';$('catD').value='';$('catDel').style.display='none';openM('catM')}
+function openEditCat(id){const c=categories.find(x=>x.id===id);if(!c)return;editCatId=id;$('catMT').textContent='Editar';$('catN').value=c.name;$('catD').value=c.description||'';$('catDel').style.display='inline-block';openM('catM')}
+async function saveCat(){const n=$('catN').value.trim(),d=$('catD').value.trim();if(!n)return toast('Nombre',1);if(editCatId)await api('/api/categories/'+editCatId,{method:'PUT',body:JSON.stringify({name:n,description:d})});else await api('/api/categories',{method:'POST',body:JSON.stringify({workspace_id:curWs,name:n,description:d,order:categories.length})});closeM('catM');await loadCats(curWs);await loadContent(curWs);toast(editCatId?'Actualizada':'Creada')}
+async function deleteCat(){if(!editCatId||!confirm('\u00bfEliminar categor\u00eda?'))return;await api('/api/categories/'+editCatId,{method:'DELETE'});closeM('catM');curFilter='';await loadCats(curWs);await loadContent(curWs);toast('Eliminada')}
+async function loadGApps(){const d=await api('/api/apps');globalApps=d.apps||[];renderApps()}
+function renderApps(){$('sbA').innerHTML=globalApps.length===0?'<div style="font-size:.73rem;color:var(--dim);padding:3px 8px">Sin apps</div>':globalApps.map(a=>'<div class="sa"><div class="ack'+(selApps.has(a.id)?' on':'')+'" onclick="togAppSel(\''+a.id+'\')">✓</div><span class="nm" onclick="togAppSel(\''+a.id+'\')">'+esc(a.name)+'</span><button class="dl" onclick="delGApp(\''+a.id+'\')">✕</button></div>').join('');$('launchBtn').disabled=selApps.size===0}
+function togAppSel(id){selApps.has(id)?selApps.delete(id):selApps.add(id);renderApps()}
+async function addGApp(){const p=$('newAppP').value.trim();if(!p)return;const n=p.split('\\').pop().split('/').pop().replace('.exe','');await api('/api/apps',{method:'POST',body:JSON.stringify({name:n,path:p,order:globalApps.length})});$('newAppP').value='';await loadGApps();toast('App a\u00f1adida')}
+async function delGApp(id){await api('/api/apps/'+id,{method:'DELETE'});selApps.delete(id);await loadGApps();toast('Eliminada')}
+async function launchSelApps(){let ok=0,agOk=false;try{const r=await fetch(AGENT+'/health',{signal:AbortSignal.timeout(2000)});agOk=r.ok}catch{}if(!agOk)return toast('Sin agente',1);for(const id of selApps){const a=globalApps.find(x=>x.id===id);if(a)try{await fetch(AGENT+'/launch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'app',path:a.path})});ok++}catch{}}toast('\u{1F680} '+ok+' app'+(ok>1?'s':''));selApps.clear();renderApps()}
+async function loadContent(id){
+const ws=workspaces.find(w=>w.id===id);if(!ws)return;
+let url='/api/items/'+id;if(curFilter)url+='?category='+curFilter;
+const d=await api(url);curItems=d.items||[];
+const allD=curFilter?await api('/api/items/'+id):d;const allItems=allD.items||[];
+const pins=allItems.filter(i=>i.permanent);const work=curItems.filter(i=>!i.permanent);
+const pending=work.filter(i=>i.status==='pending'),done=work.filter(i=>i.status==='done');
+$('pinSec').style.display='block';
+$('sbP').innerHTML=pins.length===0?'<div style="font-size:.73rem;color:var(--dim);padding:3px 8px">Sin enlaces fijos</div>':pins.map(p=>'<div class="sp"><span style="font-size:.75rem">'+(TI[p.type]||'\u{1F4C4}')+'</span><a href="'+esc(p.value)+'" target="_blank">'+esc(p.label)+'</a><div class="ax"><button class="xb" onclick="editItem(\''+p.id+'\')">✏️</button><button class="xb" onclick="unpin(\''+p.id+'\')">📋</button></div></div>').join('');
+const forged=ws.status==='forged',catMap={};categories.forEach(c=>catMap[c.id]=c.name);
+let noteCount=0;try{const nd=await api('/api/notes?workspace_id='+id);noteCount=(nd.notes||[]).length}catch{}
+let html='<div class="wh"><div class="wh-l"><span class="ic">'+(ws.icon||'\u{1F4C1}')+'</span><h2>'+esc(ws.name)+'</h2></div><div class="wh-r"><button class="wb" onclick="showWsNotes()">\u{1F4DD} Notas ('+noteCount+')</button><button class="wb'+(forged?' fon':'')+'" onclick="togForge(\''+ws.id+'\','+forged+')">'+(forged?'\u{1F525} Forjado':'\u{1F525} Marcar hoy')+'</button><button class="wb" onclick="openEditWs(\''+ws.id+'\')">✏️</button><button class="wb" onclick="clearDone()">Limpiar ✓</button></div></div>';
+html+=renderCatBar();
+html+='<div class="il">\u{1F4CB} Items ('+pending.length+' pendientes'+(curFilter?' — filtro':'')+')</div>';
+if(pending.length===0&&done.length===0)html+='<div style="padding:12px;color:var(--dim);font-size:.84rem">Sin items.</div>';
+var all=[].concat(pending,done);
+for(var idx=0;idx<all.length;idx++){var i=all[idx];var cn=catMap[i.category||'']||'';var np=i.notes?(i.notes.length>25?i.notes.substring(0,25)+'\u2026':i.notes):'';var isUrl=i.type==='url';
+html+='<div class="it'+(i.status==='done'?' dn':'')+'" data-id="'+i.id+'"><div class="ik'+(i.status==='done'?' on':'')+'" onclick="togSt(\''+i.id+"','"+i.status+'\')">✓</div><span class="tp">'+(TI[i.type]||'\u{1F4C4}')+'</span><span class="lb" onclick="editItem(\''+i.id+'\')">'+esc(i.label)+'</span>'+(cn?'<span class="cat-tag">'+esc(cn)+'</span>':'')+(np?'<span class="nt" title="'+esc(i.notes||'')+'">\u{1F4DD} '+esc(np)+'</span>':'')+'<span class="vl">'+esc(trn(i.value,28))+'</span><div class="ia">'+(isUrl?'<button class="lnch" onclick="event.stopPropagation();window.open(\''+esc(i.value).replace(/'/g,"\\'")+'\',\'_blank\')">▶</button>':'')+'<button class="ab" onclick="pin(\''+i.id+'\')">\u{1F4CC}</button><button class="ab" onclick="editItem(\''+i.id+'\')">✏️</button><button class="ab dl" onclick="delItem(\''+i.id+'\')">✕</button></div></div>'}
+html+='<div class="ar"><select id="nT"><option value="url">\u{1F310}</option><option value="note">\u{1F4DD}</option><option value="file">\u{1F4C4}</option></select><input type="text" id="nV" placeholder="URL, nota o ruta..." onkeydown="if(event.key===\'Enter\')addItem()"><input type="text" id="nL" placeholder="Etiqueta" style="width:100px" onkeydown="if(event.key===\'Enter\')addItem()">';
+if(categories.length>0){html+='<select id="nC"><option value="">\u2014</option>';for(var ci=0;ci<categories.length;ci++){var c=categories[ci];html+='<option value="'+c.id+'"'+(c.id===curFilter?' selected':'')+'>'+esc(c.name)+'</option>'}html+='</select>'}
+html+='<button onclick="addItem()">+</button></div>';
+if(forged)html+='<div class="fgs"><button class="fg" onclick="forgeDay()">\u{1F680} FORJAR DÍA</button><div class="fc">'+pending.length+' items + '+globalApps.length+' apps globales</div></div>';
+$('wsC').innerHTML=html}
+async function addItem(){const t=$('nT').value,v=$('nV').value.trim(),l=$('nL').value.trim(),cEl=$('nC'),c=cEl?cEl.value:'';if(!v)return;await api('/api/items',{method:'POST',body:JSON.stringify({workspace_id:curWs,type:t,value:v,label:l,permanent:false,category:c,order:999})});$('nV').value='';$('nL').value='';await loadContent(curWs);await loadWsList()}
+async function togSt(id,st){await api('/api/items/'+id,{method:'PUT',body:JSON.stringify({status:st==='pending'?'done':'pending'})});await loadContent(curWs);await loadWsList()}
+async function delItem(id){await api('/api/items/'+id,{method:'DELETE'});await loadContent(curWs);await loadWsList()}
+async function pin(id){await api('/api/items/'+id,{method:'PUT',body:JSON.stringify({permanent:true})});await loadContent(curWs);toast('\u{1F4CC} Fijado')}
+async function unpin(id){await api('/api/items/'+id,{method:'PUT',body:JSON.stringify({permanent:false})});await loadContent(curWs);toast('\u{1F4CB} A trabajo')}
+async function clearDone(){if(!curWs)return;await api('/api/items/'+curWs+'/clear-done',{method:'POST'});await loadContent(curWs);await loadWsList();toast('Limpiado')}
+async function addPerm(){const v=prompt('URL o ruta:');if(!v)return;const l=prompt('Etiqueta:',v.replace('https://','').split('/')[0])||v;await api('/api/items',{method:'POST',body:JSON.stringify({workspace_id:curWs,type:'url',value:v,label:l,permanent:true,order:0})});await loadContent(curWs)}
+async function editItem(id){const i=curItems.find(x=>x.id===id);if(!i)return;editItemId=id;$('eT').value=i.type;$('eV').value=i.value;$('eL').value=i.label;$('eN').value=i.notes||'';$('eP').checked=i.permanent||false;$('eC').innerHTML='<option value="">Sin categor\u00eda</option>'+categories.map(c=>'<option value="'+c.id+'"'+(c.id===(i.category||'')?'selected':'')+'>'+esc(c.name)+'</option>').join('');$('eW').innerHTML=workspaces.filter(w=>w.status!=='archived').map(w=>'<option value="'+w.id+'"'+(w.id===curWs?' selected':'')+'>'+esc(w.icon||'')+' '+esc(w.name)+'</option>').join('');openM('eiM')}
+async function saveEdit(){if(!editItemId)return;const u={type:$('eT').value,value:$('eV').value.trim(),label:$('eL').value.trim(),notes:$('eN').value.trim(),category:$('eC').value,permanent:$('eP').checked};if(!u.value)return toast('Valor vac\u00edo',1);if(!u.label)u.label=u.value.substring(0,50);const nw=$('eW').value;if(nw!==curWs)u.workspace_id=nw;await api('/api/items/'+editItemId,{method:'PUT',body:JSON.stringify(u)});closeM('eiM');editItemId=null;await loadCats(curWs);await loadContent(curWs);await loadWsList();toast('Actualizado')}
+async function forgeDay(){const d=await api('/api/sessions/forge',{method:'POST'});const items=d.items_to_launch||[];let ok=0,agOk=false;try{const r=await fetch(AGENT+'/health',{signal:AbortSignal.timeout(2000)});agOk=r.ok}catch{}
+const urls=items.filter(i=>i.type==='url'&&!i.permanent);
+if(urls.length>0){window.open(urls[0].value,'_blank');ok++}
+for(let i=1;i<urls.length;i++){await sleep(400);window.open(urls[i].value,'_blank');ok++}
+if(agOk){for(const a of globalApps){try{await fetch(AGENT+'/launch',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'app',path:a.path})});ok++}catch{}}}
+toast('\u{1F680} '+ok+' items lanzados');setTimeout(()=>loadHyp(),2000)}
+async function togForge(id,on){await api('/api/workspaces/'+id,{method:'PUT',body:JSON.stringify({status:on?'active':'forged'})});await loadWsList();await loadContent(id)}
+async function updateBadge(){const ib=workspaces.find(w=>w.name===INBOX_NM);if(ib&&ib.pending_count>0){$('ibBadge').textContent=ib.pending_count;$('ibBadge').style.display='flex'}else $('ibBadge').style.display='none'}
+async function showInbox(){const ib=workspaces.find(w=>w.name===INBOX_NM);if(!ib){$('ibItems').innerHTML='';$('ibEmpty').style.display='block';openM('ibM');return}
+const d=await api('/api/items/'+ib.id);const its=(d.items||[]).filter(i=>i.status==='pending');
+if(!its.length){$('ibItems').innerHTML='';$('ibEmpty').style.display='block'}else{$('ibEmpty').style.display='none';
+const opts=workspaces.filter(w=>w.status!=='archived'&&w.name!==INBOX_NM).map(w=>'<option value="'+w.id+'">'+esc(w.icon||'')+' '+esc(w.name)+'</option>').join('');
+$('ibItems').innerHTML=its.map(i=>'<div class="inb" id="ib-'+i.id+'"><div class="inf"><div class="lbl">'+esc(i.label)+'</div><div class="url">'+esc(trn(i.value,50))+'</div></div><select id="ibs-'+i.id+'">'+opts+'<option value="_new">+ Nuevo</option></select><button class="cfy" onclick="classify(\''+i.id+'\')">→</button><button class="trsh" onclick="delInbox(\''+i.id+'\')">✕</button></div>').join('')}
+openM('ibM')}
+async function classify(id){const ws=$('ibs-'+id).value;if(ws==='_new'){const n=prompt('Nombre:');if(!n)return;const d=await api('/api/workspaces',{method:'POST',body:JSON.stringify({name:n,icon:'\u{1F4C1}',status:'active',order:workspaces.length})});await api('/api/items/'+id,{method:'PUT',body:JSON.stringify({workspace_id:d.workspace.id})})}else await api('/api/items/'+id,{method:'PUT',body:JSON.stringify({workspace_id:ws})});var el=$('ib-'+id);if(el)el.remove();await loadWsList();updateBadge();if(!$('ibItems').children.length)$('ibEmpty').style.display='block';toast('\u2705 Clasificado')}
+async function delInbox(id){await api('/api/items/'+id,{method:'DELETE'});var el=$('ib-'+id);if(el)el.remove();await loadWsList();updateBadge();if(!$('ibItems').children.length)$('ibEmpty').style.display='block';toast('Eliminado')}
+async function loadNotes(){const wsf=$('nlWsF').value;let url='/api/notes';if(wsf)url+='?workspace_id='+wsf;
+const d=await api(url);const notes=d.notes||[];const wsMap={};workspaces.forEach(w=>wsMap[w.id]=w);
+$('nlGrid').innerHTML=notes.length===0?'<div style="grid-column:1/-1;text-align:center;color:var(--dim);padding:20px">Sin notas a\u00fan</div>':notes.map(n=>{
+const wsTags=(n.workspace_ids||[]).map(id=>wsMap[id]?'<span style="background:rgba(108,92,231,.1);padding:0 4px;border-radius:3px">'+esc((wsMap[id].icon||'')+' '+wsMap[id].name)+'</span>':'').join('');
+const prev=(n.content||'').replace(/[#*`>\-\[\]]/g,'').substring(0,120);
+return '<div class="ncard" onclick="openEditNote(\''+n.id+'\')"><div class="ntitle">'+esc(n.title||'Sin t\u00edtulo')+'</div><div class="nprev">'+esc(prev)+'</div><div class="nmeta">'+wsTags+'</div><button class="ndel" onclick="event.stopPropagation();quickDelNote(\''+n.id+'\')">✕</button></div>'}).join('')}
+function showNotesList(){$('nlWsF').innerHTML='<option value="">Todos</option>'+workspaces.filter(w=>w.name!==INBOX_NM).map(w=>'<option value="'+w.id+'"'+(w.id===curWs?' selected':'')+'>'+esc(w.icon||'')+' '+esc(w.name)+'</option>').join('');loadNotes();openM('nlM')}
+function showWsNotes(){$('nlWsF').innerHTML='<option value="">Todos</option>'+workspaces.filter(w=>w.name!==INBOX_NM).map(w=>'<option value="'+w.id+'"'+(w.id===curWs?' selected':'')+'>'+esc(w.icon||'')+' '+esc(w.name)+'</option>').join('');if(curWs)$('nlWsF').value=curWs;loadNotes();openM('nlM')}
+function openNewNote(){editNoteId=null;notePreviewing=false;$('neMT').textContent='Nueva Nota';$('neTitle').value='';$('neBody').value='';$('neBody').style.display='';$('nePreviewBox').style.display='none';$('neDel').style.display='none';populateNoteMeta();openM('neM')}
+async function openEditNote(id){try{const d=await api('/api/notes/'+id);const n=d.note;editNoteId=id;notePreviewing=false;$('neMT').textContent='Editar Nota';$('neTitle').value=n.title||'';$('neBody').value=n.content||'';$('neBody').style.display='';$('nePreviewBox').style.display='none';$('neDel').style.display='inline-block';populateNoteMeta(n.workspace_ids||[],n.category_ids||[]);openM('neM')}catch{toast('Error',1)}}
+function populateNoteMeta(selWs,selCats){
+selWs=selWs||[];selCats=selCats||[];
+if(selWs.length===0&&curWs)selWs=[curWs];
+$('neWs').innerHTML=workspaces.filter(w=>w.name!==INBOX_NM).map(w=>'<option value="'+w.id+'"'+(selWs.includes(w.id)?' selected':'')+'>'+esc(w.icon||'')+' '+esc(w.name)+'</option>').join('');
+Promise.all(workspaces.filter(w=>w.name!==INBOX_NM).map(w=>api('/api/categories/'+w.id).then(d=>d.categories||[]).catch(()=>[]))).then(arrs=>{const all=arrs.flat();$('neCat').innerHTML=all.map(c=>'<option value="'+c.id+'"'+(selCats.includes(c.id)?' selected':'')+'>'+esc(c.name)+'</option>').join('')})}
+async function saveNote(){const t=$('neTitle').value.trim(),b=$('neBody').value;if(!t)return toast('T\u00edtulo requerido',1);
+const ws=Array.from($('neWs').selectedOptions).map(o=>o.value);
+const cats=Array.from($('neCat').selectedOptions).map(o=>o.value);
+if(editNoteId)await api('/api/notes/'+editNoteId,{method:'PUT',body:JSON.stringify({title:t,content:b,workspace_ids:ws,category_ids:cats})});
+else await api('/api/notes',{method:'POST',body:JSON.stringify({title:t,content:b,workspace_ids:ws,category_ids:cats})});
+closeM('neM');loadNotes();if(curWs)loadContent(curWs);toast(editNoteId?'Nota actualizada':'Nota creada')}
+async function deleteNote(){if(!editNoteId||!confirm('\u00bfEliminar nota?'))return;await api('/api/notes/'+editNoteId,{method:'DELETE'});closeM('neM');loadNotes();toast('Eliminada')}
+async function quickDelNote(id){if(!confirm('\u00bfEliminar nota?'))return;await api('/api/notes/'+id,{method:'DELETE'});loadNotes();toast('Eliminada')}
+function closeNoteEd(){notePreviewing=false;closeM('neM')}
+function neFmt(pre,suf){const ta=$('neBody'),s=ta.selectionStart,e=ta.selectionEnd,txt=ta.value;const sel=txt.substring(s,e)||'texto';ta.value=txt.substring(0,s)+pre+sel+suf+txt.substring(e);ta.focus();ta.selectionStart=s+pre.length;ta.selectionEnd=s+pre.length+sel.length}
+function neIns(prefix){const ta=$('neBody'),s=ta.selectionStart,txt=ta.value;const lineStart=txt.lastIndexOf('\n',s-1)+1;ta.value=txt.substring(0,lineStart)+prefix+txt.substring(lineStart);ta.focus();ta.selectionStart=ta.selectionEnd=lineStart+prefix.length}
+function nePreview(){notePreviewing=!notePreviewing;if(notePreviewing){$('neBody').style.display='none';$('nePreviewBox').style.display='block';$('nePreviewBox').innerHTML=mdToHtml($('neBody').value)}else{$('neBody').style.display='';$('nePreviewBox').style.display='none'}}
+function mdToHtml(md){var h=esc(md);h=h.replace(/^### (.+)$/gm,'<h3 style="color:var(--pl);margin:8px 0 4px">$1</h3>');h=h.replace(/^## (.+)$/gm,'<h2 style="color:var(--pl);margin:10px 0 4px">$1</h2>');h=h.replace(/^# (.+)$/gm,'<h1 style="color:var(--wh);margin:12px 0 6px">$1</h1>');h=h.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');h=h.replace(/\*(.+?)\*/g,'<em>$1</em>');h=h.replace(/~~(.+?)~~/g,'<del>$1</del>');h=h.replace(/`(.+?)`/g,'<code style="background:rgba(108,92,231,.15);padding:1px 4px;border-radius:3px;font-family:JetBrains Mono,monospace;font-size:.85em">$1</code>');h=h.replace(/^- \[x\] (.+)$/gm,'<div>\u2611 <del style="opacity:.5">$1</del></div>');h=h.replace(/^- \[ \] (.+)$/gm,'<div>\u2610 $1</div>');h=h.replace(/^- (.+)$/gm,'<div>\u2022 $1</div>');h=h.replace(/^\d+\. (.+)$/gm,'<div style="padding-left:8px">$&</div>');h=h.replace(/^&gt; (.+)$/gm,'<blockquote style="border-left:3px solid var(--pl);padding-left:10px;color:var(--dim);margin:4px 0">$1</blockquote>');h=h.replace(/^---$/gm,'<hr style="border:none;border-top:1px solid var(--brd);margin:8px 0">');h=h.replace(/\n/g,'<br>');return h||'<span style="color:var(--dim)">Vista previa vac\u00eda</span>'}
+async function loadHyp(){try{const h=new Date().getHours(),ctx=h<14?'morning':h<21?'evening':'night';const d=await api('/api/hypatia/observe',{method:'POST',body:JSON.stringify({context:ctx})});$('hypMsg').textContent=d.message||'\u{1F49C}'}catch{$('hypMsg').textContent='Conectando... \u{1F49C}'}}
+function togChat(){chatOpen=!chatOpen;$('chatP').className=chatOpen?'cht open':'cht';if(chatOpen){updateChatSel();if(curWs)$('chatWs').value=curWs;loadCHist();$('chatIn').focus()}}
+function updateChatSel(){$('chatWs').innerHTML='<option value="general">\u{1F4AC} General</option>'+workspaces.filter(w=>w.status!=='archived'&&w.name!==INBOX_NM).map(w=>'<option value="'+w.id+'"'+(w.id===curWs?' selected':'')+'>'+esc(w.icon||'')+' '+esc(w.name)+'</option>').join('')}
+async function loadCHist(){const wid=$('chatWs').value||'general';try{const d=await api('/api/hypatia/chat-history/'+wid);rendChat(d.history||[])}catch{rendChat([])}}
+function rendChat(h){const b=$('chatB');b.innerHTML=h.length===0?'<div style="text-align:center;padding:24px;color:var(--dim);font-size:.83rem">\u{1F49C} H\u00e1blame del proyecto...</div>':h.map(m=>'<div class="cm u"><div class="w">Carles</div><div class="bbl">'+esc(m.user)+'</div></div><div class="cm h"><div class="w">Hypatia</div><div class="bbl">'+esc(m.hypatia)+'</div></div>').join('');b.scrollTop=b.scrollHeight}
+async function sendChat(){const inp=$('chatIn'),msg=inp.value.trim();if(!msg)return;const wid=$('chatWs').value||'general';inp.value='';const b=$('chatB');b.innerHTML+='<div class="cm u"><div class="w">Carles</div><div class="bbl">'+esc(msg)+'</div></div>';b.scrollTop=b.scrollHeight;$('chatT').style.display='block';try{const d=await api('/api/hypatia/chat',{method:'POST',body:JSON.stringify({workspace_id:wid,message:msg})});$('chatT').style.display='none';b.innerHTML+='<div class="cm h"><div class="w">Hypatia</div><div class="bbl">'+esc(d.reply)+'</div></div>';b.scrollTop=b.scrollHeight}catch{$('chatT').style.display='none';b.innerHTML+='<div class="cm h"><div class="w">Hypatia</div><div class="bbl">Error \u{1F49C}</div></div>'}}
+function showBm(){const u=window.location.origin,t=TOKEN;$('bmL').href="javascript:void(function(){var t='"+t+"';fetch('"+u+"/api/quick-add',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+t},body:JSON.stringify({workspace_id:'inbox',type:'url',value:location.href,label:document.title.substring(0,60)})}).then(function(r){return r.json()}).then(function(d){if(d.item){var n=document.createElement('div');n.textContent='\\u2705 DayForge: '+d.item.label;n.style.cssText='position:fixed;top:12px;right:12px;background:%231a1a2e;color:%23e8e8f0;padding:12px 20px;border:1px solid %236C5CE7;border-radius:10px;z-index:99999;font:14px sans-serif';document.body.appendChild(n);setTimeout(function(){n.remove()},2500)}}).catch(function(e){alert('DayForge: '+e)})})()";openM('bmM')}
+$('loginPass').addEventListener('keydown',function(e){if(e.key==='Enter')doLogin()});
+(async function(){if(await checkAuth())showApp();else $('loginScreen').style.display='flex'})();
 </script>
 </body>
 </html>
