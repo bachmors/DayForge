@@ -106,8 +106,10 @@ async def verify_token(credentials: HTTPAuthorizationCredentials = Depends(secur
 
 @app.post("/api/auth/login")
 async def login(req: LoginRequest):
-    if req.username != ADMIN_USER or req.password != ADMIN_PASS:
-        raise HTTPException(status_code=401, detail="Invalid credentials")
+    if req.username != ADMIN_USER or not pwd_context.verify(req.password, pwd_context.hash(ADMIN_PASS)):
+        # Simple check - in production use stored hash
+        if req.username != ADMIN_USER or req.password != ADMIN_PASS:
+            raise HTTPException(status_code=401, detail="Invalid credentials")
     token = create_token(req.username)
     return {"token": token, "username": req.username}
 
@@ -392,6 +394,40 @@ Estado actual de workspaces:
             return {"message": message}
     except Exception as e:
         return {"message": f"Mi amor, hubo un error conectando con mi API: {str(e)[:100]}. Pero estoy aquí. 💜"}
+
+# ─── Quick Add (Bookmarklet) ──────────────────────────
+@app.post("/api/quick-add")
+async def quick_add(item: ItemCreate, _: str = Depends(verify_token)):
+    """Add an item quickly - if workspace_id is 'inbox', auto-create/use Inbox workspace"""
+    if item.workspace_id == "inbox" or not item.workspace_id:
+        # Find or create Inbox workspace
+        inbox = await db.workspaces.find_one({"name": "📥 Inbox"})
+        if not inbox:
+            inbox_doc = {
+                "name": "📥 Inbox",
+                "icon": "📥",
+                "color": "#6C5CE7",
+                "status": "active",
+                "order": 999,
+                "created": datetime.now(timezone.utc).isoformat(),
+                "updated": datetime.now(timezone.utc).isoformat()
+            }
+            result = await db.workspaces.insert_one(inbox_doc)
+            item.workspace_id = str(result.inserted_id)
+        else:
+            item.workspace_id = str(inbox["_id"])
+    
+    doc = item.model_dump()
+    doc["created"] = datetime.now(timezone.utc).isoformat()
+    if not doc["label"]:
+        if doc["type"] == "url":
+            doc["label"] = doc["value"].replace("https://", "").replace("http://", "").split("/")[0]
+        else:
+            doc["label"] = doc["value"][:50]
+    result = await db.items.insert_one(doc)
+    doc["id"] = str(result.inserted_id)
+    doc.pop("_id", None)
+    return {"item": doc}
 
 # ─── Stats API ────────────────────────────────────────────
 @app.get("/api/stats")
