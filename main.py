@@ -102,19 +102,21 @@ class CatUpdate(BaseModel):
 class ItemCreate(BaseModel):
     workspace_id: str; type: str; value: str; label: str = ""; browser: str = "chrome"
     status: str = "pending"; permanent: bool = False; category: str = ""; notes: str = ""; order: int = 0
+    fechaForge: Optional[str] = None
 class ItemUpdate(BaseModel):
     type: Optional[str] = None; value: Optional[str] = None; label: Optional[str] = None
     browser: Optional[str] = None; status: Optional[str] = None; permanent: Optional[bool] = None
     category: Optional[str] = None; notes: Optional[str] = None; order: Optional[int] = None; workspace_id: Optional[str] = None
+    fechaForge: Optional[str] = None
 class AppCreate(BaseModel):
     name: str; path: str; icon: str = "📱"; order: int = 0
 class AppUpdate(BaseModel):
     name: Optional[str] = None; path: Optional[str] = None; icon: Optional[str] = None; order: Optional[int] = None
 class NoteCreate(BaseModel):
-    title: str; content: str = ""; workspace_ids: List[str] = []; category_ids: List[str] = []
+    title: str; content: str = ""; workspace_ids: List[str] = []; category_ids: List[str] = []; fechaForge: Optional[str] = None
 class NoteUpdate(BaseModel):
     title: Optional[str] = None; content: Optional[str] = None
-    workspace_ids: Optional[List[str]] = None; category_ids: Optional[List[str]] = None
+    workspace_ids: Optional[List[str]] = None; category_ids: Optional[List[str]] = None; fechaForge: Optional[str] = None
 class ChatMsg(BaseModel):
     workspace_id: str; message: str
 class HypReq(BaseModel):
@@ -204,6 +206,9 @@ async def create_item(item: ItemCreate, _: str = Depends(auth)):
 @app.put("/api/items/{iid}")
 async def update_item(iid: str, u: ItemUpdate, _: str = Depends(auth)):
     d = {k: v for k, v in u.model_dump().items() if v is not None}
+    # Allow clearing fechaForge with empty string
+    if u.fechaForge is not None:
+        d["fechaForge"] = u.fechaForge if u.fechaForge else None
     old = await db.items.find_one({"_id": ObjectId(iid)})
     await db.items.update_one({"_id": ObjectId(iid)}, {"$set": d})
     if old and d.get("status") == "done" and old.get("status") == "pending":
@@ -265,6 +270,8 @@ async def get_note(nid: str, _: str = Depends(auth)):
 @app.put("/api/notes/{nid}")
 async def update_note(nid: str, u: NoteUpdate, _: str = Depends(auth)):
     d = {k: v for k, v in u.model_dump().items() if v is not None}; d["updated"] = datetime.now(timezone.utc).isoformat()
+    if u.fechaForge is not None:
+        d["fechaForge"] = u.fechaForge if u.fechaForge else None
     await db.notes.update_one({"_id": ObjectId(nid)}, {"$set": d})
     return {"note": ser(await db.notes.find_one({"_id": ObjectId(nid)}))}
 
