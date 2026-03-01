@@ -272,6 +272,71 @@ async def update_note(nid: str, u: NoteUpdate, _: str = Depends(auth)):
 async def delete_note(nid: str, _: str = Depends(auth)):
     await db.notes.delete_one({"_id": ObjectId(nid)}); return {"deleted": True}
 
+
+# ═══ JSON INJECTOR ═══
+class InjectPayload(BaseModel):
+    workspaces: List[dict] = []
+    notes: List[dict] = []
+    items: List[dict] = []
+
+@app.post("/api/inject")
+async def inject_json(payload: InjectPayload, _: str = Depends(auth)):
+    """Bulk inject workspaces, items, and notes from structured JSON"""
+    now = datetime.now(timezone.utc).isoformat()
+    created = {"workspaces": 0, "items": 0, "notes": 0}
+    ws_map = {}  # name -> id mapping for reference
+    
+    # Get existing workspaces for name matching
+    existing = await db.workspaces.find().to_list(200)
+    for w in existing:
+        ws_map[w["name"].lower()] = str(w["_id"])
+    
+    # Create new workspaces
+    for ws in payload.workspaces:
+        name = ws.get("name", "").strip()
+        if not name: continue
+        # Check if exists
+        if name.lower() in ws_map:
+            wid = ws_map[name.lower()]
+        else:
+            doc = {"name": name, "icon": ws.get("icon", "📁"), "color": ws.get("color", "#6C5CE7"), "status": ws.get("status", "active"), "order": 0, "created": now}
+            r = await db.workspaces.insert_one(doc)
+            wid = str(r.inserted_id)
+            ws_map[name.lower()] = wid
+            created["workspaces"] += 1
+        
+        # Create items within workspace
+        for item in ws.get("items", []):
+            idoc = {"workspace_id": wid, "type": item.get("type", "note"), "value": item.get("value", ""), "label": item.get("label", item.get("value", "")), "browser": "chrome", "status": item.get("status", "pending"), "permanent": item.get("permanent", False), "category": "", "notes": item.get("notes", ""), "order": item.get("order", 0), "created": now}
+            await db.items.insert_one(idoc)
+            created["items"] += 1
+        
+        # Create notes within workspace
+        for note in ws.get("notes", []):
+            ndoc = {"title": note.get("title", ""), "content": note.get("content", ""), "workspace_ids": [wid], "category_ids": [], "created": now, "updated": now}
+            await db.notes.insert_one(ndoc)
+            created["notes"] += 1
+    
+    # Create standalone items (need workspace reference)
+    for item in payload.items:
+        ws_name = item.get("workspace", "").strip().lower()
+        wid = ws_map.get(ws_name)
+        if not wid: continue
+        idoc = {"workspace_id": wid, "type": item.get("type", "note"), "value": item.get("value", ""), "label": item.get("label", item.get("value", "")), "browser": "chrome", "status": item.get("status", "pending"), "permanent": item.get("permanent", False), "category": "", "notes": item.get("notes", ""), "order": item.get("order", 0), "created": now}
+        await db.items.insert_one(idoc)
+        created["items"] += 1
+    
+    # Create standalone notes (can reference multiple workspaces by name)
+    for note in payload.notes:
+        ws_names = note.get("workspaces", [])
+        ws_ids = [ws_map[n.lower()] for n in ws_names if n.lower() in ws_map]
+        ndoc = {"title": note.get("title", ""), "content": note.get("content", ""), "workspace_ids": ws_ids, "category_ids": [], "created": now, "updated": now}
+        await db.notes.insert_one(ndoc)
+        created["notes"] += 1
+    
+    await log_activity("inject", f"{created['workspaces']}ws {created['items']}items {created['notes']}notes")
+    return {"success": True, "created": created, "workspace_map": {v: k for k, v in ws_map.items()}}
+
 # ═══ QUICK ADD ═══
 @app.post("/api/quick-add")
 async def quick_add(item: ItemCreate, _: str = Depends(auth)):
