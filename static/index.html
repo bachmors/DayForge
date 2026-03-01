@@ -226,26 +226,19 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <div class="toast" id="toast"></div>
 <script src="/static/app.js"></script>
 
-<div class="modal" id="injM"><div class="mc" style="max-width:700px">
-  <div class="mh"><h3>📥 Inyector JSON</h3><button onclick="closeM('injM')">✕</button></div>
-  <div class="mb">
-    <div style="font-size:.78rem;color:var(--dim);margin-bottom:8px">Pega aquí el JSON generado por Hypatia para importar workspaces, tareas y notas de golpe.</div>
-    <textarea id="injTA" placeholder='{"workspaces":[{"name":"...","icon":"🚀","items":[...],"notes":[...]}]}'></textarea>
-    <div id="injRes"></div>
-    <div class="inj-btns">
-      <button onclick="injectSample()" class="wb">📋 Ejemplo</button>
-      <button onclick="doInject()" style="background:var(--pl);color:#fff;font-weight:600">🚀 Inyectar</button>
-    </div>
-  </div>
+<div class="mbg" id="injM"><div class="modal" style="width:600px;max-width:95vw">
+  <h2>📥 Inyector JSON</h2>
+  <p style="font-size:.78rem;color:var(--dim);margin-bottom:8px">Pega aquí el JSON generado por Hypatia para importar workspaces, tareas y notas de golpe.</p>
+  <textarea id="injTA" placeholder='{"workspaces":[{"name":"...","icon":"🚀","items":[...],"notes":[...]}]}'></textarea>
+  <div id="injRes"></div>
+  <div class="macts" style="justify-content:space-between"><button class="bx" onclick="injectSample()">📋 Ejemplo</button><div><button class="bx" onclick="closeM('injM')">Cancelar</button><button class="bok" onclick="doInject()">🚀 Inyectar</button></div></div>
 </div></div>
 
-<div class="modal" id="vnM"><div class="mc" style="max-width:650px">
-  <div class="mh"><h3 id="vnTitle">Nota</h3><button onclick="closeM('vnM')">✕</button></div>
-  <div class="mb">
-    <div id="vnMeta"></div>
-    <div id="vnBody"></div>
-    <div style="margin-top:14px;text-align:right"><button id="vnEditBtn" style="background:var(--pl);color:#fff;padding:6px 16px;border-radius:6px;border:none;cursor:pointer;font-size:.82rem">✎ Editar</button></div>
-  </div>
+<div class="mbg" id="vnM"><div class="modal" style="width:600px;max-width:95vw">
+  <h2 id="vnTitle">Nota</h2>
+  <div id="vnMeta"></div>
+  <div id="vnBody"></div>
+  <div class="macts"><button class="bx" onclick="closeM('vnM')">Cerrar</button><button class="bok" id="vnEditBtn">✎ Editar</button></div>
 </div></div>
 </body>
 </html>
