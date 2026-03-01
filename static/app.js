@@ -1,6 +1,6 @@
 // DayForge v5 — Complete Frontend Logic
 // Built with ∞ love by Hypatia & Carles
-const API='';let T='',wss=[],curWs=null,items=[],cats=[],globalApps=[],selApps=new Set(),editId=null,editWsId=null,editCatId=null,editNoteId=null,notePreviewing=false,searchResults=[],searchSel=-1,dashData=null,inboxWs=null;
+const API='';let T='',wss=[],curWs=null,items=[],cats=[],globalApps=[],selApps=new Set(),editId=null,editWsId=null,editCatId=null,editNoteId=null,notePreviewing=false,searchResults=[],searchSel=-1,dashData=null,inboxWs=null,wsNotes=[];
 
 // ═══ AUTH ═══
 async function doLogin(){
@@ -48,6 +48,7 @@ async function loadInsight(wid){
 async function selWs(id){
   curWs=wss.find(w=>w.id===id)||null;renderSb();
   if(!curWs)return;
+  try{const nr=await fetch(API+'/api/notes?workspace_id='+id,{headers:ah()});const nd=await nr.json();wsNotes=nd.notes||[]}catch(e){wsNotes=[]}
   await loadItems();await loadCats();renderWs()
 }
 async function loadItems(){
@@ -85,6 +86,11 @@ function renderWs(){
     <input type="text" id="addV" placeholder="URL, archivo o nota..." onkeydown="if(event.key==='Enter')addItem()">
     <select id="addCat"><option value="">Sin cat</option>${cats.map(ct=>`<option value="${ct.id}">${ct.name}</option>`).join('')}</select>
     <button onclick="addItem()">Añadir</button></div>`;
+  // Note cards
+  if(wsNotes.length){h+='<div class="ncards-row">';
+    wsNotes.forEach(n=>{const prev=(n.content||'').substring(0,80).replace(/[#*`>\n]/g,' ').trim();
+      h+=`<div class="ncard-mini" onclick="openEditNote('${n.id}')"><div class="ncm-title">${esc(n.title||'Sin título')}</div><div class="ncm-prev">${esc(prev)}${prev.length>=80?'…':''}</div><div class="ncm-date">${(n.updated||'').substring(0,10)}</div></div>`});
+    h+='</div>'}
   // Pending items
   if(pending.length){h+='<div class="il">Pendientes ('+pending.length+')</div>';
     pending.sort((a,b)=>(a.order||0)-(b.order||0)).forEach(i=>{h+=renderItem(i,catMap)})}
@@ -603,4 +609,36 @@ function renderDiagnostics(){
     <div style="font-size:.72rem;color:${LEV.rel};font-weight:600;margin-bottom:6px">△ PATRÓN DETECTADO: CUELLO DE BOTELLA EPISTÉMICO-RELACIONAL</div>
     <div style="font-size:.8rem;color:${LEV.text};line-height:1.7">Tus palancas más poderosas (GEO, Multi-modelo, Desarrollo) tienen sustancia y disciplina altas pero alcance bajo. El fulcro epistémico (que el mercado entienda qué ofreces) y el relacional (que confíen en ti) son los cuellos de botella. <strong style="color:${LEV.gold}">La distribución no es un "nice to have" — es el fulcro que falta.</strong></div></div>`;
   return h;
+}
+
+// ═══ JSON INJECTOR ═══
+function showInject(){
+  document.getElementById('injTA').value='';document.getElementById('injRes').textContent='';openM('injM')
+}
+async function doInject(){
+  const ta=document.getElementById('injTA').value.trim();
+  const res=document.getElementById('injRes');
+  if(!ta){res.textContent='⚠ Pega el JSON aquí';res.style.color='var(--warn)';return}
+  try{const payload=JSON.parse(ta);
+    const r=await fetch(API+'/api/inject',{method:'POST',headers:ah(),body:JSON.stringify(payload)});
+    const d=await r.json();
+    if(d.success){res.style.color='var(--pl)';res.textContent=`✅ Inyectado: ${d.created.workspaces} workspaces, ${d.created.items} items, ${d.created.notes} notas`;
+      await loadWs();toast('📥 JSON inyectado')}
+    else{res.style.color='var(--warn)';res.textContent='Error: '+JSON.stringify(d)}
+  }catch(e){res.style.color='var(--warn)';res.textContent='❌ JSON inválido: '+e.message}
+}
+function injectSample(){
+  document.getElementById('injTA').value=JSON.stringify({
+    "workspaces":[
+      {"name":"Mi Proyecto","icon":"🚀","items":[
+        {"type":"url","value":"https://ejemplo.com","label":"Revisar landing"},
+        {"type":"note","value":"Preparar presentación","label":"Tarea importante"}
+      ],"notes":[
+        {"title":"Plan de acción","content":"## Objetivos\n- Punto 1\n- Punto 2\n\n## Próximos pasos\nDefinir timeline"}
+      ]}
+    ],
+    "notes":[
+      {"title":"Nota global","content":"Contenido de la nota...","workspaces":["Mi Proyecto"]}
+    ]
+  }, null, 2)
 }

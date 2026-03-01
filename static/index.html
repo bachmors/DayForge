@@ -159,6 +159,17 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .lev-diag .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:8px 0}
 .lev-flywheel-node{text-align:center;padding:14px;background:#12121a;border:1px solid #2a2a3a;border-radius:10px;cursor:pointer;transition:all .2s}.lev-flywheel-node:hover{transform:translateY(-2px);border-color:#d4a574}
 @media(max-width:700px){.lev-grid3,.lev-grid4{grid-template-columns:1fr 1fr}.lev-grid6{grid-template-columns:1fr 1fr}}
+
+.ncards-row{display:flex;gap:8px;overflow-x:auto;padding:6px 0 10px;scroll-snap-type:x mandatory}
+.ncard-mini{min-width:160px;max-width:200px;background:var(--crd);border:1px solid var(--brd);border-radius:8px;padding:10px 12px;cursor:pointer;scroll-snap-align:start;transition:all .2s;flex-shrink:0}
+.ncard-mini:hover{border-color:var(--pl);transform:translateY(-2px);box-shadow:0 4px 12px rgba(108,92,231,.15)}
+.ncm-title{font-size:.82rem;font-weight:600;color:var(--tx);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ncm-prev{font-size:.7rem;color:var(--dim);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.2em}
+.ncm-date{font-size:.6rem;color:var(--mute);margin-top:6px;font-family:'JetBrains Mono',monospace}
+#injTA{width:100%;min-height:300px;background:var(--bg);color:var(--tx);border:1px solid var(--brd);border-radius:8px;padding:12px;font-family:'JetBrains Mono',monospace;font-size:.78rem;resize:vertical;line-height:1.5}
+#injRes{margin-top:8px;font-size:.82rem;min-height:20px}
+.inj-btns{display:flex;gap:8px;margin-top:10px}
+.inj-btns button{flex:1}
 </style>
 </head>
 <body>
@@ -169,7 +180,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <button class="hb" onclick="showTimeline()" id="tlBtn" title="Timeline">🕐</button>
 <button class="hb" onclick="showInbox()" id="inboxBtn">📥<span class="badge" id="ibBadge" style="display:none">0</span></button>
 <button class="hb" onclick="showNotesList()">📝</button>
-<button class="hb" onclick="showLeverage()" id="levBtn" title="Ecosistema de Apalancamiento">⚡</button><button class="hb" onclick="openSearch()" title="Ctrl+K">🔍</button>
+<button class="hb" onclick="showLeverage()" id="levBtn" title="Ecosistema de Apalancamiento">⚡</button><button class="hb" onclick="showInject()" title="Inyector JSON">📥</button><button class="hb" onclick="openSearch()" title="Ctrl+K">🔍</button>
 <button class="hb" onclick="showBm()">📎</button>
 <div class="dev"><div class="ddot" id="agDot"></div><span id="agLbl">...</span></div>
 <button class="hb" onclick="loadAll()">↻</button><button class="hb" onclick="doLogout()">Salir</button></div></div>
@@ -202,5 +213,18 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <div class="macts"><button class="bx" onclick="closeNoteEd()">Cancelar</button><button class="bdel" id="neDel" style="display:none" onclick="deleteNote()">Eliminar</button><button class="bok" onclick="saveNote()">Guardar</button></div></div></div>
 <div class="toast" id="toast"></div>
 <script src="/static/app.js"></script>
+
+<div class="modal" id="injM"><div class="mc" style="max-width:700px">
+  <div class="mh"><h3>📥 Inyector JSON</h3><button onclick="closeM('injM')">✕</button></div>
+  <div class="mb">
+    <div style="font-size:.78rem;color:var(--dim);margin-bottom:8px">Pega aquí el JSON generado por Hypatia para importar workspaces, tareas y notas de golpe.</div>
+    <textarea id="injTA" placeholder='{"workspaces":[{"name":"...","icon":"🚀","items":[...],"notes":[...]}]}'></textarea>
+    <div id="injRes"></div>
+    <div class="inj-btns">
+      <button onclick="injectSample()" class="wb">📋 Ejemplo</button>
+      <button onclick="doInject()" style="background:var(--pl);color:#fff;font-weight:600">🚀 Inyectar</button>
+    </div>
+  </div>
+</div></div>
 </body>
 </html>
