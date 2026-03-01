@@ -398,10 +398,10 @@ async function saveNote(){const title=document.getElementById('neTitle').value.t
   if(ff)body.fechaForge=ff;else if(editNoteId)body.fechaForge='';
   if(editNoteId){await fetch(API+'/api/notes/'+editNoteId,{method:'PUT',headers:ah(),body:JSON.stringify(body)})}
   else{await fetch(API+'/api/notes',{method:'POST',headers:ah(),body:JSON.stringify(body)})}
-  closeM('neM');loadNotes();toast('Nota guardada 📝')}
+  closeM('neM');loadNotes();if(curWs)selWs(curWs.id);toast('Nota guardada 📝')}
 let deleteNoteId=null;
 async function deleteNote(){const id=editNoteId||deleteNoteId;if(!id||!confirm('¿Eliminar nota?'))return;
-  await fetch(API+'/api/notes/'+id,{method:'DELETE',headers:ah()});closeM('neM');loadNotes();deleteNoteId=null}
+  await fetch(API+'/api/notes/'+id,{method:'DELETE',headers:ah()});closeM('neM');loadNotes();if(curWs)selWs(curWs.id);deleteNoteId=null}
 function closeNoteEd(){closeM('neM')}
 // Markdown toolbar
 function neFmt(pre,suf){const t=document.getElementById('neBody');const s=t.selectionStart,e=t.selectionEnd,txt=t.value;
