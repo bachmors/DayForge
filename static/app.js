@@ -89,7 +89,7 @@ function renderWs(){
   // Note cards
   if(wsNotes.length){h+='<div class="ncards-row">';
     wsNotes.forEach(n=>{const prev=(n.content||'').substring(0,80).replace(/[#*`>\n]/g,' ').trim();
-      h+=`<div class="ncard-mini" onclick="openEditNote('${n.id}')"><div class="ncm-title">${esc(n.title||'Sin título')}</div><div class="ncm-prev">${esc(prev)}${prev.length>=80?'…':''}</div><div class="ncm-date">${(n.updated||'').substring(0,10)}</div></div>`});
+      h+=`<div class="ncard-mini"><div class="ncm-title">${esc(n.title||'Sin título')}</div><div class="ncm-prev">${esc(prev)}${prev.length>=80?'…':''}</div><div class="ncm-foot"><span class="ncm-date">${(n.updated||'').substring(0,10)}</span><div class="ncm-acts"><button class="ncm-btn" onclick="viewNote('${n.id}')" title="Ver">◉</button><button class="ncm-btn" onclick="openEditNote('${n.id}')" title="Editar">✎</button></div></div></div>`});
     h+='</div>'}
   // Pending items
   if(pending.length){h+='<div class="il">Pendientes ('+pending.length+')</div>';
@@ -641,4 +641,16 @@ function injectSample(){
       {"title":"Nota global","content":"Contenido de la nota...","workspaces":["Mi Proyecto"]}
     ]
   }, null, 2)
+}
+
+// ═══ NOTE QUICK VIEW ═══
+async function viewNote(id){
+  try{const r=await fetch(API+'/api/notes/'+id,{headers:ah()});const d=await r.json();const n=d.note;if(!n)return;
+    const wsNames=(n.workspace_ids||[]).map(id=>{const w=wss.find(x=>x.id===id);return w?w.icon+' '+w.name:''}).filter(Boolean).join(', ');
+    const html=mdToHtml(n.content||'');
+    document.getElementById('vnTitle').textContent=n.title||'Sin título';
+    document.getElementById('vnMeta').innerHTML=(wsNames?'<span>'+wsNames+'</span> · ':'')+`<span>${(n.updated||'').substring(0,10)}</span>`;
+    document.getElementById('vnBody').innerHTML=html||'<span style="color:var(--dim);font-style:italic">Sin contenido</span>';
+    document.getElementById('vnEditBtn').onclick=()=>{closeM('vnM');openEditNote(id)};
+    openM('vnM')}catch(e){toast('Error al cargar nota','err')}
 }
