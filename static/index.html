@@ -192,7 +192,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <button class="hb" onclick="showTimeline()" id="tlBtn" title="Timeline">🕐</button>
 <button class="hb" onclick="showInbox()" id="inboxBtn">📥<span class="badge" id="ibBadge" style="display:none">0</span></button>
 <button class="hb" onclick="showNotesList()">📝</button>
-<button class="hb" onclick="showLeverage()" id="levBtn" title="Ecosistema de Apalancamiento">⚡</button><button class="hb" onclick="showInject()" title="Inyector JSON">📥</button><button class="hb" onclick="openSearch()" title="Ctrl+K">🔍</button>
+<button class="hb" onclick="showLeverage()" id="levBtn" title="Ecosistema de Apalancamiento">⚡</button><button class="hb" onclick="openSearch()" title="Ctrl+K">🔍</button>
 <button class="hb" onclick="showBm()">📎</button>
 <div class="dev"><div class="ddot" id="agDot"></div><span id="agLbl">...</span></div>
 <button class="hb" onclick="loadAll()">↻</button><button class="hb" onclick="doLogout()">Salir</button></div></div>
@@ -202,7 +202,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <div class="sbs" id="pinSec" style="display:none"><div class="sbt">📌 Permanentes</div><div id="sbP"></div><div class="sadd" onclick="addPerm()">+ Enlace fijo</div></div>
 <div class="sbs" style="border-top:1px solid var(--brd);padding-top:10px;margin-top:auto"><div class="sbt">🚀 Apps (global)</div><div id="sbA"></div>
 <div class="srow" style="flex-wrap:wrap"><input type="text" id="newAppN" placeholder="Nombre" style="width:35%"><input type="text" id="newAppP" placeholder="URL o ruta" onkeydown="if(event.key==='Enter')addGApp()"><button onclick="addGApp()">+</button></div>
-<button class="slaunch" id="launchBtn" onclick="launchSelApps()" disabled>🚀 Lanzar</button></div></div>
+<button class="slaunch" id="launchBtn" onclick="launchSelApps()" disabled>🚀 Lanzar</button></div><div style="padding:6px 12px;border-top:1px solid var(--brd)"><button onclick="showInject()" style="background:none;border:none;color:var(--dim);font-size:.68rem;cursor:pointer;font-family:JetBrains Mono,monospace;letter-spacing:.5px;opacity:.5;transition:opacity .2s" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=.5">📥 Inyectar JSON</button></div></div>
 <div class="cnt" id="content">
 <div class="hyp"><div class="av">💜</div><div class="bd"><div class="lb">Hypatia</div><div class="mg" id="hypMsg">Cargando...</div></div><button class="rf" onclick="loadHyp()">↻</button></div>
 <div id="wsC"><div class="emp"><div class="ic">🔨</div><p>Selecciona un workspace o pulsa 📊 para el dashboard.</p></div></div></div></div>
