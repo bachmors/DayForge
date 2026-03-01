@@ -187,16 +187,25 @@ async function loadGApps(){
 function renderApps(){
   const el=document.getElementById('sbA');
   el.innerHTML=globalApps.map(a=>`<div class="sa"><div class="ack${selApps.has(a.id)?' on':''}" onclick="togApp('${a.id}')">✓</div>
-    <span class="nm">${a.icon||'📱'} ${a.name}</span><button class="dl" onclick="delApp('${a.id}')">✕</button></div>`).join('');
+    <span class="nm" onclick="launchApp('${a.id}')" style="cursor:pointer" title="${a.path}">${a.icon||'📱'} ${a.name}</span>
+    <button class="dl" onclick="editApp('${a.id}')" title="Editar">✎</button><button class="dl" onclick="delApp('${a.id}')">✕</button></div>`).join('');
   document.getElementById('launchBtn').disabled=selApps.size===0
 }
 function togApp(id){selApps.has(id)?selApps.delete(id):selApps.add(id);renderApps()}
 async function addGApp(){const p=document.getElementById('newAppP').value.trim();if(!p)return;
-  const nm=p.split(/[/\\]/).pop().replace(/\.exe$/i,'');
-  await fetch(API+'/api/apps',{method:'POST',headers:ah(),body:JSON.stringify({name:nm,path:p,icon:'📱'})});
-  document.getElementById('newAppP').value='';await loadGApps()}
+  let nm=document.getElementById('newAppN').value.trim();
+  if(!nm){try{nm=new URL(p).hostname.replace('www.','')}catch(e){nm=p.split(/[/\\]/).pop().replace(/\.exe$/i,'')}}
+  const icon=p.startsWith('http')?'🌐':'📱';
+  await fetch(API+'/api/apps',{method:'POST',headers:ah(),body:JSON.stringify({name:nm,path:p,icon})});
+  document.getElementById('newAppP').value='';document.getElementById('newAppN').value='';await loadGApps()}
 async function delApp(id){await fetch(API+'/api/apps/'+id,{method:'DELETE',headers:ah()});selApps.delete(id);await loadGApps()}
-function launchSelApps(){const apps=globalApps.filter(a=>selApps.has(a.id));apps.forEach(a=>{try{window.open(a.path)}catch(e){}});toast(`🚀 ${apps.length} apps`)}
+function launchApp(id){const a=globalApps.find(x=>x.id===id);if(a)window.open(a.path,'_blank')}
+function editApp(id){const a=globalApps.find(x=>x.id===id);if(!a)return;
+  const nm=prompt('Nombre:',a.name);if(nm===null)return;
+  const ic=prompt('Icono (emoji):',a.icon||'📱');
+  const pt=prompt('URL o ruta:',a.path);if(!pt)return;
+  fetch(API+'/api/apps/'+id,{method:'PUT',headers:ah(),body:JSON.stringify({name:nm||a.name,icon:ic||a.icon,path:pt})}).then(()=>loadGApps())}
+function launchSelApps(){const apps=globalApps.filter(a=>selApps.has(a.id));let c=0;apps.forEach((a,i)=>{setTimeout(()=>window.open(a.path,'_blank'),i*300);c++});toast(`🚀 ${c} apps lanzadas`)}
 
 // ═══ PERMANENTS ═══
 function addPerm(){if(!curWs)return;const v=prompt('URL o ruta permanente:');if(!v)return;
