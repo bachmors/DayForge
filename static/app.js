@@ -82,18 +82,28 @@ function renderWs(){
     h+=`<span class="cp" onclick="filterCat('${ct.id}')" ondblclick="openEditCat('${ct.id}')">${ct.name} <span class="n">${n}</span></span>`});
   h+=`<span class="cp" onclick="openNewCat()">+</span></div>`;
   // Add item row
-  h+=`<div class="ar"><select id="addT"><option value="url">🌐</option><option value="file">📄</option><option value="note">📝</option></select>
+  h+=`<div class="ar"><select id="addT"><option value="url">🌐</option><option value="file">📄</option><option value="note">📱</option></select>
     <input type="text" id="addV" placeholder="URL, archivo o nota..." onkeydown="if(event.key==='Enter')addItem()">
     <select id="addCat"><option value="">Sin cat</option>${cats.map(ct=>`<option value="${ct.id}">${ct.name}</option>`).join('')}</select>
+    <input type="date" id="addFF" title="🔥 Fecha forge" style="width:120px;font-size:.75rem">
     <button onclick="addItem()">Añadir</button></div>`;
   // Note cards
   if(wsNotes.length){h+='<div class="ncards-row">';
     wsNotes.forEach(n=>{const prev=(n.content||'').substring(0,80).replace(/[#*`>\n]/g,' ').trim();
-      h+=`<div class="ncard-mini"><div class="ncm-title">${esc(n.title||'Sin título')}</div><div class="ncm-prev">${esc(prev)}${prev.length>=80?'…':''}</div><div class="ncm-foot"><span class="ncm-date">${(n.updated||'').substring(0,10)}</span><div class="ncm-acts"><button class="ncm-btn" onclick="viewNote('${n.id}')" title="Ver">◉</button><button class="ncm-btn" onclick="openEditNote('${n.id}')" title="Editar">✎</button></div></div></div>`});
+      let ffHtml='';
+      if(n.fechaForge){const ff=n.fechaForge.substring(0,10);const ffd=new Date(ff+'T00:00:00');const now=new Date();now.setHours(0,0,0,0);
+        const past=ffd<now;const ms=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+        ffHtml=`<span style="font-size:.65rem;font-weight:600;color:${past?'#EF4444':'#F97316'}">🔥 ${ffd.getDate()} ${ms[ffd.getMonth()]}</span>`}
+      h+=`<div class="ncard-mini"><div class="ncm-title">${esc(n.title||'Sin título')}</div><div class="ncm-prev">${esc(prev)}${prev.length>=80?'…':''}</div><div class="ncm-foot">${ffHtml}<span class="ncm-date">${(n.updated||'').substring(0,10)}</span><div class="ncm-acts"><button class="ncm-btn" onclick="viewNote('${n.id}')" title="Ver">◉</button><button class="ncm-btn" onclick="openEditNote('${n.id}')" title="Editar">✎</button></div></div></div>`});
     h+='</div>'}
   // Pending items
   if(pending.length){h+='<div class="il">Pendientes ('+pending.length+')</div>';
-    pending.sort((a,b)=>(a.order||0)-(b.order||0)).forEach(i=>{h+=renderItem(i,catMap)})}
+    pending.sort((a,b)=>{
+      const af=a.fechaForge,bf=b.fechaForge;
+      if(af&&bf)return af.localeCompare(bf);
+      if(af&&!bf)return -1;if(!af&&bf)return 1;
+      return (a.order||0)-(b.order||0);
+    }).forEach(i=>{h+=renderItem(i,catMap)})}
   // Done items
   if(done.length){h+=`<div class="il" style="display:flex;align-items:center;justify-content:space-between">Completados (${done.length})<button class="ab" onclick="clearDone()">Limpiar</button></div>`;
     done.forEach(i=>{h+=renderItem(i,catMap,true)})}
@@ -108,23 +118,32 @@ function renderWs(){
 }
 function renderItem(i,catMap,isDone){
   const dn=isDone?'dn':'';const ck=isDone?'on':'';
-  const tp={'url':'🌐','file':'📄','note':'📝'}[i.type]||'📄';
+  const tp={'url':'🌐','file':'📄','note':'📱'}[i.type]||'📄';
   const catTag=catMap[i.category]?`<span class="cat-tag">${catMap[i.category]}</span>`:'';
   const noteTag=i.notes?`<span class="nt" title="${i.notes}">📝 ${i.notes.substring(0,20)}</span>`:'';
   const pin=i.permanent?'📌 ':'';
   const launch=i.type==='url'&&!isDone?`<button class="lnch" onclick="event.stopPropagation();window.open('${i.value}','_blank')" title="Abrir">▶</button>`:'';
+  let ffTag='';
+  if(i.fechaForge){
+    const ff=i.fechaForge.substring(0,10);const ffd=new Date(ff+'T00:00:00');const now=new Date();now.setHours(0,0,0,0);
+    const past=ffd<now&&!isDone;const months=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+    const label=ffd.getDate()+' '+months[ffd.getMonth()];
+    ffTag=`<span style="font-size:.7rem;font-weight:600;color:${past?'#EF4444':'#F97316'};margin-left:4px;white-space:nowrap" title="Fecha forge: ${ff}">🔥 ${label}</span>`;
+  }
   return `<div class="it ${dn}"><div class="ik ${ck}" onclick="togItem('${i.id}','${isDone?'pending':'done'}')">✓</div>
-    <span class="tp">${tp}</span><span class="lb" onclick="editItem('${i.id}')">${pin}${i.label||i.value}</span>
+    <span class="tp">${tp}</span><span class="lb" onclick="editItem('${i.id}')">${pin}${i.label||i.value}</span>${ffTag}
     <span class="vl" title="${i.value}">${i.value.replace('https://','').substring(0,40)}</span>${catTag}${noteTag}
     <div class="ia">${launch}<button class="ab" onclick="editItem('${i.id}')">✎</button><button class="ab dl" onclick="delItem('${i.id}')">✕</button></div></div>`;
 }
 
 // ═══ ITEM OPERATIONS ═══
 async function addItem(){
-  const t=document.getElementById('addT').value,v=document.getElementById('addV').value.trim(),cat=document.getElementById('addCat').value;
+  const t=document.getElementById('addT').value,v=document.getElementById('addV').value.trim(),cat=document.getElementById('addCat').value,ff=document.getElementById('addFF').value;
   if(!v)return;
-  await fetch(API+'/api/items',{method:'POST',headers:ah(),body:JSON.stringify({workspace_id:curWs.id,type:t,value:v,category:cat})});
-  document.getElementById('addV').value='';await loadItems();renderWs();celebrate()
+  const body={workspace_id:curWs.id,type:t,value:v,category:cat};
+  if(ff)body.fechaForge=ff;
+  await fetch(API+'/api/items',{method:'POST',headers:ah(),body:JSON.stringify(body)});
+  document.getElementById('addV').value='';document.getElementById('addFF').value='';await loadItems();renderWs();celebrate()
 }
 async function togItem(id,st){
   await fetch(API+'/api/items/'+id,{method:'PUT',headers:ah(),body:JSON.stringify({status:st})});
@@ -136,6 +155,7 @@ function editItem(id){
   const i=items.find(x=>x.id===id);if(!i)return;editId=id;
   document.getElementById('eT').value=i.type;document.getElementById('eV').value=i.value;document.getElementById('eL').value=i.label||'';
   document.getElementById('eN').value=i.notes||'';document.getElementById('eP').checked=!!i.permanent;
+  document.getElementById('eFF').value=(i.fechaForge||'').substring(0,10);
   // Populate category select
   const cs=document.getElementById('eC');cs.innerHTML='<option value="">Sin categoría</option>'+cats.map(c=>`<option value="${c.id}"${c.id===i.category?' selected':''}>${c.name}</option>`).join('');
   // Populate workspace move select
@@ -145,7 +165,7 @@ function editItem(id){
 async function saveEdit(){
   const d={type:document.getElementById('eT').value,value:document.getElementById('eV').value,label:document.getElementById('eL').value,
     notes:document.getElementById('eN').value,permanent:document.getElementById('eP').checked,category:document.getElementById('eC').value,
-    workspace_id:document.getElementById('eW').value};
+    workspace_id:document.getElementById('eW').value,fechaForge:document.getElementById('eFF').value||''};
   await fetch(API+'/api/items/'+editId,{method:'PUT',headers:ah(),body:JSON.stringify(d)});
   closeM('eiM');await loadItems();renderWs()
 }
@@ -349,15 +369,20 @@ async function loadNotes(){
     if(!notes.length){g.innerHTML='<div style="text-align:center;padding:20px;color:var(--dim)">Sin notas.</div>';return}
     g.innerHTML=notes.map(n=>{
       const wsNames=(n.workspace_ids||[]).map(id=>{const w=wss.find(x=>x.id===id);return w?w.icon+' '+w.name:''}).filter(Boolean).join(', ');
+      let ffHtml='';
+      if(n.fechaForge){const ff=n.fechaForge.substring(0,10);const ffd=new Date(ff+'T00:00:00');const now=new Date();now.setHours(0,0,0,0);
+        const past=ffd<now;const ms=['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+        ffHtml=`<span style="font-size:.65rem;font-weight:600;color:${past?'#EF4444':'#F97316'}">🔥 ${ffd.getDate()} ${ms[ffd.getMonth()]}</span>`}
       return `<div class="ncard" onclick="openEditNote('${n.id}')"><div class="ntitle">${esc(n.title||'Sin título')}</div><div class="nprev">${esc((n.content||'').substring(0,100))}</div>
-        <div class="nmeta">${wsNames?'<span>'+wsNames+'</span>':''}<span>${(n.updated||'').substring(0,10)}</span></div>
+        <div class="nmeta">${wsNames?'<span>'+wsNames+'</span>':''}${ffHtml}<span>${(n.updated||'').substring(0,10)}</span></div>
         <button class="ndel" onclick="event.stopPropagation();deleteNoteId='${n.id}';deleteNote()">✕</button></div>`}).join('')
   }catch(e){}}
-function openNewNote(){editNoteId=null;document.getElementById('neMT').textContent='Nueva Nota';document.getElementById('neTitle').value='';document.getElementById('neBody').value='';document.getElementById('neBody').style.display='';document.getElementById('nePreviewBox').style.display='none';notePreviewing=false;document.getElementById('neDel').style.display='none';popNeMeta();openM('neM')}
+function openNewNote(){editNoteId=null;document.getElementById('neMT').textContent='Nueva Nota';document.getElementById('neTitle').value='';document.getElementById('neBody').value='';document.getElementById('neBody').style.display='';document.getElementById('nePreviewBox').style.display='none';notePreviewing=false;document.getElementById('neDel').style.display='none';document.getElementById('neFF').value='';popNeMeta();openM('neM')}
 async function openEditNote(id){
   try{const r=await fetch(API+'/api/notes/'+id,{headers:ah()});const d=await r.json();const n=d.note;if(!n)return;
     editNoteId=id;document.getElementById('neMT').textContent='Editar Nota';document.getElementById('neTitle').value=n.title||'';document.getElementById('neBody').value=n.content||'';
     document.getElementById('neBody').style.display='';document.getElementById('nePreviewBox').style.display='none';notePreviewing=false;document.getElementById('neDel').style.display='inline-block';
+    document.getElementById('neFF').value=(n.fechaForge||'').substring(0,10);
     popNeMeta(n.workspace_ids||[],n.category_ids||[]);openM('neM')}catch(e){}}
 function popNeMeta(selWs=[],selCats=[]){
   document.getElementById('neWs').innerHTML=wss.filter(w=>w.status!=='archived').map(w=>`<option value="${w.id}"${selWs.includes(w.id)?' selected':''}>${w.icon} ${w.name}</option>`).join('');
@@ -368,7 +393,9 @@ function popNeMeta(selWs=[],selCats=[]){
 async function saveNote(){const title=document.getElementById('neTitle').value.trim();if(!title){toast('Título requerido','err');return}
   const ws=Array.from(document.getElementById('neWs').selectedOptions).map(o=>o.value);
   const cs=Array.from(document.getElementById('neCat').selectedOptions).map(o=>o.value);
+  const ff=document.getElementById('neFF').value;
   const body={title,content:document.getElementById('neBody').value,workspace_ids:ws,category_ids:cs};
+  if(ff)body.fechaForge=ff;else if(editNoteId)body.fechaForge='';
   if(editNoteId){await fetch(API+'/api/notes/'+editNoteId,{method:'PUT',headers:ah(),body:JSON.stringify(body)})}
   else{await fetch(API+'/api/notes',{method:'POST',headers:ah(),body:JSON.stringify(body)})}
   closeM('neM');loadNotes();toast('Nota guardada 📝')}
