@@ -161,7 +161,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 @media(max-width:700px){.lev-grid3,.lev-grid4{grid-template-columns:1fr 1fr}.lev-grid6{grid-template-columns:1fr 1fr}}
 
 .ncards-row{display:flex;gap:8px;overflow-x:auto;padding:6px 0 10px;scroll-snap-type:x mandatory}
-.ncard-mini{min-width:160px;max-width:200px;background:var(--crd);border:1px solid var(--brd);border-radius:8px;padding:10px 12px;cursor:pointer;scroll-snap-align:start;transition:all .2s;flex-shrink:0}
+.ncard-mini{min-width:160px;max-width:200px;background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:10px 12px;cursor:pointer;scroll-snap-align:start;transition:all .2s;flex-shrink:0}
 .ncard-mini:hover{border-color:var(--pl);transform:translateY(-2px);box-shadow:0 4px 12px rgba(108,92,231,.15)}
 .ncm-title{font-size:.82rem;font-weight:600;color:var(--tx);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ncm-prev{font-size:.7rem;color:var(--dim);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:2.2em}
@@ -170,6 +170,18 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 #injRes{margin-top:8px;font-size:.82rem;min-height:20px}
 .inj-btns{display:flex;gap:8px;margin-top:10px}
 .inj-btns button{flex:1}
+
+.ncm-foot{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.ncm-acts{display:flex;gap:3px}
+
+.ncm-btn{width:24px;height:24px;border:1px solid var(--brd);border-radius:6px;background:var(--bg);color:var(--dim);font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;padding:0;line-height:1}
+.ncm-btn:hover{border-color:var(--pl);color:var(--pl);background:rgba(108,92,231,.1)}
+#vnBody{line-height:1.7;font-size:.88rem;color:var(--tx);max-height:60vh;overflow-y:auto;padding:4px 0}
+#vnBody h1,#vnBody h2,#vnBody h3{color:var(--pl);margin:12px 0 6px}
+#vnBody code{background:rgba(108,92,231,.12);padding:1px 5px;border-radius:3px;font-family:'JetBrains Mono',monospace;font-size:.82rem}
+#vnBody blockquote{border-left:3px solid var(--pl);padding-left:10px;color:var(--dim);margin:6px 0}
+#vnBody strong{color:var(--tx)}
+#vnMeta{font-size:.72rem;color:var(--dim);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--brd)}
 </style>
 </head>
 <body>
@@ -224,6 +236,15 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
       <button onclick="injectSample()" class="wb">📋 Ejemplo</button>
       <button onclick="doInject()" style="background:var(--pl);color:#fff;font-weight:600">🚀 Inyectar</button>
     </div>
+  </div>
+</div></div>
+
+<div class="modal" id="vnM"><div class="mc" style="max-width:650px">
+  <div class="mh"><h3 id="vnTitle">Nota</h3><button onclick="closeM('vnM')">✕</button></div>
+  <div class="mb">
+    <div id="vnMeta"></div>
+    <div id="vnBody"></div>
+    <div style="margin-top:14px;text-align:right"><button id="vnEditBtn" style="background:var(--pl);color:#fff;padding:6px 16px;border-radius:6px;border:none;cursor:pointer;font-size:.82rem">✎ Editar</button></div>
   </div>
 </div></div>
 </body>
