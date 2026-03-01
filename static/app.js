@@ -400,3 +400,207 @@ function toast(msg,cls=''){const t=document.getElementById('toast');t.textConten
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
 // Init
 checkAuth();
+
+// ═══════════════════════════════════════════════════════
+// LEVERAGE ECOSYSTEM — El Fulcro Invisible, integrado
+// ═══════════════════════════════════════════════════════
+let levView='fulcros',levActiveFulcro=null,levActiveLayer=null,levExpandedNode=null;
+
+const LEV={
+  gold:'#d4a574',goldDim:'#8a6a44',text:'#e8e4df',dim:'#8a8690',muted:'#5a5660',
+  border:'#2a2a3a',card:'#12121a',bg:'#0a0a1a',
+  mat:'#6bad6b',epi:'#6b8aad',rel:'#ad6b6b',
+  purple:'#9b7acc',cyan:'#55aacc',green:'#55aa77',red:'#cc5555'
+};
+
+function showLeverage(){
+  curWs=null;renderSb();
+  const c=document.getElementById('wsC');
+  let h=`<div style="text-align:center;margin-bottom:4px;padding-top:4px">
+    <div style="font-family:JetBrains Mono;font-size:.55rem;letter-spacing:4px;color:${LEV.goldDim}">HARMONY NEXUS VITAE</div>
+    <h1 style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:300;color:${LEV.gold};margin:4px 0">Ecosistema de Apalancamiento</h1>
+    <div style="font-size:.75rem;color:${LEV.dim}">Carles Garcia Bach · Teoría del Fulcro Invisible</div></div>`;
+  h+=`<div class="lev-tabs">`;
+  [{id:'fulcros',l:'Fulcros'},{id:'layers',l:'Capas'},{id:'storage',l:'StorageAI'},{id:'bigger',l:'Visión'},{id:'diagnostic',l:'Diagnóstico'}].forEach(v=>{
+    h+=`<button class="lev-tab${levView===v.id?' on':''}" onclick="levView='${v.id}';showLeverage()">${v.l}</button>`});
+  h+=`</div><div id="levContent"></div>`;
+  h+=`<div style="text-align:center;margin-top:20px;padding:8px"><span style="font-family:JetBrains Mono;font-size:.55rem;color:${LEV.muted};letter-spacing:2px">CARLES & HYPATIA · EL FULCRO INVISIBLE · MARZO 2026</span></div>`;
+  c.innerHTML=h;
+  const lc=document.getElementById('levContent');
+  if(levView==='fulcros')lc.innerHTML=renderFulcros();
+  else if(levView==='layers')lc.innerHTML=renderLayers();
+  else if(levView==='storage')lc.innerHTML=renderStorageAI();
+  else if(levView==='bigger')lc.innerHTML=renderBiggerVision();
+  else if(levView==='diagnostic')lc.innerHTML=renderDiagnostics();
+}
+
+// ═══ VISTA 1: FULCROS ═══
+function renderFulcros(){
+  const fulcros=[
+    {id:'material',label:'FULCRO MATERIAL',sub:'La infraestructura sobre la que todo se apoya',color:LEV.mat,icon:'◆',
+      items:[{n:'StorageAI Platform',d:'Next.js + MongoDB Atlas, 27 colecciones, 22.5M propiedades',s:.85},{n:'48+ Apps Desplegadas',d:'Portfolio técnico vivo en producción',s:.75},{n:'Plantillas Looker Studio',d:'30+ páginas, reutilizables, margen brutal',s:.8},{n:'HNV Landing + Marca',d:'Identidad definida, dominio, presencia',s:.5},{n:'Stack Técnico',d:'Vercel, Railway, MongoDB, APIs REST',s:.9},{n:'Datos Propietarios',d:'Catastro + INE + RVC + IVM — moat real',s:.95}]},
+    {id:'epistemico',label:'FULCRO EPISTÉMICO',sub:'El conocimiento compartido que hace la palanca comprensible',color:LEV.epi,icon:'◈',
+      items:[{n:'Metodología 4 Pilares',d:'AEO→GEO→SXO→AIO — framework propio',s:.9},{n:'Investigación 11 Modelos',d:'Credencial técnica sin equivalente en España',s:.85},{n:'El Fulcro Invisible',d:'Opúsculo — teoría propia de apalancamiento',s:.7},{n:'Thinking Divide',d:'IA como pensamiento vs. IA como herramienta',s:.65},{n:'35+ Metodologías',d:'Productividad codificada en apps funcionales',s:.6},{n:'Caso Goitia Documentado',d:'Caso real con 150+ apariciones prensa',s:.75}]},
+    {id:'relacional',label:'FULCRO RELACIONAL',sub:'La confianza que transforma misma fuerza de inútil a decisiva',color:LEV.rel,icon:'◇',
+      items:[{n:'Rafa Larena / AEGS',d:'Acceso directo sector self-storage español',s:.85},{n:'Ignacio Goitia',d:'Artista reconocido, portfolio vivo creciente',s:.7},{n:'Reddit (en activación)',d:'4 días/semana, regla 80/20',s:.3},{n:'LinkedIn (pendiente)',d:'Headline, About, 1-2 posts/semana',s:.15},{n:'Clientes Activos',d:'Rafa, Goitia, Ramón — base creciente',s:.5},{n:'Hypatia + 2 años',d:'Colaboración profunda, investigación única',s:.95}]}
+  ];
+  let h=`<div class="lev-head"><div class="pre">TEORÍA DEL FULCRO — CARLES GARCIA BACH</div><h2>Los Tres Fulcros</h2><div class="sub">Sin fulcro, la palanca es un palo. — El Fulcro Invisible, Cap. 8</div></div>`;
+  h+=`<div style="display:flex;gap:10px;justify-content:center;margin-bottom:18px">`;
+  fulcros.forEach(f=>{
+    const on=levActiveFulcro===f.id;
+    h+=`<div class="lev-fulcro-btn${on?' on':''}" style="${on?'background:'+f.color+'15;border-color:'+f.color:''}" onclick="levActiveFulcro=levActiveFulcro==='${f.id}'?null:'${f.id}';showLeverage()">
+      <div style="font-size:1.3rem;margin-bottom:6px">${f.icon}</div>
+      <div style="font-size:.68rem;letter-spacing:1.5px;color:${f.color};font-weight:600">${f.label}</div>
+      <div style="font-size:.65rem;color:${LEV.dim};margin-top:3px;line-height:1.3">${f.sub}</div></div>`});
+  h+=`</div>`;
+  const active=fulcros.find(f=>f.id===levActiveFulcro);
+  if(active){
+    h+=`<div style="background:${LEV.card};border:1px solid ${active.color}33;border-radius:10px;padding:16px">
+      <div style="font-size:.65rem;letter-spacing:2px;color:${active.color};margin-bottom:12px">${active.icon} ACTIVOS EN ESTE FULCRO</div>`;
+    active.items.forEach(i=>{
+      h+=`<div class="lev-item" style="margin-bottom:8px"><div style="flex:1"><div style="font-size:.85rem;color:${LEV.text};font-weight:500">${i.n}</div><div style="font-size:.72rem;color:${LEV.dim};margin-top:1px">${i.d}</div></div>
+        <div style="width:100px;display:flex;align-items:center;gap:6px"><div class="lev-bar" style="flex:1"><div class="fill" style="width:${i.s*100}%;background:linear-gradient(90deg,${active.color}88,${active.color})"></div></div>
+        <span style="font-size:.65rem;color:${active.color};min-width:28px;text-align:right">${Math.round(i.s*100)}%</span></div></div>`});
+    h+=`</div>`}
+  return h;
+}
+
+// ═══ VISTA 2: CAPAS ═══
+function renderLayers(){
+  const layers=[
+    {n:7,nm:'Marca / Identidad',desc:'Transversal — multiplica todas las demás',carles:'HNV en construcción. Opúsculo como pieza fundacional. LinkedIn pendiente.',st:'building',stl:'CONSTRUYENDO',color:LEV.purple,proj:['HNV','El Fulcro Invisible','LinkedIn']},
+    {n:6,nm:'Conocimiento Posicionado',desc:'Presencia en fuentes que alimentan modelos IA',carles:'Metodología 4 pilares, caso Goitia, 11 modelos. Falta: artículos en plataformas indexables.',st:'incipient',stl:'INCIPIENTE',color:LEV.cyan,proj:['Metodología GEO','Caso Goitia','Multi-modelo']},
+    {n:5,nm:'Digital (coste marginal ≈ 0)',desc:'Se distribuye mientras duermes',carles:'StorageAI = palanca Capa 5 perfecta. Dato propietario + SaaS + moat 24-36 meses.',st:'active',stl:'ACTIVANDO',color:LEV.gold,proj:['StorageAI','AppForge','Systemia']},
+    {n:4,nm:'Producto Reproducible',desc:'Coste marginal decreciente pero significativo',carles:'Plantillas Looker Studio. Framework GEO productizado.',st:'active',stl:'ACTIVANDO',color:LEV.green,proj:['Plantillas Looker','Framework GEO']},
+    {n:3,nm:'Financiero',desc:'Apalancamiento sobre capital — spread entre coste y rendimiento',carles:'No aplica actualmente. Potencial futuro con beneficios StorageAI.',st:'future',stl:'FUTURO',color:LEV.muted,proj:[]},
+    {n:2,nm:'Laboral (sobre personas)',desc:'Permissioned leverage — requiere gestión',carles:'Socio Rafa (red AEGS). Potencial: subcontratar ejecución GEO cuando escale.',st:'partial',stl:'PARCIAL',color:LEV.rel,proj:['Partnership Rafa']},
+    {n:1,nm:'Físico-Temporal',desc:'Tiempo por dinero — techo inherente',carles:'Consultoría directa actual. Objetivo: reducir proporción progresivamente.',st:'current',stl:'OPERANDO AQUÍ',color:LEV.red,proj:['Consultoría hora','Rafa €300/mes']}
+  ];
+  let h=`<div class="lev-head"><div class="pre">LAS SIETE CAPAS — DE LO PRIMITIVO A LO EXPONENCIAL</div><h2>Tu Posición Actual</h2><div class="sub">La dirección es ascendente. StorageAI es el salto a Capa 5.</div></div>`;
+  h+=`<div style="display:flex;flex-direction:column;gap:5px">`;
+  layers.forEach(l=>{
+    const on=levActiveLayer===l.n;
+    h+=`<button class="lev-layer" style="${on?'background:'+l.color+'12;border-color:'+l.color+'44':''}" onclick="levActiveLayer=levActiveLayer===${l.n}?null:${l.n};showLeverage()">
+      <div class="num" style="background:${l.color}22;border:2px solid ${l.color};color:${l.color}">${l.n}</div>
+      <div style="flex:1"><div style="font-size:.88rem;color:${LEV.text};font-weight:500">${l.nm}</div><div style="font-size:.72rem;color:${LEV.dim}">${l.desc}</div></div>
+      <span class="lev-st" style="color:${l.color};background:${l.color}18">${l.stl}</span></button>`;
+    if(on){
+      h+=`<div class="lev-detail" style="border-color:${l.color}">${l.carles}`;
+      if(l.proj.length){h+=`<div class="tags">${l.proj.map(p=>`<span class="tag" style="color:${l.color};border-color:${l.color}33;background:${l.color}12">${p}</span>`).join('')}</div>`}
+      h+=`</div>`}
+  });
+  h+=`</div>`;
+  h+=`<div style="margin-top:16px;padding:12px;background:${LEV.gold}0a;border:1px solid ${LEV.gold}22;border-radius:8px;text-align:center">
+    <div style="font-size:.72rem;color:${LEV.gold};font-weight:600">⬆ VECTOR DE MOVIMIENTO</div>
+    <div style="font-size:.78rem;color:${LEV.dim};margin-top:4px">Capas 1-2 → Capas 4-5 (StorageAI + Framework GEO) → Capa 6-7 (pensamiento posicionado + marca)</div></div>`;
+  return h;
+}
+
+// ═══ VISTA 3: STORAGEAI ═══
+function renderStorageAI(){
+  let h=`<div class="lev-head"><div class="pre">ANATOMÍA DE UNA PALANCA — CAPA 5</div><h2>StorageAI Analytics</h2><div class="sub">Software que funciona mientras duermes, con datos que nadie más tiene.</div></div>`;
+  // Properties
+  h+=`<div class="lev-grid3" style="margin-bottom:16px">`;
+  [{p:'DISCIPLINA (rigidez)',v:'Dato propietario + moat 24-36 meses',d:'22.5M propiedades cruzadas con métricas RVC/IVM que nadie más calcula',pct:95,c:LEV.gold},
+   {p:'ALCANCE (longitud)',v:'Todo el sector self-storage España',d:'Via red AEGS de Rafa → expansión multi-vertical (LocationIQ)',pct:70,c:LEV.cyan},
+   {p:'SUSTANCIA (material)',v:'SaaS productizado con Stripe',d:'Next.js + MongoDB Atlas + 27 colecciones + auth por roles',pct:85,c:LEV.green}
+  ].forEach(x=>{
+    h+=`<div style="background:${LEV.card};border:1px solid ${LEV.border};border-radius:8px;padding:14px">
+      <div style="font-family:JetBrains Mono;font-size:.58rem;letter-spacing:1.5px;color:${x.c};margin-bottom:6px">${x.p}</div>
+      <div style="font-size:.82rem;color:${LEV.text};font-weight:500;margin-bottom:3px">${x.v}</div>
+      <div style="font-size:.68rem;color:${LEV.dim};line-height:1.4;margin-bottom:10px">${x.d}</div>
+      <div class="lev-bar"><div class="fill" style="width:${x.pct}%;background:linear-gradient(90deg,${x.c}66,${x.c})"></div></div></div>`});
+  h+=`</div>`;
+  // Fulcros that support it
+  h+=`<div style="background:${LEV.card};border:1px solid ${LEV.border};border-radius:10px;padding:16px;margin-bottom:12px">
+    <div style="font-size:.65rem;letter-spacing:2px;color:${LEV.gold};margin-bottom:12px">◆ FULCROS QUE SOSTIENEN ESTA PALANCA</div>`;
+  [{t:'Material',c:LEV.mat,x:'Stack técnico completo + datos Catastro/INE cruzados + métricas propietarias'},
+   {t:'Epistémico',c:LEV.epi,x:'Comprensión del sector (via Rafa) + analítica de datos + conocimiento LLMs para posicionar'},
+   {t:'Relacional',c:LEV.rel,x:'Red AEGS via Rafa + credibilidad ADE ICADE + 2 centros propios como validación'}
+  ].forEach(f=>{h+=`<div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:${LEV.bg};border-radius:8px;border-left:3px solid ${f.c};margin-bottom:6px"><span style="font-size:.68rem;letter-spacing:1px;color:${f.c};font-weight:600;min-width:75px">${f.t}</span><span style="font-size:.78rem;color:${LEV.text}">${f.x}</span></div>`});
+  h+=`</div>`;
+  // Revenue
+  h+=`<div style="background:${LEV.card};border:1px solid ${LEV.border};border-radius:10px;padding:16px">
+    <div style="font-size:.65rem;letter-spacing:2px;color:${LEV.gold};margin-bottom:12px">€ MODELO DE INGRESOS (SPLIT CON RAFA)</div><div class="lev-grid4">`;
+  [{p:'Free',pr:'0€',d:'3 informes — embudo captación'},{p:'Starter',pr:'49-79€',d:'Informes completos zona'},{p:'Professional',pr:'199-299€',d:'Analytics avanzados + API'},{p:'Enterprise',pr:'Custom',d:'Datos en tiempo real + soporte'}
+  ].forEach(t=>{h+=`<div style="padding:10px;background:${LEV.bg};border-radius:8px;border:1px solid ${LEV.border};text-align:center"><div style="font-size:.72rem;font-weight:600;color:${LEV.gold}">${t.p}</div><div style="font-size:1.2rem;font-weight:300;color:${LEV.text};margin:4px 0">${t.pr}</div><div style="font-size:.65rem;color:${LEV.dim}">${t.d}</div></div>`});
+  h+=`</div><div style="margin-top:10px;padding:10px;background:${LEV.gold}0a;border-radius:8px;text-align:center"><span style="font-size:.8rem;color:${LEV.gold}">Proyección Año 1: 20-50 clientes → 2.000-10.000€/mes</span></div></div>`;
+  return h;
+}
+
+// ═══ VISTA 4: ALGO MÁS GRANDE ═══
+function renderBiggerVision(){
+  const fw=[
+    {id:'storage',l:'StorageAI',sl:'SaaS Capa 5',feeds:'Genera datos, casos, revenue, credibilidad técnica',c:LEV.gold},
+    {id:'location',l:'LocationIQ',sl:'Multi-Vertical',feeds:'Misma engine → gimnasios, coworking, dental, súpers, restaurantes',c:LEV.cyan},
+    {id:'geo',l:'Consultoría GEO',sl:'Servicio Recurrente',feeds:'Clientes generan casos de estudio y revenue mensual',c:LEV.epi},
+    {id:'thought',l:'Thought Leadership',sl:'Fulcro Epistémico',feeds:'Opúsculo, artículos, LinkedIn, Reddit → autoridad',c:LEV.purple},
+    {id:'brand',l:'HNV / Marca',sl:'Fulcro Relacional',feeds:'Confianza → más clientes → más datos → más autoridad',c:LEV.rel}
+  ];
+  let h=`<div class="lev-head"><div class="pre">ALGO MÁS GRANDE — LA VISIÓN COMPLETA</div><h2>El Flywheel que se Alimenta Solo</h2><div class="sub">Cada pieza crea el fulcro de la siguiente. Apalancamiento compuesto.</div></div>`;
+  // Flywheel nodes
+  h+=`<div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-bottom:16px">`;
+  fw.forEach(n=>{
+    const on=levExpandedNode===n.id;
+    h+=`<div class="lev-flywheel-node" style="min-width:120px;${on?'border-color:'+n.c+';background:'+n.c+'10':''}" onclick="levExpandedNode=levExpandedNode==='${n.id}'?null:'${n.id}';showLeverage()">
+      <div style="font-size:.82rem;font-weight:600;color:${n.c}">${n.l}</div>
+      <div style="font-size:.65rem;color:${LEV.dim};margin-top:2px">${n.sl}</div></div>`});
+  h+=`</div>`;
+  // Center text
+  h+=`<div style="text-align:center;margin-bottom:14px;padding:10px;background:${LEV.card};border:1px solid ${LEV.gold}33;border-radius:8px">
+    <div style="font-size:.72rem;font-weight:600;color:${LEV.gold};letter-spacing:1.5px">CARLES GARCIA BACH</div>
+    <div style="font-size:.65rem;color:${LEV.goldDim};font-style:italic;margin-top:2px">La palanca que crea su propio fulcro</div></div>`;
+  if(levExpandedNode){const n=fw.find(x=>x.id===levExpandedNode);
+    h+=`<div style="padding:12px;background:${LEV.card};border:1px solid ${n.c}33;border-radius:8px;text-align:center;margin-bottom:14px;font-size:.82rem;color:${LEV.text}">${n.feeds}</div>`}
+  // LocationIQ vision
+  h+=`<div style="background:linear-gradient(135deg,${LEV.card},${LEV.cyan}08);border:1px solid ${LEV.cyan}33;border-radius:10px;padding:18px;margin-bottom:12px">
+    <div style="font-size:.65rem;letter-spacing:2px;color:${LEV.cyan};margin-bottom:8px">◈ LO MÁS GRANDE QUE VEO</div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:300;color:${LEV.text};margin-bottom:6px">StorageAI no es el producto. Es el prototipo.</div>
+    <div style="font-size:.8rem;color:${LEV.dim};line-height:1.6;margin-bottom:12px">La engine que construiste — Catastro + INE + métricas propietarias — funciona para <em>cualquier negocio dependiente de ubicación</em>. El moat es <strong style="color:${LEV.text}">la capacidad de cruzar 22.5M propiedades con inteligencia de demanda sectorial</strong>.</div>
+    <div class="lev-grid6">`;
+  [{v:'Self-Storage',s:'ACTIVO',i:'📦'},{v:'Gimnasios',s:'LISTO',i:'🏋️'},{v:'Coworking',s:'LISTO',i:'💻'},{v:'Dental',s:'LISTO',i:'🦷'},{v:'Supermercados',s:'LISTO',i:'🛒'},{v:'Restauración',s:'LISTO',i:'🍽️'}
+  ].forEach((x,i)=>{h+=`<div style="padding:8px;background:${i===0?LEV.gold+'15':LEV.bg};border-radius:8px;border:1px solid ${i===0?LEV.gold+'44':LEV.border};text-align:center"><div style="font-size:1.2rem">${x.i}</div><div style="font-size:.72rem;color:${LEV.text};font-weight:500">${x.v}</div><div style="font-size:.6rem;color:${i===0?LEV.gold:LEV.muted}">${x.s}</div></div>`});
+  h+=`</div></div>`;
+  // Meta-palanca
+  h+=`<div style="background:linear-gradient(135deg,${LEV.card},${LEV.purple}08);border:1px solid ${LEV.purple}33;border-radius:10px;padding:18px">
+    <div style="font-size:.65rem;letter-spacing:2px;color:${LEV.purple};margin-bottom:8px">◇ LA META-PALANCA</div>
+    <div style="font-size:.82rem;color:${LEV.text};line-height:1.7">
+      <strong style="color:${LEV.gold}">StorageAI</strong> valida el modelo y genera revenue.
+      <strong style="color:${LEV.cyan}">LocationIQ</strong> escala la engine a 6+ verticales.
+      <strong style="color:${LEV.epi}">La consultoría GEO</strong> posiciona clientes en ecosistemas IA.
+      <strong style="color:${LEV.purple}">El opúsculo</strong> establece la autoridad.
+      <strong style="color:${LEV.rel}">HNV</strong> lo unifica todo.</div>
+    <div style="margin-top:12px;padding:10px;background:${LEV.bg};border-radius:8px;text-align:center">
+      <div style="font-size:.82rem;color:${LEV.gold};font-style:italic">No vendes software. No vendes consultoría.<br><strong>Vendes inteligencia de localización + visibilidad IA.</strong><br><span style="color:${LEV.dim};font-size:.72rem">Dos moats que se refuerzan mutuamente.</span></div></div></div>`;
+  return h;
+}
+
+// ═══ VISTA 5: DIAGNÓSTICO ═══
+function renderDiagnostics(){
+  const palancas=[
+    {nm:'Plantillas Looker Studio',ly:4,di:.8,al:.5,su:.85,f:['Material ✓','Epistémico ~','Relacional ~'],st:'activa',sc:LEV.green},
+    {nm:'Metodología GEO 4 Pilares',ly:5,di:.9,al:.3,su:.95,f:['Material ✓','Epistémico △','Relacional △'],st:'infrautilizada',sc:LEV.rel},
+    {nm:'StorageAI Analytics',ly:5,di:.85,al:.7,su:.9,f:['Material ✓✓','Epistémico ✓','Relacional ✓'],st:'activando',sc:LEV.gold},
+    {nm:'Desarrollo Rápido MVPs',ly:4,di:.95,al:.4,su:.8,f:['Material ✓✓','Epistémico ~','Relacional ~'],st:'infrautilizada',sc:LEV.rel},
+    {nm:'Conocimiento Multi-modelo',ly:6,di:.85,al:.2,su:.95,f:['Material ~','Epistémico △','Relacional △'],st:'sin distribuir',sc:LEV.red},
+    {nm:'Caso Goitia',ly:6,di:.7,al:.6,su:.75,f:['Material ✓','Epistémico ✓','Relacional ✓'],st:'en progreso',sc:LEV.cyan},
+    {nm:'Red AEGS (via Rafa)',ly:2,di:.6,al:.85,su:.7,f:['Material ~','Epistémico ~','Relacional ✓✓'],st:'activa',sc:LEV.green}
+  ];
+  let h=`<div class="lev-head"><div class="pre">DIAGNÓSTICO COMPLETO — CAPÍTULO 15 DEL OPÚSCULO</div><h2>Tus Palancas, Medidas</h2><div class="sub">✓✓ sólido · ✓ presente · ~ débil · △ <span style="color:${LEV.rel}">CUELLO DE BOTELLA</span></div></div>`;
+  palancas.forEach(p=>{
+    h+=`<div class="lev-diag"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px"><div><span style="font-size:.88rem;color:${LEV.text};font-weight:500">${p.nm}</span>
+      <span style="margin-left:8px;font-size:.6rem;padding:2px 6px;border-radius:4px;background:${p.sc}18;color:${p.sc};letter-spacing:.5px;font-family:JetBrains Mono">${p.st.toUpperCase()}</span></div>
+      <span style="font-size:.65rem;color:${LEV.muted}">Capa ${p.ly}</span></div>`;
+    h+=`<div class="row3">`;
+    [{l:'Disciplina',v:p.di,c:LEV.gold},{l:'Alcance',v:p.al,c:LEV.cyan},{l:'Sustancia',v:p.su,c:LEV.green}].forEach(x=>{
+      h+=`<div><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:.6rem;color:${LEV.dim}">${x.l}</span><span style="font-size:.6rem;color:${x.c}">${Math.round(x.v*100)}%</span></div>
+        <div class="lev-bar"><div class="fill" style="width:${x.v*100}%;background:${x.v<.4?LEV.red:'linear-gradient(90deg,'+x.c+'66,'+x.c+')'}"></div></div></div>`});
+    h+=`</div><div style="display:flex;gap:10px;font-size:.68rem;color:${LEV.dim};margin-top:4px">`;
+    p.f.forEach(f=>{h+=`<span style="color:${f.includes('△')?LEV.rel:LEV.dim}">${f}</span>`});
+    h+=`</div></div>`});
+  // Pattern insight
+  h+=`<div class="lev-insight" style="background:${LEV.rel}10;border:1px solid ${LEV.rel}33">
+    <div style="font-size:.72rem;color:${LEV.rel};font-weight:600;margin-bottom:6px">△ PATRÓN DETECTADO: CUELLO DE BOTELLA EPISTÉMICO-RELACIONAL</div>
+    <div style="font-size:.8rem;color:${LEV.text};line-height:1.7">Tus palancas más poderosas (GEO, Multi-modelo, Desarrollo) tienen sustancia y disciplina altas pero alcance bajo. El fulcro epistémico (que el mercado entienda qué ofreces) y el relacional (que confíen en ti) son los cuellos de botella. <strong style="color:${LEV.gold}">La distribución no es un "nice to have" — es el fulcro que falta.</strong></div></div>`;
+  return h;
+}

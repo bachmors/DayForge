@@ -138,6 +138,27 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .ncard .ndel{position:absolute;top:6px;right:6px;background:none;border:none;color:var(--dim);cursor:pointer;font-size:.7rem;opacity:0;transition:opacity .15s}.ncard:hover .ndel{opacity:1}.ncard .ndel:hover{color:var(--r)}
 .toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--g);color:var(--tx);padding:8px 16px;border-radius:9px;font-size:.83rem;z-index:300;opacity:0;transition:all .3s}.toast.show{transform:translateX(-50%) translateY(0);opacity:1}.toast.err{border-color:var(--r)}.toast.hyp{border-color:var(--pl)}
 @media(max-width:700px){.grid{grid-template-columns:1fr}.sb{display:none}.cnt{padding:12px}.it .vl,.it .nt,.it .cat-tag{display:none}.cht{width:calc(100vw - 16px);right:8px;bottom:66px}.note-modal{width:95vw}.dash-stats{grid-template-columns:repeat(2,1fr)}}
+
+.lev-tabs{display:flex;gap:3px;justify-content:center;margin-bottom:18px;background:rgba(18,18,26,.8);border-radius:8px;padding:3px;border:1px solid rgba(42,42,58,.6)}
+.lev-tab{padding:6px 14px;border-radius:6px;border:none;background:transparent;color:var(--dim);font-size:.75rem;cursor:pointer;font-family:inherit;transition:all .2s;letter-spacing:.5px}.lev-tab:hover{color:var(--tx)}.lev-tab.on{background:rgba(212,165,116,.15);color:#d4a574;font-weight:600;letter-spacing:1px}
+.lev-head{text-align:center;margin-bottom:20px}.lev-head .pre{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:#5a5660;letter-spacing:3px;text-transform:uppercase;margin-bottom:4px}.lev-head h2{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:300;color:#e8e4df;margin:0}.lev-head .sub{font-size:.78rem;color:#8a8690;margin-top:4px;font-style:italic}
+.lev-card{background:#12121a;border:1px solid #2a2a3a;border-radius:10px;padding:14px;transition:all .2s;cursor:pointer}.lev-card:hover{border-color:#6C5CE7}
+.lev-bar{height:3px;background:#2a2a3a;border-radius:2px;overflow:hidden;margin-top:4px}.lev-bar .fill{height:100%;border-radius:2px;transition:width .6s ease}
+.lev-fulcro-btn{background:#12121a;border:1px solid #2a2a3a;border-radius:8px;padding:14px 18px;cursor:pointer;transition:all .3s;flex:1;max-width:220px;text-align:center}.lev-fulcro-btn:hover{border-color:#6C5CE7}.lev-fulcro-btn.on{border-color:var(--active-color)}
+.lev-item{display:flex;align-items:center;gap:12px;padding:10px 14px;background:#0a0a1a;border-radius:8px;border:1px solid #2a2a3a}
+.lev-layer{width:100%;display:flex;align-items:center;gap:14px;padding:12px 16px;background:#12121a;border:1px solid #2a2a3a;border-radius:8px;cursor:pointer;transition:all .2s;text-align:left;font-family:inherit}.lev-layer:hover{border-color:#6C5CE7}
+.lev-layer .num{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.9rem;font-weight:700;flex-shrink:0}
+.lev-st{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:1px;padding:3px 8px;border-radius:4px;font-weight:600;flex-shrink:0}
+.lev-detail{margin:3px 0 6px 46px;padding:10px 14px;background:#0a0a1a;border-radius:8px;border-left:3px solid;font-size:.82rem;line-height:1.6;color:#e8e4df}
+.lev-detail .tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}.lev-detail .tag{font-size:.68rem;padding:2px 8px;border-radius:10px;border:1px solid}
+.lev-grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.lev-grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.lev-grid6{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.lev-insight{padding:14px;border-radius:8px;margin-top:16px}
+.lev-diag{background:#12121a;border:1px solid #2a2a3a;border-radius:10px;padding:14px;margin-bottom:10px}
+.lev-diag .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin:8px 0}
+.lev-flywheel-node{text-align:center;padding:14px;background:#12121a;border:1px solid #2a2a3a;border-radius:10px;cursor:pointer;transition:all .2s}.lev-flywheel-node:hover{transform:translateY(-2px);border-color:#d4a574}
+@media(max-width:700px){.lev-grid3,.lev-grid4{grid-template-columns:1fr 1fr}.lev-grid6{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
@@ -148,7 +169,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 <button class="hb" onclick="showTimeline()" id="tlBtn" title="Timeline">🕐</button>
 <button class="hb" onclick="showInbox()" id="inboxBtn">📥<span class="badge" id="ibBadge" style="display:none">0</span></button>
 <button class="hb" onclick="showNotesList()">📝</button>
-<button class="hb" onclick="openSearch()" title="Ctrl+K">🔍</button>
+<button class="hb" onclick="showLeverage()" id="levBtn" title="Ecosistema de Apalancamiento">⚡</button><button class="hb" onclick="openSearch()" title="Ctrl+K">🔍</button>
 <button class="hb" onclick="showBm()">📎</button>
 <div class="dev"><div class="ddot" id="agDot"></div><span id="agLbl">...</span></div>
 <button class="hb" onclick="loadAll()">↻</button><button class="hb" onclick="doLogout()">Salir</button></div></div>
